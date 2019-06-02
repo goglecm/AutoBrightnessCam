@@ -4,6 +4,7 @@
 
 TEST_SOURCES = \
 	$(SOURCE_PATH)/tests/tests_abc_brightness_calculator.cpp \
+	$(SOURCE_PATH)/tests/tests_abc_brightness_control.cpp \
 
 #############
 # Libraries #

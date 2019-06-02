@@ -4,8 +4,13 @@
 
 TEST(ABC_brightness_calculator, newBrightnessIsGreaterOrEqualThanTheMinimumBrightness)
 {
-    const abc_Percentage_t newBrightness =
-        abc_calculateNewBrightnessPercentage(g_abc_MIN_BRIGHTNESS - 1);
+    abc_Percentage_t newBrightness;
+
+    newBrightness = abc_calculateNewBrightnessPercentage(g_abc_MIN_BRIGHTNESS - 1);
+
+    ASSERT_GE(newBrightness, g_abc_MIN_BRIGHTNESS);
+
+    newBrightness = abc_calculateNewBrightnessPercentage(2 * g_abc_MIN_BRIGHTNESS);
 
     ASSERT_GE(newBrightness, g_abc_MIN_BRIGHTNESS);
 }
