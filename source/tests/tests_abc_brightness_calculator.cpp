@@ -27,10 +27,3 @@ TEST(ABC_brightness_calculator, newBrightnessIsLessOrEqualThanTheMaximumBrightne
 
     ASSERT_LE(newBrightness, g_abc_MAX_BRIGHTNESS);
 }
-
-int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-
-    return RUN_ALL_TESTS();
-}
