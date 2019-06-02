@@ -1,0 +1,20 @@
+################
+# Test sources #
+################
+
+TEST_SOURCES = \
+	$(SOURCE_PATH)/tests/tests_abc_brightness_calculator.cpp \
+
+#############
+# Libraries #
+#############
+
+MASTER_INCLUDE_PATH += \
+	$(LIBS_PATH)/google-test/googletest-release-1.7.0/include \
+
+DYNAMIC_LIBS_PATH = \
+	$(LIBS_PATH)/google-test/googletest-release-1.7.0/ \
+
+DYNAMIC_LIBS = \
+	-lgtest \
+	-lgtest_main \

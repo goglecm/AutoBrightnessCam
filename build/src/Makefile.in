@@ -1,0 +1,9 @@
+###########
+# Project #
+###########
+
+MASTER_INCLUDE_PATH += \
+	$(SOURCE_PATH)/inc \
+
+PROJECT_SOURCES = \
+	$(SOURCE_PATH)/src/abc_brightness_calculator.c \
