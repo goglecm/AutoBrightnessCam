@@ -7,3 +7,4 @@ MASTER_INCLUDE_PATH += \
 
 PROJECT_SOURCES = \
 	$(SOURCE_PATH)/src/abc_brightness_calculator.c \
+	$(SOURCE_PATH)/src/abc_brightness_control.c \

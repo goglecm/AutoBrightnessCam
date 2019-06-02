@@ -13,8 +13,6 @@ extern "C" {
 
 typedef double abc_Percentage_t; // 0.0 - 100.0 %
 
-typedef uint16_t abc_Brightness_t; // anything integer up to 65k
-
 /*************************
  * Variable declarations *
  *************************/
