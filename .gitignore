@@ -1,3 +1,5 @@
 *.o
 *.exe
 *.out
+CMakeLists.txt
+.idea
