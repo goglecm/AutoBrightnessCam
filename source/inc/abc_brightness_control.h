@@ -5,25 +5,31 @@
 extern "C" {
 #endif
 
+/******************
+ * Local includes *
+ ******************/
+
+#include "abc_common.h"
+
 /**************
  * Structures *
  **************/
 
 typedef struct
 {
-    const char *pDisplayBrightnessPath;
+    const char *pCurrent;
 
-    const char *pMaxDisplayBrightnessPath;
+    const char *pMax;
 
-} abc_DisplayBrightnessInfo_t;
+} abc_BrightnessDeviceInfo_t;
 
 /*************************
  * Function declarations *
  *************************/
 
 void
-abc_setBrightness(const abc_DisplayBrightnessInfo_t *pDisplayInfo,
-                  double brightnessValue);
+abc_setBrightness(const abc_BrightnessDeviceInfo_t *pInfo,
+                  abc_Percentage_t value);
 
 #ifdef __cplusplus
 } // end extern "C"

@@ -4,6 +4,32 @@
 
 #include "abc_brightness_calculator.h"
 
+/******************************
+ * Local function definitions *
+ ******************************/
+
+static abc_Percentage_t
+limitToMaxBrightness(const abc_Percentage_t brightness)
+{
+    if (brightness > g_abc_MAX_BRIGHTNESS)
+    {
+        return g_abc_MAX_BRIGHTNESS;
+    }
+
+    return brightness;
+}
+
+static abc_Percentage_t
+limitToMinBrightness(const abc_Percentage_t brightness)
+{
+    if (brightness < g_abc_MIN_BRIGHTNESS)
+    {
+        return g_abc_MIN_BRIGHTNESS;
+    }
+
+    return brightness;
+}
+
 /*******************************
  * Global variable definitions *
  *******************************/
@@ -16,17 +42,7 @@ const abc_Percentage_t g_abc_MAX_BRIGHTNESS = 100;
  *******************************/
 
 abc_Percentage_t
-abc_calculateNewBrightnessPercentage(const abc_Percentage_t ambientBrightness)
+abc_calculateNewBrightness(abc_Percentage_t ambientBrightness)
 {
-    // Offset the brightness to prevent setting a brightness below the minimum
-    // allowed brightness.
-    abc_Percentage_t newBrightness = ambientBrightness + g_abc_MIN_BRIGHTNESS;
-
-    // Clip the new brightness at the maximum allowed brightness.
-    if (newBrightness > g_abc_MAX_BRIGHTNESS)
-    {
-        newBrightness = g_abc_MAX_BRIGHTNESS;
-    }
-
-    return newBrightness;
+    return limitToMinBrightness(limitToMaxBrightness(ambientBrightness));
 }

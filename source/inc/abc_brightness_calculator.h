@@ -5,19 +5,16 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+/******************
+ * Local includes *
+ ******************/
 
-/************
- * Typedefs *
- ************/
-
-typedef double abc_Percentage_t; // 0.0 - 100.0 %
+#include "abc_common.h"
 
 /*************************
  * Variable declarations *
  *************************/
 
-// Min/max brightness percentages.
 extern const abc_Percentage_t g_abc_MIN_BRIGHTNESS;
 extern const abc_Percentage_t g_abc_MAX_BRIGHTNESS;
 
@@ -26,7 +23,7 @@ extern const abc_Percentage_t g_abc_MAX_BRIGHTNESS;
  *************************/
 
 abc_Percentage_t
-abc_calculateNewBrightnessPercentage(abc_Percentage_t ambientBrightness);
+abc_calculateNewBrightness(abc_Percentage_t ambientBrightness);
 
 #ifdef __cplusplus
 } // end extern "C"

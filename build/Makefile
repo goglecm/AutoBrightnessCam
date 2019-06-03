@@ -80,7 +80,8 @@ project_build:
 
 tests_clean:
 	cd $(TEST_BUILD_PATH); \
-	rm -rf *.exe
+	rm -rf *.exe \
+	rm -rf *.out \
 
 tests_build:
 	make -j project_build tests_clean

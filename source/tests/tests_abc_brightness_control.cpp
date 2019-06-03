@@ -7,37 +7,39 @@
 
 #include <stdint.h>
 
-class test_DisplayBrightness_t
+class test_BrightnessDevice_t
 {
-    const std::string displayPath_;
+    const std::string currentPath_;
 
-    const std::string displayMaxBrightnessPath_;
+    const std::string maxPath_;
 
 public:
-    static const uint16_t s_MAX_BRIGHTNESS = 100;
+    static const uint16_t s_MAX_BRIGHTNESS_ = 150;
 
-    explicit test_DisplayBrightness_t(const std::string &displayPath,
-                                      const std::string &displayMaxBrightnessPath,
+    explicit test_BrightnessDevice_t(const std::string &currentPath,
+                                      const std::string &maxPath,
                                       const double initialBrightnessValue):
-        displayPath_(displayPath),
-        displayMaxBrightnessPath_(displayMaxBrightnessPath)
+        currentPath_(currentPath),
+        maxPath_(maxPath)
     {
-        std::ofstream outfile(displayPath.c_str());
+        std::ofstream outfile(currentPath.c_str());
 
-        outfile << std::dec << (initialBrightnessValue / 100.0) * s_MAX_BRIGHTNESS << std::endl;
+        outfile << std::dec
+                << (initialBrightnessValue / 100.0) * s_MAX_BRIGHTNESS_
+                << std::endl;
 
         outfile.close();
 
-        std::ofstream outfileMax(displayMaxBrightnessPath.c_str());
+        std::ofstream outfileMax(maxPath.c_str());
 
-        outfileMax << std::dec << s_MAX_BRIGHTNESS << std::endl;
+        outfileMax << std::dec << s_MAX_BRIGHTNESS_ << std::endl;
 
         outfileMax.close();
     }
 
-    double getBrightness(void)
+    double getCurrentBrightness(void) const
     {
-        std::ifstream displayFile(displayPath_.c_str());
+        std::ifstream displayFile(currentPath_.c_str());
 
         uint16_t currentBrightness = 0;
 
@@ -45,30 +47,35 @@ public:
 
         displayFile.close();
 
-        return (currentBrightness / 100.0) * 100.0;
+        return ((double)currentBrightness / (double)s_MAX_BRIGHTNESS_) * 100.0;
     }
 };
 
-TEST(ABC_brightness_control, setAndGetTheBrightnessOfADisplay)
+TEST(ABC_brightness_control, theBrightnessIsSetTo50Percent)
 {
+    const abc_Percentage_t initalBrightness = 10;
+    const abc_Percentage_t targetBrightness = 50;
+
     // Create a display.
-    const std::string displayPath("testDisplay.out");
-    const std::string displayMaxBrightnessPath("testMaxDisplay.out");
-    test_DisplayBrightness_t testDisplay(displayPath, displayMaxBrightnessPath, 10.0);
+    const std::string currentPath("testBrightnessDeviceCurrent.out");
+    const std::string maxPath("testBrightnessDeviceMax.out");
+
+    const test_BrightnessDevice_t testDevice(currentPath,
+                                             maxPath,
+                                             initalBrightness);
 
     // Set the display brightness.
-    const abc_DisplayBrightnessInfo_t testDisplayInfo =
+    const abc_BrightnessDeviceInfo_t brightnessInfo =
     {
-        .pDisplayBrightnessPath = displayPath.c_str(),
-        .pMaxDisplayBrightnessPath = displayMaxBrightnessPath.c_str(),
+        .pCurrent = currentPath.c_str(),
+        .pMax = maxPath.c_str(),
     };
 
-    abc_setBrightness(&testDisplayInfo, 50.0);
+    abc_setBrightness(&brightnessInfo, targetBrightness);
 
     // Check the display brightness.
-    const double readBrightness = testDisplay.getBrightness();
+    const abc_Percentage_t readBrightness = testDevice.getCurrentBrightness();
 
-    ASSERT_GE(readBrightness, 49);
-
-    ASSERT_LE(readBrightness, 51);
+    ASSERT_GE(readBrightness, targetBrightness - 1);
+    ASSERT_LE(readBrightness, targetBrightness + 1);
 }
