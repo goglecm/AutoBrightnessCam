@@ -17,8 +17,8 @@ public:
     static const uint16_t s_MAX_BRIGHTNESS_ = 150;
 
     explicit test_BrightnessDevice_t(const std::string &currentPath,
-                                      const std::string &maxPath,
-                                      const double initialBrightnessValue):
+                                     const std::string &maxPath,
+                                     const double initialBrightnessValue) :
         currentPath_(currentPath),
         maxPath_(maxPath)
     {
@@ -37,7 +37,8 @@ public:
         outfileMax.close();
     }
 
-    double getCurrentBrightness(void) const
+    double
+    getCurrentBrightness(void) const
     {
         std::ifstream displayFile(currentPath_.c_str());
 
@@ -47,7 +48,7 @@ public:
 
         displayFile.close();
 
-        return ((double)currentBrightness / (double)s_MAX_BRIGHTNESS_) * 100.0;
+        return ((double) currentBrightness / (double) s_MAX_BRIGHTNESS_) * 100.0;
     }
 };
 
@@ -66,10 +67,10 @@ TEST(ABC_brightness_control, theBrightnessIsSetTo50Percent)
 
     // Set the display brightness.
     const abc_BrightnessDeviceInfo_t brightnessInfo =
-    {
-        .pCurrent = currentPath.c_str(),
-        .pMax = maxPath.c_str(),
-    };
+        {
+            .pCurrent = currentPath.c_str(),
+            .pMax = maxPath.c_str(),
+        };
 
     abc_setBrightness(&brightnessInfo, targetBrightness);
 
