@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#include <assert.h>
+
 /************
  * Typedefs *
  ************/
@@ -27,7 +29,10 @@ typedef uint16_t RawValue_t; // 0.0 - 100.0 %
 static RawValue_t
 readBrightness(const char brightnessDevicePath[])
 {
+    assert(brightnessDevicePath);
+
     FILE *const pBrightnessDeviceFile = fopen(brightnessDevicePath, "r");
+    assert(pBrightnessDeviceFile);
 
     RawValue_t value = 0;
 
@@ -41,7 +46,10 @@ readBrightness(const char brightnessDevicePath[])
 static void
 writeBrightness(const char brightnessDevicePath[], const RawValue_t value)
 {
+    assert(brightnessDevicePath);
+
     FILE *const pBrightnessDeviceFile = fopen(brightnessDevicePath, "w");
+    assert(pBrightnessDeviceFile);
 
     (void)fprintf(pBrightnessDeviceFile, "%"PRIu16, value);
 
@@ -63,7 +71,11 @@ void
 abc_setBrightness(const abc_BrightnessDeviceInfo_t *const pInfo,
                   const abc_Percentage_t value)
 {
+    assert(pInfo);
+
+    assert(pInfo->pMax);
     const RawValue_t rawValue = normalise(value) * readBrightness(pInfo->pMax);
 
+    assert(pInfo->pCurrent);
     writeBrightness(pInfo->pCurrent, rawValue);
 }
