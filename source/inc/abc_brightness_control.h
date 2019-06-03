@@ -25,10 +25,6 @@ void
 abc_setBrightness(const abc_DisplayBrightnessInfo_t *pDisplayInfo,
                   double brightnessValue);
 
-void
-abc_getBrightness(const abc_DisplayBrightnessInfo_t *pDisplayInfo,
-                  double *pBrightnessValue);
-
 #ifdef __cplusplus
 } // end extern "C"
 #endif

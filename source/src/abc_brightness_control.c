@@ -15,11 +15,3 @@ abc_setBrightness(const abc_DisplayBrightnessInfo_t *pDisplayInfo,
     (void)pDisplayInfo;
     (void)brightnessValue;
 }
-
-void
-abc_getBrightness(const abc_DisplayBrightnessInfo_t *pDisplayInfo,
-                  double *const pBrightnessValue)
-{
-    (void)pDisplayInfo;
-    (void)pBrightnessValue;
-}

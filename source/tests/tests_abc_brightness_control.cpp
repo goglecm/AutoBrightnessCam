@@ -7,31 +7,56 @@
 
 #include <stdint.h>
 
-static void
-createDisplay(const std::string &displayPath,
-              const std::string &displayMaxBrightnessPath,
-              const uint16_t initialBrightnessValue)
+class test_DisplayBrightness_t
 {
-    std::ofstream outfile(displayPath.c_str());
+    const std::string displayPath_;
 
-    outfile << std::dec << initialBrightnessValue << std::endl;
+    const std::string displayMaxBrightnessPath_;
 
-    outfile.close();
+public:
+    static const uint16_t s_MAX_BRIGHTNESS = 100;
 
-    std::ofstream outfileMax(displayMaxBrightnessPath.c_str());
+    explicit test_DisplayBrightness_t(const std::string &displayPath,
+                                      const std::string &displayMaxBrightnessPath,
+                                      const double initialBrightnessValue):
+        displayPath_(displayPath),
+        displayMaxBrightnessPath_(displayMaxBrightnessPath)
+    {
+        std::ofstream outfile(displayPath.c_str());
 
-    outfileMax << std::dec << initialBrightnessValue * 2 + 123 << std::endl;
+        outfile << std::dec << (initialBrightnessValue / 100.0) * s_MAX_BRIGHTNESS << std::endl;
 
-    outfileMax.close();
-}
+        outfile.close();
+
+        std::ofstream outfileMax(displayMaxBrightnessPath.c_str());
+
+        outfileMax << std::dec << s_MAX_BRIGHTNESS << std::endl;
+
+        outfileMax.close();
+    }
+
+    double getBrightness(void)
+    {
+        std::ifstream displayFile(displayPath_.c_str());
+
+        uint16_t currentBrightness = 0;
+
+        displayFile >> currentBrightness;
+
+        displayFile.close();
+
+        return (currentBrightness / 100.0) * 100.0;
+    }
+};
 
 TEST(ABC_brightness_control, setAndGetTheBrightnessOfADisplay)
 {
+    // Create a display.
     const std::string displayPath("testDisplay.out");
     const std::string displayMaxBrightnessPath("testMaxDisplay.out");
+    test_DisplayBrightness_t testDisplay(displayPath, displayMaxBrightnessPath, 10.0);
 
-    createDisplay(displayPath, displayMaxBrightnessPath, 10);
-
+    // Set the display brightness.
     const abc_DisplayBrightnessInfo_t testDisplayInfo =
     {
         .pDisplayBrightnessPath = displayPath.c_str(),
@@ -40,11 +65,10 @@ TEST(ABC_brightness_control, setAndGetTheBrightnessOfADisplay)
 
     abc_setBrightness(&testDisplayInfo, 50.0);
 
-    double readBrightness = -1;
+    // Check the display brightness.
+    const double readBrightness = testDisplay.getBrightness();
 
-    abc_getBrightness(&testDisplayInfo, &readBrightness);
+    ASSERT_GE(readBrightness, 49);
 
-    ASSERT_GE(readBrightness, 45);
-
-    ASSERT_LE(readBrightness, 55);
+    ASSERT_LE(readBrightness, 51);
 }
