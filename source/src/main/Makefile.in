@@ -1,0 +1,9 @@
+###########
+# Project #
+###########
+
+MAIN_MASTER_INC_PATH += \
+	$(SOURCE_PATH)/inc/abc_brightness_service \
+
+MAIN_SOURCES = \
+	$(SOURCE_PATH)/src/main/main.c \

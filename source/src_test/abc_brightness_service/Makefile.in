@@ -1,0 +1,12 @@
+#########
+# Fakes #
+#########
+
+ABC_BRIGHTNESS_SERVICE_MASTER_INC_PATH += \
+	$(SOURCE_PATH)/inc_test/abc_brightness_service \
+
+ABC_BRIGHTNESS_SERVICE_FAKES_SOURCES = \
+	$(SOURCE_PATH)/src_test/abc_brightness_service/fake_abc_ambient_brightness_controller.c \
+	$(SOURCE_PATH)/src_test/abc_brightness_service/fake_abc_backlight_brightness_controller.c \
+	$(SOURCE_PATH)/src_test/abc_brightness_service/fake_abc_time_service.c \
+	$(SOURCE_PATH)/src_test/abc_brightness_service/fake_abc_power_controller.c \

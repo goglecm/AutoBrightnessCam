@@ -1,0 +1,9 @@
+###########
+# Project #
+###########
+
+ABC_POWER_CONTROLLER_MASTER_INC_PATH += \
+	$(SOURCE_PATH)/inc/abc_power_controller \
+
+ABC_POWER_CONTROLLER_SOURCES = \
+	$(SOURCE_PATH)/src/abc_power_controller/abc_power_controller.c \
