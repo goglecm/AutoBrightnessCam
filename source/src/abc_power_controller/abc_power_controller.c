@@ -6,28 +6,24 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "abc_terminal_controller.h"
+
 bool
 abc_powerController_isCharging(void)
 {
-    const char cmd[] = "upower -i `upower -e | grep 'BAT'` | "
+    const char cmd[] = "upower -i `upower -e | "
+                       "grep 'BAT'` | "
                        "grep state | "
                        "sed 's^state:^^g' | "
                        "sed 's^ ^^g'";
 
-    FILE *const pProcessOut_file = popen(cmd, "r");
-
-    assert(pProcessOut_file);
-
     char batteryStateStr[16] = { 0 };
-    if (NULL == fgets(batteryStateStr, sizeof(batteryStateStr), pProcessOut_file))
-    {
-        assert(false);
-    }
 
-    if (pclose(pProcessOut_file))
-    {
-        assert(false);
-    }
+    const bool result = abc_terminalController_send(sizeof(batteryStateStr),
+                                                    batteryStateStr,
+                                                    cmd);
+
+    assert(result);
 
     return (0 == strcmp("charging", batteryStateStr));
 }

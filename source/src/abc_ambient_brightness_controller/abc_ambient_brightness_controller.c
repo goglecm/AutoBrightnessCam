@@ -1,40 +1,50 @@
 #include "abc_ambient_brightness_controller.h"
 
+#include "abc_terminal_controller.h"
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 
-double abc_ambientBrightnessController_get(void)
+static void takePicture_fswebcam(const char *const restrict pPicPath)
 {
-    const char cmdCamera[] = "fswebcam --no-banner -r 160x120 --jpeg 50 /tmp/brightness.jpg";
+    char cmdCamera[128] = { 0 };
 
-    if (system(cmdCamera))
+    if (0 >= snprintf(cmdCamera, sizeof(cmdCamera), "fswebcam --no-banner -r 160x120 --jpeg 50 %s", pPicPath))
     {
         assert(false);
     }
 
-    const char cmdBrightness[] = "convert /tmp/brightness.jpg -colorspace gray -format %[fx:100*mean]%% info:";
+    const bool result = abc_terminalController_send(0, NULL, cmdCamera);
 
-    FILE *pProcessOut_file = popen(cmdBrightness, "r");
+    assert(result);
+}
 
-    assert(pProcessOut_file);
+static double getBrightnessFromPicture_convert(const char *const restrict pPicPath)
+{
+    char cmdBrightness[128] = { 0 };
 
-    char brightness[10] = { 0 };
-
-    if (NULL == fgets(brightness, sizeof(brightness), pProcessOut_file))
+    if (0 >= snprintf(cmdBrightness, sizeof(cmdBrightness), "convert %s -colorspace gray -format %%[fx:100*mean]%%%% info:", pPicPath))
     {
         assert(false);
     }
 
-    if (pclose(pProcessOut_file))
-    {
-        assert(false);
-    }
+    double ambientBrightness;
 
-    const double ambientBrightness = strtod(brightness, NULL);
+    const bool result =
+        abc_terminalController_readCmdDouble(&ambientBrightness, cmdBrightness);
 
-    assert(ambientBrightness);
+    assert(result);
 
     return ambientBrightness;
+}
+
+double abc_ambientBrightnessController_get(void)
+{
+    const char picPath[] = "/tmp/brightness.jpg";
+
+    takePicture_fswebcam(picPath);
+
+    return getBrightnessFromPicture_convert(picPath);
 }
