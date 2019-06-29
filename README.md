@@ -47,10 +47,16 @@ Same mapping as the source, except these directories hold build files.
 ### TL;DR
 
 Run production:
-*MODULE_NAME=main make -f ~/source/targets/main/Makefile -j exe_build*
+
+`MODULE_NAME=main make -f ~/source/targets/main/Makefile -j exe_build`
+
+then (with sudo) run the main exe:
+
+`sudo ~/build/src/main/main.exe`
 
 Run tests on the abc_brightness module (or any other module):
-*MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile -j run_tests*
+
+`MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile -j run_tests`
 
 ### Background
 
@@ -65,7 +71,7 @@ Variable $(MODULE_NAME) should be defined prior to making any target.
 
 For instance, to build the abc_brightness_service module:
 
-*MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile build_with_deps*
+`MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile build_with_deps`
 
 ### Build targets
 
