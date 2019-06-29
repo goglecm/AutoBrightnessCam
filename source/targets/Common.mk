@@ -4,6 +4,7 @@
 
 CC=gcc
 CXX=g++
+AR=ar
 
 SOURCE_PATH = /home/john/CLionProjects/AutoBrightnessCam/source
 BUILD_PATH = /home/john/CLionProjects/AutoBrightnessCam/build
@@ -63,3 +64,5 @@ DYNAMIC_LIBS = \
 
 DYNAMIC_LIBS_PATH_PREFIXED = \
 	$(foreach var, $(DYNAMIC_LIBS_PATH), -L$(var))
+
+include ../CommonTargets.mk

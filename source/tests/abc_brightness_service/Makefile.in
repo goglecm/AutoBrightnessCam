@@ -1,7 +1,0 @@
-################
-# Test sources #
-################
-
-TEST_SOURCES = \
-	$(SOURCE_PATH)/tests/abc_brightness_service/tests_abc_brightness_service.cpp \
-	$(SOURCE_PATH)/tests/abc_brightness_service/tests_fake_abc_time_service.cpp \
