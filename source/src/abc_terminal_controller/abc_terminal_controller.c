@@ -6,6 +6,12 @@
 #include <inttypes.h>
 
 bool
+abc_terminalController_send(const char *const restrict pCmd)
+{
+    return abc_terminalController_sendReturnStr(0, NULL, pCmd);
+}
+
+bool
 abc_terminalController_sendReturnStr(const unsigned resultLen,
                                      char *const restrict pResult,
                                      const char *const restrict pCmd)

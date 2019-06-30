@@ -10,9 +10,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-const double g_abc_BacklightBrightnessController_MAX = 100;
+const double
+g_abc_BacklightBrightnessController_MAX = 100;
 
-const double g_abc_BacklightBrightnessController_MIN = 50;
+const double
+g_abc_BacklightBrightnessController_MIN = 50;
 
 static bool
 s_isMaxSet = false;
@@ -20,13 +22,19 @@ s_isMaxSet = false;
 static uint32_t
 s_maxBrightness = -1;
 
-static uint32_t readMaxBrightness(void)
-{
-    const char f[] = "/sys/class/backlight/intel_backlight/max_brightness";
+static const char
+s_PATH_MAX_BRIGHTNESS[] = "/sys/class/backlight/intel_backlight/max_brightness";
 
+static const char
+s_PATH_CURRENT_BRIGHTNESS[] = "/sys/class/backlight/intel_backlight/brightness";
+
+static uint32_t
+readMaxBrightness(void)
+{
     int maxBrightness;
 
-    const bool result = abc_terminalController_readFile(&maxBrightness, f);
+    const bool result =
+        abc_terminalController_readFile(&maxBrightness, s_PATH_MAX_BRIGHTNESS);
 
     assert(result);
 
@@ -35,11 +43,11 @@ static uint32_t readMaxBrightness(void)
     return maxBrightness;
 }
 
-static void writeBrightness(const uint32_t value)
+static void
+writeBrightness(const uint32_t value)
 {
-    const char f[] = "/sys/class/backlight/intel_backlight/brightness";
-
-    const bool result = abc_terminalController_writeFile(value, f);
+    const bool result =
+        abc_terminalController_writeFile(value, s_PATH_CURRENT_BRIGHTNESS);
 
     assert(result);
 }
@@ -61,7 +69,8 @@ limitBrightness(const double value)
     }
 }
 
-void abc_backlightBrightnessController_set(const double value)
+void
+abc_backlightBrightnessController_set(const double value)
 {
     if (false == s_isMaxSet)
     {
@@ -69,7 +78,5 @@ void abc_backlightBrightnessController_set(const double value)
         s_isMaxSet = true;
     }
 
-    const double newValue = limitBrightness(value);
-
-    writeBrightness((double) s_maxBrightness * (newValue / 100.0));
+    writeBrightness(s_maxBrightness * (limitBrightness(value) / 100.0));
 }

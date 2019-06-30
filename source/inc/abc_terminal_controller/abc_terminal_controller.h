@@ -16,6 +16,9 @@ abc_terminalController_sendReturnStr(unsigned resultLen,
                                      const char *pCmd);
 
 bool
+abc_terminalController_send(const char *pCmd);
+
+bool
 abc_terminalController_sendReturnDbl(double *pValue, const char *pCmd);
 
 bool
