@@ -44,6 +44,23 @@ static void writeBrightness(const uint32_t value)
     assert(result);
 }
 
+static double
+limitBrightness(const double value)
+{
+    if (value > g_abc_BacklightBrightnessController_MAX)
+    {
+        return g_abc_BacklightBrightnessController_MAX;
+    }
+    else if (value < g_abc_BacklightBrightnessController_MIN)
+    {
+        return g_abc_BacklightBrightnessController_MIN;
+    }
+    else
+    {
+        return value;
+    }
+}
+
 void abc_backlightBrightnessController_set(const double value)
 {
     if (false == s_isMaxSet)
@@ -52,5 +69,7 @@ void abc_backlightBrightnessController_set(const double value)
         s_isMaxSet = true;
     }
 
-    writeBrightness((double) s_maxBrightness * (value / 100.0));
+    const double newValue = limitBrightness(value);
+
+    writeBrightness((double) s_maxBrightness * (newValue / 100.0));
 }

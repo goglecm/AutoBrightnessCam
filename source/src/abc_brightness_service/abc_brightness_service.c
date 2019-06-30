@@ -46,23 +46,6 @@ isStopped(void)
     return abc_brightnessService_STOPPED == s_status;
 }
 
-static double
-limitBrightness(const double value)
-{
-    if (value > g_abc_BacklightBrightnessController_MAX)
-    {
-        return g_abc_BacklightBrightnessController_MAX;
-    }
-    else if (value < g_abc_BacklightBrightnessController_MIN)
-    {
-        return g_abc_BacklightBrightnessController_MIN;
-    }
-    else
-    {
-        return value;
-    }
-}
-
 static bool
 isNextPeriod(const time_t now)
 {
@@ -120,9 +103,7 @@ abc_brightnessService_wakeUp(void)
         {
             const double ambientBrightness = abc_ambientBrightnessController_get();
 
-            const double newBacklightBrightness = limitBrightness(ambientBrightness);
-
-            abc_backlightBrightnessController_set(newBacklightBrightness);
+            abc_backlightBrightnessController_set(ambientBrightness);
 
             s_lastTimestamp = now;
         }
