@@ -42,6 +42,8 @@ public:
         abc_backlightBrightnessController_set(s_TEST_DEFAULT_BACKLIGHT_BRIGHTNESS);
 
         fake_abc_ambientBrightnessController_set(s_TEST_DEFAULT_AMBIENT_BRIGHTNESS);
+
+        fake_abc_backlightBrightnessController_resetNumSetCalls();
     }
 
     void TearDown(void)
@@ -121,12 +123,12 @@ TEST(abc_brightness_service_period, period_is_not_set_higher_than_the_maximum_pe
               abc_brightnessService_setPeriod(aboveMax));
 }
 
-TEST_F(abc_brightness_service, service_reports_error_if_woken_when_not_started)
+TEST_F(abc_brightness_service, report_error_if_woken_when_not_started)
 {
     ASSERT_EQ(abc_brightnessService_FAILURE, abc_brightnessService_wakeUp());
 }
 
-TEST_F(abc_brightness_service, backlight_brightness_is_set_to_the_ambient_brightness_6_times_during_6_periods)
+TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_periods)
 {
     const abc_brightnessService_PeriodSec_t period = 5;
 
@@ -136,51 +138,31 @@ TEST_F(abc_brightness_service, backlight_brightness_is_set_to_the_ambient_bright
 
     abc_brightnessService_start();
 
-    fake_abc_BacklightBrightnessValue_t brightnessAtPeriodStart =
-        fake_abc_backlightBrightnessController_get();
-
     for (unsigned timeNow = 0; timeNow < period * numPeriods; ++timeNow)
     {
-        const double ambientBrightness = timeNow + s_TEST_DEFAULT_BACKLIGHT_BRIGHTNESS;
-
-        fake_abc_ambientBrightnessController_set(ambientBrightness);
-
         fake_abc_timeService_forward(1);
 
-        EXPECT_EQ(abc_brightnessService_SUCCESS,
+        ASSERT_EQ(abc_brightnessService_SUCCESS,
                   abc_brightnessService_wakeUp());
-
-        const fake_abc_BacklightBrightnessValue_t backlightBrightness =
-            fake_abc_backlightBrightnessController_get();
 
         if ((timeNow + 1) % period == 0)
         {
-            EXPECT_EQ(FAKE_ABC_BACKLIGHT_BRIGHTNESS_SET,
-                      backlightBrightness.set);
+            ASSERT_EQ(1, fake_abc_backlightBrightnessController_numSetCalls());
 
-            EXPECT_DOUBLE_EQ(ambientBrightness,
-                             backlightBrightness.value);
-
-            brightnessAtPeriodStart = backlightBrightness;
-        }
-        else
-        {
-            EXPECT_EQ(brightnessAtPeriodStart.set,
-                      backlightBrightness.set);
-
-            EXPECT_DOUBLE_EQ(brightnessAtPeriodStart.value,
-                             backlightBrightness.value);
+            fake_abc_backlightBrightnessController_resetNumSetCalls();
         }
     }
 }
 
 TEST_F(abc_brightness_service, backlight_brightness_is_not_changed_if_service_is_woken_when_not_started)
 {
+    fake_abc_backlightBrightnessController_resetNumSetCalls();
+
     fake_abc_timeService_forward(2 * s_TEST_DEFAULT_PERIOD_SEC);
 
     ASSERT_EQ(abc_brightnessService_FAILURE, abc_brightnessService_wakeUp());
 
-    ASSERT_NE(s_TEST_DEFAULT_AMBIENT_BRIGHTNESS, fake_abc_backlightBrightnessController_get().value);
+    ASSERT_EQ(0, fake_abc_backlightBrightnessController_numSetCalls());
 }
 
 TEST_F(abc_brightness_service, backlight_brightness_is_set_to_maximum_when_charging)

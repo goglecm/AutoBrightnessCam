@@ -23,6 +23,12 @@ typedef struct
 fake_abc_BacklightBrightnessValue_t
 fake_abc_backlightBrightnessController_get(void);
 
+unsigned
+fake_abc_backlightBrightnessController_numSetCalls(void);
+
+void
+fake_abc_backlightBrightnessController_resetNumSetCalls(void);
+
 #ifdef __cplusplus
 }
 #endif
