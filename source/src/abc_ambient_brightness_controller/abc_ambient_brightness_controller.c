@@ -7,25 +7,33 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-static void takePicture_fswebcam(const char *const restrict pPicPath)
+static void
+takePicture_fswebcam(const char *const restrict pPicPath)
 {
+    const char s[] = "fswebcam --no-banner -r 160x120 --jpeg 50 %s";
+
     char cmdCamera[128] = { 0 };
 
-    if (0 >= snprintf(cmdCamera, sizeof(cmdCamera), "fswebcam --no-banner -r 160x120 --jpeg 50 %s", pPicPath))
+    if (0 >= snprintf(cmdCamera, sizeof(cmdCamera), s, pPicPath))
     {
         assert(false);
     }
 
-    const bool result = abc_terminalController_send(0, NULL, cmdCamera);
+    const bool result = abc_terminalController_sendReturnStr(0, NULL, cmdCamera);
 
     assert(result);
 }
 
-static double getBrightnessFromPicture_convert(const char *const restrict pPicPath)
+static double
+getBrightnessFromPicture_convert(const char *const restrict pPicPath)
 {
+    const char s[] = "convert %s "
+                     "-colorspace gray "
+                     "-format %%[fx:100*mean]%%%% info:";
+
     char cmdBrightness[128] = { 0 };
 
-    if (0 >= snprintf(cmdBrightness, sizeof(cmdBrightness), "convert %s -colorspace gray -format %%[fx:100*mean]%%%% info:", pPicPath))
+    if (0 >= snprintf(cmdBrightness, sizeof(cmdBrightness), s, pPicPath))
     {
         assert(false);
     }
@@ -33,14 +41,15 @@ static double getBrightnessFromPicture_convert(const char *const restrict pPicPa
     double ambientBrightness;
 
     const bool result =
-        abc_terminalController_readCmdDouble(&ambientBrightness, cmdBrightness);
+        abc_terminalController_sendReturnDbl(&ambientBrightness, cmdBrightness);
 
     assert(result);
 
     return ambientBrightness;
 }
 
-double abc_ambientBrightnessController_get(void)
+double
+abc_ambientBrightnessController_get(void)
 {
     const char picPath[] = "/tmp/brightness.jpg";
 

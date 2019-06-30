@@ -6,6 +6,8 @@ $(MODULE_NAME)_MODULE_MASTER_INC_PATH += \
 	$(SOURCE_PATH) \
 	$(COMMON_INC_PATH) \
 	$(SOURCE_PATH)/inc/$(MODULE_NAME) \
+	$(SOURCE_PATH)/inc \
+	$(SOURCE_PATH)/inc_test \
 	$(SOURCE_PATH)/inc_test/$(MODULE_NAME) \
 	$(foreach dep, $($(MODULE_NAME)_DEPENDENCIES), $(SOURCE_PATH)/inc/$(dep)) \
 

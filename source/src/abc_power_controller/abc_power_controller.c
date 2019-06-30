@@ -19,9 +19,10 @@ abc_powerController_isCharging(void)
 
     char batteryStateStr[16] = { 0 };
 
-    const bool result = abc_terminalController_send(sizeof(batteryStateStr),
-                                                    batteryStateStr,
-                                                    cmd);
+    const bool result =
+        abc_terminalController_sendReturnStr(sizeof(batteryStateStr),
+                                             batteryStateStr,
+                                             cmd);
 
     assert(result);
 

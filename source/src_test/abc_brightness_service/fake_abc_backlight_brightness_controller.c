@@ -1,6 +1,6 @@
 #include "abc_backlight_brightness_controller.h"
 
-#include "fake_abc_backlight_brightness_controller.h"
+#include "fake_abc_terminal_controller.h"
 
 const double g_abc_BacklightBrightnessController_MAX = 100;
 

@@ -3,7 +3,7 @@
 #include "abc_brightness_service.h"
 
 #include "fake_abc_ambient_brightness_controller.h"
-#include "fake_abc_backlight_brightness_controller.h"
+#include "fake_abc_terminal_controller.h"
 #include "abc_backlight_brightness_controller.h"
 #include "fake_abc_time_service.h"
 #include "fake_abc_power_controller.h"

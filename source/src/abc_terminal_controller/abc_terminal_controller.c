@@ -6,9 +6,9 @@
 #include <inttypes.h>
 
 bool
-abc_terminalController_send(const unsigned resultLen,
-                            char *const restrict pResult,
-                            const char *const restrict pCmd)
+abc_terminalController_sendReturnStr(const unsigned resultLen,
+                                     char *const restrict pResult,
+                                     const char *const restrict pCmd)
 {
     assert(pCmd);
 
@@ -56,7 +56,7 @@ abc_terminalController_writeFile(const int value,
         return false;
     }
 
-    if (!abc_terminalController_send(0, NULL, cmd))
+    if (!abc_terminalController_sendReturnStr(0, NULL, cmd))
     {
         return false;
     }
@@ -83,7 +83,7 @@ abc_terminalController_readFile(int *const restrict pValue,
 
     char strValue[10] = { 0 };
 
-    if (!abc_terminalController_send(sizeof(strValue), strValue, cmd))
+    if (!abc_terminalController_sendReturnStr(sizeof(strValue), strValue, cmd))
     {
         return false;
     }
@@ -94,7 +94,7 @@ abc_terminalController_readFile(int *const restrict pValue,
 }
 
 bool
-abc_terminalController_readCmdDouble(double *const restrict pValue,
+abc_terminalController_sendReturnDbl(double *const restrict pValue,
                                      const char *const restrict pCmd)
 {
     assert(pValue);
@@ -102,7 +102,7 @@ abc_terminalController_readCmdDouble(double *const restrict pValue,
 
     char strValue[10] = { 0 };
 
-    if (!abc_terminalController_send(sizeof(strValue), strValue, pCmd))
+    if (!abc_terminalController_sendReturnStr(sizeof(strValue), strValue, pCmd))
     {
         return false;
     }
