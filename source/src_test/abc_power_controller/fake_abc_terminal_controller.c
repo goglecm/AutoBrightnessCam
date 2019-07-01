@@ -55,11 +55,11 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
     // Report the result.
     if (s_isCharging)
     {
-        strcpy(pResult, "charging");
+        strcpy(pResult, "charging\n");
     }
     else
     {
-        strcpy(pResult, "discharging");
+        strcpy(pResult, "discharging\n");
     }
 
     return true;
