@@ -10,6 +10,8 @@ extern "C" {
 
 #define ABC_LOGGING_ON 1
 
+#ifdef ABC_LOGGING_ON
+
 extern bool g_isFirstLog;
 extern FILE *g_pLogFile;
 extern const char g_logFilename[];
@@ -34,6 +36,12 @@ extern const char g_logFilename[];
         } \
     }\
 } while (0)
+
+#else
+
+#define ABC_LOG(...) do {} while (0)
+
+#endif
 
 #ifdef __cplusplus
 }
