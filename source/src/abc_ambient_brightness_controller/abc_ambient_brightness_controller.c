@@ -7,8 +7,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-static const unsigned
-s_MAX_BUFF_SIZE = 128;
+#define MAX_BUFF_SIZE 128
 
 static const char
 s_PICTURE_PATH[] = "/tmp/brightness.jpg";
@@ -18,7 +17,7 @@ takePicture_fswebcam(const char *const restrict pPicPath)
 {
     const char s[] = "fswebcam --no-banner -r 160x120 --jpeg 50 %s";
 
-    char cmdCamera[s_MAX_BUFF_SIZE] = { 0 };
+    char cmdCamera[MAX_BUFF_SIZE] = { 0 };
 
     if (0 >= snprintf(cmdCamera, sizeof(cmdCamera), s, pPicPath))
     {
@@ -37,7 +36,7 @@ getBrightnessFromPicture_convert(const char *const restrict pPicPath)
                      "-colorspace gray "
                      "-format %%[fx:100*mean]%%%% info:";
 
-    char cmdBrightness[s_MAX_BUFF_SIZE] = { 0 };
+    char cmdBrightness[MAX_BUFF_SIZE] = { 0 };
 
     if (0 >= snprintf(cmdBrightness, sizeof(cmdBrightness), s, pPicPath))
     {
