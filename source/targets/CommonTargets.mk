@@ -5,11 +5,8 @@ $(MODULE_NAME)_MODULE_FAKES_BUILD_PATH = $(BUILD_PATH)/src_test/$(MODULE_NAME)
 $(MODULE_NAME)_MODULE_MASTER_INC_PATH += \
 	$(SOURCE_PATH) \
 	$(COMMON_INC_PATH) \
-	$(SOURCE_PATH)/inc/$(MODULE_NAME) \
 	$(SOURCE_PATH)/inc \
 	$(SOURCE_PATH)/inc_test \
-	$(SOURCE_PATH)/inc_test/$(MODULE_NAME) \
-	$(foreach dep, $($(MODULE_NAME)_DEPENDENCIES), $(SOURCE_PATH)/inc/$(dep)) \
 
 $(MODULE_NAME)_MODULE_SOURCES = $(SOURCE_PATH)/src/$(MODULE_NAME)/*.c
 
@@ -97,6 +94,8 @@ fakes_build:
 tests_clean:
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		rm -rf *.o *.a *.exe *.out *.jpeg
+
+# Include the logging service here explicitly
 
 tests_build:
 	MODULE_NAME=$(MODULE_NAME) make -j \

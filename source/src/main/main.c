@@ -1,7 +1,6 @@
-#include "abc_brightness_service.h"
+#include "abc_brightness_service/abc_brightness_service.h"
 
 #include <unistd.h>
-
 #include <stdio.h>
 
 int main(void)

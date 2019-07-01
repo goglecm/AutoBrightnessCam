@@ -1,6 +1,5 @@
-#include "abc_ambient_brightness_controller.h"
-
-#include "fake_abc_ambient_brightness_controller.h"
+#include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
+#include "abc_brightness_service/fake_abc_ambient_brightness_controller.h"
 
 #include <assert.h>
 #include <stdbool.h>

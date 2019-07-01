@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "abc_backlight_brightness_controller.h"
+#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 
-#include "abc_terminal_controller.h"
+#include "abc_terminal_controller/abc_terminal_controller.h"
 
 #include "abc_backlight_brightness_controller/fake_abc_terminal_controller.h"
 

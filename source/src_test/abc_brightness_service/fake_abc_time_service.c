@@ -1,6 +1,5 @@
-#include "abc_time_service.h"
-
-#include "fake_abc_time_service.h"
+#include "abc_time_service/abc_time_service.h"
+#include "abc_brightness_service/fake_abc_time_service.h"
 
 static time_t s_time;
 

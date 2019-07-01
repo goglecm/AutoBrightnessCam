@@ -1,14 +1,13 @@
-#include "abc_power_controller.h"
+#include "abc_power_controller/abc_power_controller.h"
+
+#include "abc_terminal_controller/abc_terminal_controller.h"
+#include "abc_logging_service/abc_logging_service.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
-
-#include "abc_terminal_controller.h"
-
-#include "abc_logging_service/abc_logging_service.h"
 
 bool
 abc_powerController_isCharging(void)

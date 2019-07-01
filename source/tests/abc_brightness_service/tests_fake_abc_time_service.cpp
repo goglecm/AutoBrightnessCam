@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "abc_time_service.h"
+#include "abc_time_service/abc_time_service.h"
 
-#include "fake_abc_time_service.h"
+#include "abc_brightness_service/fake_abc_time_service.h"
 
 TEST(fake_abc_time_service, current_time_is_incremented_by_12_seconds)
 {

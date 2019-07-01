@@ -5,8 +5,6 @@
 extern "C" {
 #endif
 
-
-
 typedef unsigned abc_brightnessService_PeriodSec_t; // Seconds
 
 typedef enum
@@ -22,8 +20,6 @@ typedef enum
     abc_brightnessService_SUCCESS,
 
 } abc_brightnessService_Result_t;
-
-
 
 extern const abc_brightnessService_PeriodSec_t
 g_abc_brightnessService_DEFAULT_PERIOD;

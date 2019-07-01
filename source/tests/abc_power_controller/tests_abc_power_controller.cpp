@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "abc_power_controller.h"
+#include "abc_power_controller/abc_power_controller.h"
 
 #include "abc_power_controller/fake_abc_terminal_controller.h"
 

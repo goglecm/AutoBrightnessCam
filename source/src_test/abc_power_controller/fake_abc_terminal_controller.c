@@ -1,9 +1,7 @@
-#include "abc_terminal_controller.h"
-
+#include "abc_terminal_controller/abc_terminal_controller.h"
 #include "abc_power_controller/fake_abc_terminal_controller.h"
 
 #include <assert.h>
-
 #include <string.h>
 
 static bool

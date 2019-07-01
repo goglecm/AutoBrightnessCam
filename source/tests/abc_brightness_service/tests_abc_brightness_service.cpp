@@ -1,12 +1,16 @@
 #include <gtest/gtest.h>
 
-#include "abc_brightness_service.h"
+#include "abc_brightness_service/abc_brightness_service.h"
 
-#include "fake_abc_ambient_brightness_controller.h"
-#include "fake_abc_terminal_controller.h"
-#include "abc_backlight_brightness_controller.h"
-#include "fake_abc_time_service.h"
-#include "fake_abc_power_controller.h"
+#include "abc_brightness_service/fake_abc_ambient_brightness_controller.h"
+
+#include "abc_brightness_service/fake_abc_backlight_brightness_controller.h"
+
+#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+
+#include "abc_brightness_service/fake_abc_time_service.h"
+
+#include "abc_brightness_service/fake_abc_power_controller.h"
 
 const abc_brightnessService_PeriodSec_t s_TEST_DEFAULT_PERIOD_SEC = 30;
 

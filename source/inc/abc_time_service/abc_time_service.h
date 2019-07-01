@@ -7,6 +7,8 @@ extern "C" {
 
 #include <time.h>
 
+// Warning! Direct wrapper. Not tested.
+
 time_t
 abc_timeService_get(void);
 

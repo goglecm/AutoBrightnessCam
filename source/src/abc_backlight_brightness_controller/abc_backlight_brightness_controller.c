@@ -1,6 +1,5 @@
-#include "abc_backlight_brightness_controller.h"
-
-#include "abc_terminal_controller.h"
+#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+#include "abc_terminal_controller/abc_terminal_controller.h"
 
 #include <stdio.h>
 #include <stdbool.h>

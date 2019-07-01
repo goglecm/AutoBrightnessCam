@@ -1,12 +1,12 @@
-#include "abc_brightness_service.h"
+#include "abc_brightness_service/abc_brightness_service.h"
+
+#include "abc_time_service/abc_time_service.h"
+#include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
+#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+#include "abc_power_controller/abc_power_controller.h"
 
 #include <assert.h>
 #include <stdbool.h>
-
-#include "abc_time_service.h"
-#include "abc_ambient_brightness_controller.h"
-#include "abc_backlight_brightness_controller.h"
-#include "abc_power_controller.h"
 
 #define ABC_DEFAULT_PERIOD (5U)
 

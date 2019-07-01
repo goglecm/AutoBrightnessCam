@@ -1,6 +1,7 @@
-#include "abc_power_controller.h"
+#include "abc_power_controller/abc_power_controller.h"
+#include "abc_brightness_service/fake_abc_power_controller.h"
 
-#include "fake_abc_power_controller.h"
+#include <stdbool.h>
 
 static fake_abc_PowerState_t
 s_source = fake_abc_PowerState_DISCHARGING;
