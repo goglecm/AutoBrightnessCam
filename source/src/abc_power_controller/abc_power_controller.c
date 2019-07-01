@@ -8,6 +8,8 @@
 
 #include "abc_terminal_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 bool
 abc_powerController_isCharging(void)
 {
@@ -25,6 +27,11 @@ abc_powerController_isCharging(void)
                                              cmd);
 
     assert(result);
+
+    // Remove the newline from the end of the string.
+    batteryStateStr[strlen(batteryStateStr) - 1] = '\0';
+
+    ABC_LOG("battery state = `%s`", batteryStateStr);
 
     return (0 == strcmp("charging", batteryStateStr));
 }

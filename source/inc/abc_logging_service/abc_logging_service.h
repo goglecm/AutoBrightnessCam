@@ -28,7 +28,7 @@ extern const char g_logFilename[];
         g_pLogFile = fopen(g_logFilename, "a"); \
         if (g_pLogFile) \
         { \
-            fprintf(g_pLogFile, "%s: ", __func__); \
+            fprintf(g_pLogFile, "\n%s: ", __func__); \
             fprintf(g_pLogFile, __VA_ARGS__) ; \
             fclose(g_pLogFile); \
         } \

@@ -104,11 +104,14 @@ tests_build:
 		fakes_build \
 		tests_clean
 
+	MODULE_NAME=abc_logging_service make -j build_with_deps
+
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		$(CXX) \
 		$($(MODULE_NAME)_MODULE_BUILD_PATH)/*.o \
 		$($(MODULE_NAME)_MODULE_FAKES_BUILD_PATH)/*.o \
 		$($(MODULE_NAME)_TEST_SOURCES) \
+		$(BUILD_PATH)/src/abc_logging_service/*.a \
 		$($(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED) \
 		$(DYNAMIC_LIBS_PATH_PREFIXED) \
 		$(DYNAMIC_LIBS) \
