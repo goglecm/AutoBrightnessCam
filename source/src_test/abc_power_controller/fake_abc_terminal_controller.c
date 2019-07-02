@@ -4,8 +4,8 @@
 #include <assert.h>
 #include <string.h>
 
-static bool
-s_isCharging;
+static fake_abc_terminalController_ChargingState_t
+s_chargingState;
 
 static bool
 s_isChargingStateSet = false;
@@ -14,9 +14,9 @@ static bool
 s_isUpowerCalled = false;
 
 void
-fake_abc_terminalController_setUpowerState(const bool isCharging)
+fake_abc_terminalController_setUpowerState(const fake_abc_terminalController_ChargingState_t chargingState)
 {
-    s_isCharging = isCharging;
+    s_chargingState = chargingState;
 
     s_isChargingStateSet = true;
 }
@@ -52,15 +52,24 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
 
     s_isUpowerCalled = isUpowerCalled;
 
+    bool result = true;
+
     // Report the result.
-    if (s_isCharging)
+    switch (s_chargingState)
     {
-        strcpy(pResult, "charging\n");
-    }
-    else
-    {
-        strcpy(pResult, "discharging\n");
+        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_CHARGING:
+            strcpy(pResult, "charging\n");
+            break;
+
+        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_DISCHARGING:
+            strcpy(pResult, "discharging\n");
+            break;
+
+        default:
+            strcpy(pResult, "unknown");
+            result = false;
+            break;
     }
 
-    return true;
+    return result;
 }
