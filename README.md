@@ -58,6 +58,14 @@ Run tests on the abc_brightness module (or any other module):
 
 `MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile -j run_tests`
 
+Run all tests and build important targets:
+
+`make -f ~/source/targets/Makefile run_all_tests`
+
+Enable/disable logging:
+
+`ABC_LOGGING_ON=1 make ...`
+
 ### Background
 
 The build system works around the concept of a module. Each module has a set of 
