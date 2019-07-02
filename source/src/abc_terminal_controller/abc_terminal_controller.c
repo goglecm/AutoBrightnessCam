@@ -1,9 +1,13 @@
 #include "abc_terminal_controller/abc_terminal_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <errno.h>
+#include <string.h>
 
 #define MAX_BUFF_SIZE 128U
 
@@ -18,36 +22,59 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
                                      char *const restrict pResult,
                                      const char *const restrict pCmd)
 {
+    int errCode = 0;
+    bool result = true;
+
     if (resultLen > 0 && pResult)
     {
         // use popen
-
-        FILE *const pProcessOut_file = popen(pCmd, "r");
+        FILE *const restrict pProcessOut_file = popen(pCmd, "r");
 
         if (NULL == pProcessOut_file)
         {
+            ABC_LOG_ERR("Returning false: Failed to run cmd `%s` due to `%s`",
+                        pCmd ? pCmd : "bad command", strerror(errno));
+
             return false;
         }
-
-        bool result = true;
 
         if (NULL == fgets(pResult, resultLen, pProcessOut_file))
         {
+            clearerr(pProcessOut_file);
+            errCode = ferror(pProcessOut_file);
+
+            ABC_LOG_ERR("Will return false: Failed to read file due to %d", errCode);
+
             result = false;
         }
-
-        if (pclose(pProcessOut_file))
+        else
         {
-            return false;
+            ABC_LOG("pResult = `%s`", pResult);
         }
 
-        return result;
+        errCode = pclose(pProcessOut_file);
+        if (errCode)
+        {
+            ABC_LOG_ERR("Will return false: Failed to finish cmd due to %d", errCode);
+
+            result = false;
+        }
     }
     else
     {
         // use system
-        return (system(pCmd) == 0);
+        errCode = system(pCmd);
+
+        if (errCode)
+        {
+            result = false;
+
+            ABC_LOG_ERR("Returning false: Failed to run cmd `%s` due to %d",
+                        pCmd ? pCmd : "bad command", errCode);
+        }
     }
+
+    return result;
 }
 
 bool
@@ -56,8 +83,15 @@ abc_terminalController_writeFile(const int value,
 {
     if (NULL == pFileName)
     {
+        if (value)
+        {
+            ABC_LOG_WRN("Value specified but the filename is NULL");
+        }
+
         return true;
     }
+
+    ABC_LOG("writing %d to %s", value, pFileName);
 
     char cmd[MAX_BUFF_SIZE] = { 0 };
 
@@ -66,6 +100,8 @@ abc_terminalController_writeFile(const int value,
 
     if (result <= 0)
     {
+        ABC_LOG_ERR("Returning false: Failed to construct the cmd to write the file");
+
         return false;
     }
 
@@ -83,6 +119,8 @@ abc_terminalController_readFile(int *const restrict pValue,
 {
     if (NULL == pFileName)
     {
+        ABC_LOG_WRN("Invalid filename");
+
         return true;
     }
 
@@ -93,6 +131,8 @@ abc_terminalController_readFile(int *const restrict pValue,
 
     if (result <= 0)
     {
+        ABC_LOG_ERR("Returning false: Failed to construct the cmd to read the file");
+
         return false;
     }
 
@@ -106,6 +146,8 @@ abc_terminalController_readFile(int *const restrict pValue,
     if (pValue)
     {
         *pValue = strtoimax(strValue, NULL, 10);
+
+        ABC_LOG("return value = %d", *pValue);
     }
 
     return true;
@@ -125,6 +167,8 @@ abc_terminalController_sendReturnDbl(double *const restrict pValue,
     if (pValue)
     {
         *pValue = strtod(strValue, NULL);
+
+        ABC_LOG("return value = %f", *pValue);
     }
 
     return true;

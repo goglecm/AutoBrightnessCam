@@ -1,4 +1,14 @@
 run_all_tests:
+
+	# Build main (with logs)
+	cd ./main; \
+		MODULE_NAME=main ABC_LOGGING_ON=1 make -f Makefile -j exe_build
+
+	# Build main (no logs)
+	cd ./main; \
+		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile -j exe_build
+
+	# Run tests
 	cd ./abc_logging_service; \
 		MODULE_NAME=abc_logging_service make -f Makefile -j tests_run
 

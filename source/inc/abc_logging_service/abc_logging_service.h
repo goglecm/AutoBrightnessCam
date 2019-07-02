@@ -8,7 +8,11 @@ extern "C" {
 #include <stdbool.h>
 #include <stdio.h>
 
+#ifndef ABC_LOGGING_ON
+
 #define ABC_LOGGING_ON 1
+
+#endif // #ifndef ABC_LOGGING_ON
 
 extern bool g_isFirstLog;
 extern FILE *g_pLogFile;

@@ -14,6 +14,14 @@ $(MODULE_NAME)_MODULE_FAKES_SOURCES = $(SOURCE_PATH)/src_test/$(MODULE_NAME)/*.c
 
 $(MODULE_NAME)_TEST_SOURCES = $(SOURCE_PATH)/tests/$(MODULE_NAME)/*.cpp
 
+ifndef ABC_LOGGING_ON
+ABC_LOGGING_ON = 1
+endif
+
+C_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
+
+CXX_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
+
 ##########################
 # Add -I and -L prefixes #
 ##########################
@@ -51,9 +59,9 @@ build_no_deps:
 
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) -fPIC -c \
-		$($(MODULE_NAME)_MODULE_SOURCES) \
-		$($(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED) \
-		$(C_FLAGS)
+			$($(MODULE_NAME)_MODULE_SOURCES) \
+			$($(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED) \
+			$(C_FLAGS)
 
 build_with_deps:
 	cd $(TARGETS_PATH)/$(MODULE_NAME); \
@@ -78,9 +86,9 @@ exe_build:
 
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) \
-		$($(MODULE_NAME)_MODULE_BUILD_PATH)/*.a \
-		$(C_FLAGS) \
-		-o $(MODULE_NAME).exe; \
+			$($(MODULE_NAME)_MODULE_BUILD_PATH)/*.a \
+			$(C_FLAGS) \
+			-o $(MODULE_NAME).exe; \
 
 fakes_build:
 	MODULE_NAME=$(MODULE_NAME) make -j fakes_clean
