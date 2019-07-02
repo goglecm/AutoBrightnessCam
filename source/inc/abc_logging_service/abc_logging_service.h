@@ -14,6 +14,26 @@ extern bool g_isFirstLog;
 extern FILE *g_pLogFile;
 extern const char g_logFilename[];
 
+#define ABC_LOG_ERR(...) do { \
+    g_pLogFile = fopen(g_logFilename, "a"); \
+    if (g_pLogFile) \
+    { \
+        fprintf(g_pLogFile, "\nERROR: %s: ", __func__); \
+        fprintf(g_pLogFile, __VA_ARGS__) ; \
+        fclose(g_pLogFile); \
+    } \
+} while (0)
+
+#define ABC_LOG_WRN(...) do { \
+    g_pLogFile = fopen(g_logFilename, "a"); \
+    if (g_pLogFile) \
+    { \
+        fprintf(g_pLogFile, "\nWARNING: %s: ", __func__); \
+        fprintf(g_pLogFile, __VA_ARGS__) ; \
+        fclose(g_pLogFile); \
+    } \
+} while (0)
+
 #define ABC_LOG(...) do { \
     if (ABC_LOGGING_ON) { \
         if (g_isFirstLog) { \

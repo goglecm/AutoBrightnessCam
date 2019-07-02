@@ -68,3 +68,75 @@ TEST(abc_logging_service, message_is_logged_in_a_file_with_newline_and_function_
 
     ASSERT_EQ(message, line);
 }
+
+TEST(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning_and_function_name_before_it)
+{
+    std::string targetWarningLog("Something happened");
+
+    g_isFirstLog = true; // reset logger
+
+    // Clear the state of the file
+    ABC_LOG("\n");
+
+    ABC_LOG_WRN(targetWarningLog.c_str());
+
+    std::ifstream infile(g_logFilename);
+
+    std::string line;
+
+    std::getline(infile, line); // Skip initial message
+    std::getline(infile, line); // Skip initial new line
+    std::getline(infile, line); // Skip additional new line (before)
+    std::getline(infile, line); // Skip additional new line (actual)
+
+    std::string warningNewline("");
+
+    std::getline(infile, line); // message newline
+
+    ASSERT_EQ(warningNewline, line);
+
+    std::string currentFunctionName(__func__);
+    std::string warning = "WARNING: " +
+                           currentFunctionName + ": " +
+                           targetWarningLog;
+
+    std::getline(infile, line); // warning itself
+
+    ASSERT_EQ(warning, line);
+}
+
+TEST(abc_logging_service, error_is_logged_in_a_file_with_newline_and_error_and_function_name_before_it)
+{
+    std::string targetWarningLog("Something bad happened");
+
+    g_isFirstLog = true; // reset logger
+
+    // Clear the state of the file
+    ABC_LOG("\n");
+
+    ABC_LOG_ERR(targetWarningLog.c_str());
+
+    std::ifstream infile(g_logFilename);
+
+    std::string line;
+
+    std::getline(infile, line); // Skip initial message
+    std::getline(infile, line); // Skip initial new line
+    std::getline(infile, line); // Skip additional new line (before)
+    std::getline(infile, line); // Skip additional new line (actual)
+
+    std::string warningNewline("");
+
+    std::getline(infile, line); // message newline
+
+    ASSERT_EQ(warningNewline, line);
+
+    std::string currentFunctionName(__func__);
+    std::string warning = "ERROR: " +
+                           currentFunctionName + ": " +
+                           targetWarningLog;
+
+    std::getline(infile, line); // warning itself
+
+    ASSERT_EQ(warning, line);
+}
