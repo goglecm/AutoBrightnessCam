@@ -41,7 +41,7 @@ extern const char g_logFilename[];
             if (g_pLogFile) \
             { \
                 fprintf(g_pLogFile, "Starting logs\n\n"); \
-                g_isFirstLog = true; \
+                g_isFirstLog = false; \
                 fclose(g_pLogFile); \
             } \
         } \

@@ -17,126 +17,85 @@
 
 #endif // #ifdef ABC_LOGGING_ON
 
+static void resetLogger(void)
+{
+    g_isFirstLog = true;
+    ABC_LOG("First log");
+}
+
+static void skipResetState(std::ifstream &infile)
+{
+    std::string line;
+    std::getline(infile, line); // Skip initial message
+    std::getline(infile, line); // Skip initial new line
+    std::getline(infile, line); // Skip the first log new line
+    std::getline(infile, line); // Skip the first log (which is also a new line)
+}
+
+static void checkLogFormat(const std::string &targetMessage,
+                           const std::string &logType,
+                           const std::string &funcName)
+{
+    std::ifstream infile(g_logFilename);
+    skipResetState(infile);
+
+    // Log format:
+    // \n[logType: ]funcName: message
+    std::string fullLogMessage = (logType.empty() ? "" : logType + ": ") +
+                                 funcName + ": " +
+                                 targetMessage;
+    std::string line;
+    std::getline(infile, line);
+    ASSERT_EQ(fullLogMessage, line);
+}
+
+
 TEST(abc_logging_service, initial_message_is_logged_before_first_log)
 {
-    g_isFirstLog = true; // reset logger
-
-    ABC_LOG("\n");
+    resetLogger();
 
     std::ifstream infile(g_logFilename);
 
     std::string line;
 
     std::getline(infile, line);
-
     std::string initialLog("Starting logs");
-
     ASSERT_EQ(initialLog, line);
 
     std::getline(infile, line);
-
     std::string newLineAfterInitialMessage("");
-
     ASSERT_EQ(newLineAfterInitialMessage, line);
 }
 
 TEST(abc_logging_service, message_is_logged_in_a_file_with_newline_and_function_name_before_it)
 {
-    std::string targetLog("Hello world!");
+    resetLogger();
 
-    g_isFirstLog = true; // reset logger
+    std::string targetMessage("Hello world!");
 
-    ABC_LOG(targetLog.c_str());
+    ABC_LOG(targetMessage.c_str());
 
-    std::ifstream infile(g_logFilename);
-
-    std::string line;
-
-    std::getline(infile, line); // Skip initial message
-    std::getline(infile, line); // Skip initial new line
-
-    std::string messageNewline("");
-
-    std::getline(infile, line); // message newline
-
-    ASSERT_EQ(messageNewline, line);
-
-    std::string currentFunctionName(__func__);
-    std::string message = currentFunctionName + ": " + targetLog;
-
-    std::getline(infile, line); // message itself
-
-    ASSERT_EQ(message, line);
+    checkLogFormat(targetMessage, "", __func__);
 }
 
 TEST(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning_and_function_name_before_it)
 {
-    std::string targetWarningLog("Something happened");
+    resetLogger();
 
-    g_isFirstLog = true; // reset logger
+    std::string targetMessage("something unexpected happened");
 
-    // Clear the state of the file
-    ABC_LOG("\n");
+    ABC_LOG_WRN(targetMessage.c_str());
 
-    ABC_LOG_WRN(targetWarningLog.c_str());
-
-    std::ifstream infile(g_logFilename);
-
-    std::string line;
-
-    std::getline(infile, line); // Skip initial message
-    std::getline(infile, line); // Skip initial new line
-    std::getline(infile, line); // Skip additional new line (before)
-    std::getline(infile, line); // Skip additional new line (actual)
-
-    std::string warningNewline("");
-
-    std::getline(infile, line); // message newline
-
-    ASSERT_EQ(warningNewline, line);
-
-    std::string currentFunctionName(__func__);
-    std::string warning = "WARNING: " +
-                           currentFunctionName + ": " +
-                           targetWarningLog;
-
-    std::getline(infile, line); // warning itself
-
-    ASSERT_EQ(warning, line);
+    checkLogFormat(targetMessage, "WARNING", __func__);
 }
 
 TEST(abc_logging_service, error_is_logged_in_a_file_with_newline_and_error_and_function_name_before_it)
 {
-    std::string targetWarningLog("Something bad happened");
+    resetLogger();
 
-    g_isFirstLog = true; // reset logger
+    std::string targetMessage("something bad happened");
 
-    // Clear the state of the file
-    ABC_LOG("\n");
+    ABC_LOG_ERR(targetMessage.c_str());
 
-    ABC_LOG_ERR(targetWarningLog.c_str());
-
-    std::ifstream infile(g_logFilename);
-
-    std::string line;
-
-    std::getline(infile, line); // Skip initial message
-    std::getline(infile, line); // Skip initial new line
-    std::getline(infile, line); // Skip additional new line (before)
-    std::getline(infile, line); // Skip additional new line (actual)
-
-    std::string warningNewline("");
-
-    std::getline(infile, line); // message newline
-
-    ASSERT_EQ(warningNewline, line);
-
-    std::string currentFunctionName(__func__);
-    std::string warning = "ERROR: " +
-                           currentFunctionName + ": " +
-                           targetWarningLog;
-
-    std::getline(infile, line); // warning itself
-
-    ASSERT_EQ(warning, line);
+    checkLogFormat(targetMessage, "ERROR", __func__);
 }
