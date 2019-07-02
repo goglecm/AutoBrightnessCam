@@ -11,7 +11,8 @@
 
 #define BUFF_SIZE 32U
 
-static const bool s_DEFAULT_CHARGING_STATE = false;
+static const bool
+s_DEFAULT_CHARGING_STATE = false;
 
 bool
 abc_powerController_isCharging(void)
@@ -22,28 +23,33 @@ abc_powerController_isCharging(void)
                        "sed 's^state:^^g' | "
                        "sed 's^ ^^g'";
 
+    const char chargingStr[] = "charging";
+    const char dischargingStr[] = "discharging";
+
     char batteryStateStr[BUFF_SIZE] = {0};
 
-    const bool result =
-        abc_terminalController_sendReturnStr(sizeof(batteryStateStr),
-                                             batteryStateStr,
-                                             cmd);
+    const unsigned bufferLen = sizeof(batteryStateStr);
 
-    if (!result)
+    const bool isCmdSuccess =
+        abc_terminalController_sendReturnStr(bufferLen, batteryStateStr, cmd);
+
+    if (!isCmdSuccess)
     {
-        ABC_LOG("Failed to get the charging state, returning default (%s)",
-                (s_DEFAULT_CHARGING_STATE ? "charging" : "discharging"));
+        ABC_LOG_ERR("Failed to get the charging state, returning default (%s)",
+                    s_DEFAULT_CHARGING_STATE ? chargingStr : dischargingStr);
 
         return s_DEFAULT_CHARGING_STATE;
     }
 
     // Truncate the string if overflown.
-    batteryStateStr[sizeof(batteryStateStr) - 1] = '\0';
+    batteryStateStr[bufferLen - 1] = '\0';
 
     // Remove the newline from the end of the string.
     batteryStateStr[strlen(batteryStateStr) - 1] = '\0';
 
-    ABC_LOG("battery state = `%s`", batteryStateStr);
+    const bool isCharging = (0 == strcmp(chargingStr, batteryStateStr));
 
-    return (0 == strcmp("charging", batteryStateStr));
+    ABC_LOG("isCharging = %u, battery state = `%s`", isCharging, batteryStateStr);
+
+    return isCharging;
 }
