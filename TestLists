@@ -1,7 +1,9 @@
 TODO list:
 
-remove asserts and replace them with logs
-add tests to check for errors
+- remove asserts and replace them with logs
+- add tests to check for errors
+- add support for gmock
+- generalise project path (use the full to a makefile?)
 
 Requirements:
 
