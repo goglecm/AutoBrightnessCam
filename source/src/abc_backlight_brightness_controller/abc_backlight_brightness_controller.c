@@ -40,10 +40,17 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
 
     if (!result)
     {
+        ABC_LOG_ERR("Failed to read max brightness");
+
         return false;
     }
 
-    assert(maxBrightness > 0);
+    if (0 == maxBrightness)
+    {
+        ABC_LOG_ERR("max brightness is zero");
+
+        return false;
+    }
 
     if (pRetValue)
     {
@@ -59,7 +66,10 @@ writeBrightness(const uint32_t value)
     const bool result =
         abc_terminalController_writeFile(value, s_PATH_CURRENT_BRIGHTNESS);
 
-    assert(result);
+    if (!result)
+    {
+        ABC_LOG_ERR("failed to set the brightness to %u", value);
+    }
 }
 
 static double
@@ -95,4 +105,9 @@ abc_backlightBrightnessController_set(const double value)
     }
 
     writeBrightness(s_maxBrightness * (limitBrightness(value) / 100.0));
+}
+
+void abc_backlightBrightnessController_resetMax(void)
+{
+    s_isMaxSet = false;
 }

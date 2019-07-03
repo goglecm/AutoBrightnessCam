@@ -22,6 +22,8 @@ public:
 
     void SetUp(void)
     {
+        abc_backlightBrightnessController_resetMax();
+
         // code here will execute just before the test ensues
         fake_abc_terminalController_failRead(false);
 
@@ -82,6 +84,20 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maxim
     const double target = g_abc_BacklightBrightnessController_MIN / 2;
 
     fake_abc_terminalController_failRead(true);
+
+    abc_backlightBrightnessController_set(target);
+
+    ASSERT_EQ(0, fake_abc_terminalController_getNumWrites());
+}
+
+TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_is_zero)
+{
+    // Mid point between min and max
+    const double target = (g_abc_BacklightBrightnessController_MAX -
+                           g_abc_BacklightBrightnessController_MIN) / 2 +
+                          g_abc_BacklightBrightnessController_MIN;
+
+    fake_abc_terminalController_setMaxBrightness(0);
 
     abc_backlightBrightnessController_set(target);
 
