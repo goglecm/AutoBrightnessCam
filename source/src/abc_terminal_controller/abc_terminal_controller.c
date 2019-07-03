@@ -83,12 +83,9 @@ abc_terminalController_writeFile(const int value,
 {
     if (NULL == pFileName)
     {
-        if (value)
-        {
-            ABC_LOG_WRN("Value specified but the filename is NULL");
-        }
+        ABC_LOG_ERR("Invalid filename");
 
-        return true;
+        return false;
     }
 
     ABC_LOG("writing %d to %s", value, pFileName);
@@ -119,9 +116,9 @@ abc_terminalController_readFile(int *const restrict pValue,
 {
     if (NULL == pFileName)
     {
-        ABC_LOG_WRN("Invalid filename");
+        ABC_LOG_ERR("Invalid filename");
 
-        return true;
+        return false;
     }
 
     char cmd[MAX_BUFF_SIZE] = { 0 };
