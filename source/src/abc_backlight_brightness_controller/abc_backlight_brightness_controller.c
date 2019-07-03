@@ -1,15 +1,11 @@
 #include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 #include "abc_terminal_controller/abc_terminal_controller.h"
-
 #include "abc_logging_service/abc_logging_service.h"
 
-#include <stdio.h>
 #include <stdbool.h>
-#include <assert.h>
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 const double
 g_abc_BacklightBrightnessController_MAX = 100;
@@ -33,12 +29,9 @@ s_PATH_CURRENT_BRIGHTNESS[] = "/sys/class/backlight/intel_backlight/brightness";
 static bool
 readMaxBrightness(uint32_t *const restrict pRetValue)
 {
-    int maxBrightness;
+    int maxBrightness = 0;
 
-    const bool result =
-        abc_terminalController_readFile(&maxBrightness, s_PATH_MAX_BRIGHTNESS);
-
-    if (!result)
+    if (!abc_terminalController_readFile(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
     {
         ABC_LOG_ERR("Failed to read max brightness");
 
@@ -56,6 +49,10 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
     {
         *pRetValue = maxBrightness;
     }
+    else
+    {
+        ABC_LOG_WRN("invalid result pointer, not returning the max brightness");
+    }
 
     return true;
 }
@@ -63,10 +60,7 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
 static void
 writeBrightness(const uint32_t value)
 {
-    const bool result =
-        abc_terminalController_writeFile(value, s_PATH_CURRENT_BRIGHTNESS);
-
-    if (!result)
+    if (!abc_terminalController_writeFile(value, s_PATH_CURRENT_BRIGHTNESS))
     {
         ABC_LOG_ERR("failed to set the brightness to %u", value);
     }
@@ -92,7 +86,7 @@ limitBrightness(const double value)
 void
 abc_backlightBrightnessController_set(const double value)
 {
-    if (false == s_isMaxSet)
+    if (!s_isMaxSet)
     {
         if (!readMaxBrightness(&s_maxBrightness))
         {
@@ -107,7 +101,8 @@ abc_backlightBrightnessController_set(const double value)
     writeBrightness(s_maxBrightness * (limitBrightness(value) / 100.0));
 }
 
-void abc_backlightBrightnessController_resetMax(void)
+void
+abc_backlightBrightnessController_resetMax(void)
 {
     s_isMaxSet = false;
 }

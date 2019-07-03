@@ -5,15 +5,19 @@
 extern "C" {
 #endif
 
-extern const double g_abc_BacklightBrightnessController_MAX;
+extern const double
+g_abc_BacklightBrightnessController_MAX;
 
-extern const double g_abc_BacklightBrightnessController_MIN;
+extern const double
+g_abc_BacklightBrightnessController_MIN;
 
-void abc_backlightBrightnessController_set(double value);
+void
+abc_backlightBrightnessController_set(double value);
 
 // Function to reset the current max brightness value.
 // Used when the maximum brightness has changed.
-void abc_backlightBrightnessController_resetMax(void);
+void
+abc_backlightBrightnessController_resetMax(void);
 
 #ifdef __cplusplus
 }
