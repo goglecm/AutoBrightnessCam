@@ -1,9 +1,12 @@
 TODO list:
 
+- add support for seamless brightness change
+- add some sort of tap filtering when reading the ambient brightness
 - remove asserts and replace them with logs
 - add tests to check for errors
 - add support for gmock
 - generalise project path (use the full to a makefile?)
+- add more build flags
 
 Requirements:
 
