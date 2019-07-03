@@ -1,6 +1,8 @@
 #include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 #include "abc_terminal_controller/abc_terminal_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -27,19 +29,28 @@ s_PATH_MAX_BRIGHTNESS[] = "/sys/class/backlight/intel_backlight/max_brightness";
 static const char
 s_PATH_CURRENT_BRIGHTNESS[] = "/sys/class/backlight/intel_backlight/brightness";
 
-static uint32_t
-readMaxBrightness(void)
+// return true on success
+static bool
+readMaxBrightness(uint32_t *const restrict pRetValue)
 {
     int maxBrightness;
 
     const bool result =
         abc_terminalController_readFile(&maxBrightness, s_PATH_MAX_BRIGHTNESS);
 
-    assert(result);
+    if (!result)
+    {
+        return false;
+    }
 
     assert(maxBrightness > 0);
 
-    return maxBrightness;
+    if (pRetValue)
+    {
+        *pRetValue = maxBrightness;
+    }
+
+    return true;
 }
 
 static void
@@ -73,7 +84,13 @@ abc_backlightBrightnessController_set(const double value)
 {
     if (false == s_isMaxSet)
     {
-        s_maxBrightness = readMaxBrightness();
+        if (!readMaxBrightness(&s_maxBrightness))
+        {
+            ABC_LOG_ERR("failed to read max brightness, returning");
+
+            return;
+        }
+
         s_isMaxSet = true;
     }
 
