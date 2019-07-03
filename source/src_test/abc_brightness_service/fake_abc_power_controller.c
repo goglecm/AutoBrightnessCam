@@ -3,11 +3,13 @@
 
 #include <stdbool.h>
 
-static fake_abc_PowerState_t
-s_source = fake_abc_PowerState_DISCHARGING;
+typedef fake_abc_PowerState_t PowerState_t;
+
+static PowerState_t
+s_source = FAKE_ABC_POWERSTATE_DISCHARGING;
 
 void
-fake_abc_powerController_setState(const fake_abc_PowerState_t source)
+fake_abc_powerController_setState(const PowerState_t source)
 {
     s_source = source;
 }
@@ -15,5 +17,5 @@ fake_abc_powerController_setState(const fake_abc_PowerState_t source)
 bool
 abc_powerController_isCharging(void)
 {
-    return fake_abc_PowerState_CHARGING == s_source;
+    return FAKE_ABC_POWERSTATE_CHARGING == s_source;
 }

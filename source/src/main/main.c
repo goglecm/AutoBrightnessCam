@@ -15,7 +15,7 @@ int main(void)
 
         sleep(1);
     }
-    while (abc_brightnessService_wakeUp() == abc_brightnessService_SUCCESS);
+    while (abc_brightnessService_wakeUp() == ABC_BRIGHTNESSSERVICE_SUCCESS);
 
     return -1;
 }

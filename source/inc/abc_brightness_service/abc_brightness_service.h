@@ -7,17 +7,17 @@ extern "C" {
 
 typedef unsigned abc_brightnessService_PeriodSec_t; // Seconds
 
-typedef enum
+typedef enum abc_brightnessService_Status_t
 {
-    abc_brightnessService_STOPPED,
-    abc_brightnessService_STARTED,
+    ABC_BRIGHTNESSSERVICE_STOPPED,
+    ABC_BRIGHTNESSSERVICE_STARTED,
 
 } abc_brightnessService_Status_t;
 
-typedef enum
+typedef enum abc_brightnessService_Result_t
 {
-    abc_brightnessService_FAILURE,
-    abc_brightnessService_SUCCESS,
+    ABC_BRIGHTNESSSERVICE_FAILURE,
+    ABC_BRIGHTNESSSERVICE_SUCCESS,
 
 } abc_brightnessService_Result_t;
 

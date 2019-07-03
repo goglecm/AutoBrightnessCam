@@ -41,7 +41,7 @@ public:
 
         abc_brightnessService_setPeriod(s_TEST_DEFAULT_PERIOD_SEC);
 
-        fake_abc_powerController_setState(fake_abc_PowerState_DISCHARGING);
+        fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_DISCHARGING);
 
         abc_backlightBrightnessController_set(s_TEST_DEFAULT_BACKLIGHT_BRIGHTNESS);
 
@@ -85,7 +85,7 @@ TEST(abc_brightness_service_period, period_is_set_when_the_service_is_not_runnin
 {
     abc_brightnessService_stop();
 
-    ASSERT_EQ(abc_brightnessService_SUCCESS,
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS,
               abc_brightnessService_setPeriod(s_TEST_DEFAULT_PERIOD_SEC));
 
     ASSERT_EQ(s_TEST_DEFAULT_PERIOD_SEC, abc_brightnessService_getPeriod());
@@ -95,7 +95,7 @@ TEST(abc_brightness_service_period, period_is_not_set_when_the_service_is_runnin
 {
     abc_brightnessService_start();
 
-    ASSERT_EQ(abc_brightnessService_FAILURE,
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE,
               abc_brightnessService_setPeriod(s_TEST_DEFAULT_PERIOD_SEC));
 }
 
@@ -106,7 +106,7 @@ TEST(abc_brightness_service_period, period_is_not_set_lower_than_the_minimum_per
     const abc_brightnessService_PeriodSec_t belowMinimum =
         g_abc_brightnessService_MIN_PERIOD - 1;
 
-    ASSERT_EQ(abc_brightnessService_FAILURE,
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE,
               abc_brightnessService_setPeriod(belowMinimum));
 }
 
@@ -123,13 +123,13 @@ TEST(abc_brightness_service_period, period_is_not_set_higher_than_the_maximum_pe
     const abc_brightnessService_PeriodSec_t aboveMax =
         g_abc_brightnessService_MAX_PERIOD + 1;
 
-    ASSERT_EQ(abc_brightnessService_FAILURE,
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE,
               abc_brightnessService_setPeriod(aboveMax));
 }
 
 TEST_F(abc_brightness_service, report_error_if_woken_when_not_started)
 {
-    ASSERT_EQ(abc_brightnessService_FAILURE, abc_brightnessService_wakeUp());
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE, abc_brightnessService_wakeUp());
 }
 
 TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_periods)
@@ -146,7 +146,7 @@ TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_
     {
         fake_abc_timeService_forward(1);
 
-        ASSERT_EQ(abc_brightnessService_SUCCESS,
+        ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS,
                   abc_brightnessService_wakeUp());
 
         if ((timeNow + 1) % period == 0)
@@ -164,20 +164,20 @@ TEST_F(abc_brightness_service, backlight_brightness_is_not_changed_if_service_is
 
     fake_abc_timeService_forward(2 * s_TEST_DEFAULT_PERIOD_SEC);
 
-    ASSERT_EQ(abc_brightnessService_FAILURE, abc_brightnessService_wakeUp());
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE, abc_brightnessService_wakeUp());
 
     ASSERT_EQ(0, fake_abc_backlightBrightnessController_numSetCalls());
 }
 
 TEST_F(abc_brightness_service, backlight_brightness_is_set_to_maximum_when_charging)
 {
-    fake_abc_powerController_setState(fake_abc_PowerState_CHARGING);
+    fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_CHARGING);
 
     abc_brightnessService_start();
 
     fake_abc_timeService_forward(2 * s_TEST_DEFAULT_PERIOD_SEC);
 
-    ASSERT_EQ(abc_brightnessService_SUCCESS, abc_brightnessService_wakeUp());
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS, abc_brightnessService_wakeUp());
 
     const fake_abc_BacklightBrightnessValue_t
         actualBrightness = fake_abc_backlightBrightnessController_get();

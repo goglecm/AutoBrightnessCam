@@ -4,37 +4,41 @@
 #include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
 #include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 #include "abc_power_controller/abc_power_controller.h"
+#include "abc_logging_service/abc_logging_service.h"
 
-#include <assert.h>
 #include <stdbool.h>
 
 #define ABC_DEFAULT_PERIOD (5U)
 
-static abc_brightnessService_Status_t
-s_status = abc_brightnessService_STOPPED;
+typedef abc_brightnessService_PeriodSec_t PeriodSec_t;
 
-static abc_brightnessService_PeriodSec_t
+typedef abc_brightnessService_Result_t Result_t;
+
+static abc_brightnessService_Status_t
+s_status = ABC_BRIGHTNESSSERVICE_STOPPED;
+
+static PeriodSec_t
 s_period = ABC_DEFAULT_PERIOD;
 
 static time_t s_lastTimestamp;
 
-const abc_brightnessService_PeriodSec_t
+const PeriodSec_t
 g_abc_brightnessService_DEFAULT_PERIOD = ABC_DEFAULT_PERIOD;
 
-const abc_brightnessService_PeriodSec_t
+const PeriodSec_t
 g_abc_brightnessService_MIN_PERIOD = 1;
 
-const abc_brightnessService_PeriodSec_t
+const PeriodSec_t
 g_abc_brightnessService_MAX_PERIOD = 1800;
 
-abc_brightnessService_PeriodSec_t
+PeriodSec_t
 abc_brightnessService_getPeriod(void)
 {
     return s_period;
 }
 
 static int
-isPeriodValid(const abc_brightnessService_PeriodSec_t period)
+isValid(const PeriodSec_t period)
 {
     return period >= g_abc_brightnessService_MIN_PERIOD &&
            period <= g_abc_brightnessService_MAX_PERIOD;
@@ -43,7 +47,7 @@ isPeriodValid(const abc_brightnessService_PeriodSec_t period)
 static bool
 isStopped(void)
 {
-    return abc_brightnessService_STOPPED == s_status;
+    return ABC_BRIGHTNESSSERVICE_STOPPED == s_status;
 }
 
 static bool
@@ -52,43 +56,48 @@ isNextPeriod(const time_t now)
     return (s_lastTimestamp + s_period) <= now;
 }
 
-abc_brightnessService_Result_t
-abc_brightnessService_setPeriod(const abc_brightnessService_PeriodSec_t period)
+Result_t
+abc_brightnessService_setPeriod(const PeriodSec_t period)
 {
-    if (isStopped() && isPeriodValid(period))
+    if (isStopped() && isValid(period))
     {
         s_period = period;
 
-        return abc_brightnessService_SUCCESS;
+        return ABC_BRIGHTNESSSERVICE_SUCCESS;
     }
 
-    return abc_brightnessService_FAILURE;
+    ABC_LOG_WRN("failed to set period, isStopped = %u, isValid = %u",
+                isStopped(), isValid(period));
+
+    return ABC_BRIGHTNESSSERVICE_FAILURE;
 }
 
 void
 abc_brightnessService_stop(void)
 {
-    s_status = abc_brightnessService_STOPPED;
+    s_status = ABC_BRIGHTNESSSERVICE_STOPPED;
 }
 
 void
 abc_brightnessService_start(void)
 {
-    s_status = abc_brightnessService_STARTED;
-
     s_lastTimestamp = abc_timeService_get();
 
-    const abc_brightnessService_Result_t result = abc_brightnessService_wakeUp();
+    if (ABC_BRIGHTNESSSERVICE_SUCCESS != abc_brightnessService_wakeUp())
+    {
+        ABC_LOG_ERR("service started but it failed to wakeup properly, "
+                    "further wakeups may or may not fail");
+    }
 
-    assert(abc_brightnessService_SUCCESS == result);
+    s_status = ABC_BRIGHTNESSSERVICE_STARTED;
 }
 
-abc_brightnessService_Result_t
+Result_t
 abc_brightnessService_wakeUp(void)
 {
     if (isStopped())
     {
-        return abc_brightnessService_FAILURE;
+        return ABC_BRIGHTNESSSERVICE_FAILURE;
     }
 
     if (abc_powerController_isCharging())
@@ -109,5 +118,5 @@ abc_brightnessService_wakeUp(void)
         }
     }
 
-    return abc_brightnessService_SUCCESS;
+    return ABC_BRIGHTNESSSERVICE_SUCCESS;
 }

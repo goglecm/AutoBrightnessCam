@@ -5,14 +5,14 @@
 extern "C" {
 #endif
 
-typedef enum
+typedef enum fake_abc_BacklightBrightnessStatus_t
 {
     FAKE_ABC_BACKLIGHT_BRIGHTNESS_NOT_SET,
     FAKE_ABC_BACKLIGHT_BRIGHTNESS_SET
 
 } fake_abc_BacklightBrightnessStatus_t;
 
-typedef struct
+typedef struct fake_abc_BacklightBrightnessValue_t
 {
     fake_abc_BacklightBrightnessStatus_t set;
 

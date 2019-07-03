@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-typedef enum
+typedef enum fake_abc_PowerState_t
 {
-    fake_abc_PowerState_DISCHARGING,
-    fake_abc_PowerState_CHARGING
+    FAKE_ABC_POWERSTATE_DISCHARGING,
+    FAKE_ABC_POWERSTATE_CHARGING
 } fake_abc_PowerState_t;
 
 void fake_abc_powerController_setState(fake_abc_PowerState_t source);
