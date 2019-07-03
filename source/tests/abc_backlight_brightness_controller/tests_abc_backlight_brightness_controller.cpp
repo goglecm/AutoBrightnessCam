@@ -46,16 +46,28 @@ public:
     // put in any custom data members that you need
 };
 
+static double
+getMidBrightness(void)
+{
+    return (g_abc_BacklightBrightnessController_MAX -
+            g_abc_BacklightBrightnessController_MIN) / 2 +
+           g_abc_BacklightBrightnessController_MIN;
+}
+
+static uint16_t
+toRawBrightness(const double target)
+{
+    return target / 100.0 * s_DEFAULT_MAX;
+}
+
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_value)
 {
     // Mid point between min and max
-    const double target = (g_abc_BacklightBrightnessController_MAX -
-                          g_abc_BacklightBrightnessController_MIN) / 2 +
-                          g_abc_BacklightBrightnessController_MIN;
+    const double target = getMidBrightness();
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ(s_DEFAULT_MAX * (target / 100.0),
+    ASSERT_EQ(toRawBrightness(target),
               fake_abc_terminalController_getCurrentBrightness());
 }
 
@@ -65,7 +77,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ((g_abc_BacklightBrightnessController_MAX / 100.0) * s_DEFAULT_MAX,
+    ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MAX),
               fake_abc_terminalController_getCurrentBrightness());
 }
 
@@ -75,7 +87,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_recede
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ(g_abc_BacklightBrightnessController_MIN / 100 * s_DEFAULT_MAX,
+    ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MIN),
               fake_abc_terminalController_getCurrentBrightness());
 }
 
@@ -93,9 +105,7 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maxim
 TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_is_zero)
 {
     // Mid point between min and max
-    const double target = (g_abc_BacklightBrightnessController_MAX -
-                           g_abc_BacklightBrightnessController_MIN) / 2 +
-                          g_abc_BacklightBrightnessController_MIN;
+    const double target = getMidBrightness();
 
     fake_abc_terminalController_setMaxBrightness(0);
 
