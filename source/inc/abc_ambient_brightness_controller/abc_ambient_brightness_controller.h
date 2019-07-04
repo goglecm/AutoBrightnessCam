@@ -5,7 +5,10 @@
 extern "C" {
 #endif
 
-double abc_ambientBrightnessController_get(void);
+#include <stdbool.h>
+
+bool
+abc_ambientBrightnessController_get(double *pBrightness);
 
 #ifdef __cplusplus
 }

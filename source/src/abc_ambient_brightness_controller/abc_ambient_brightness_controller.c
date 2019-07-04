@@ -52,10 +52,19 @@ getBrightnessFromPicture_convert(const char *const restrict pPicPath)
     return ambientBrightness;
 }
 
-double
-abc_ambientBrightnessController_get(void)
+bool
+abc_ambientBrightnessController_get(double *const restrict pResult)
 {
     takePicture_fswebcam(s_PICTURE_PATH);
 
-    return getBrightnessFromPicture_convert(s_PICTURE_PATH);
+    if (pResult)
+    {
+        *pResult = getBrightnessFromPicture_convert(s_PICTURE_PATH);
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
 }

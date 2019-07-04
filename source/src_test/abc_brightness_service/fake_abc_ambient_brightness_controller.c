@@ -4,18 +4,25 @@
 #include <assert.h>
 #include <stdbool.h>
 
-static double s_value;
+static double
+s_value;
 
-static bool s_isValueSet = false;
+static bool
+s_isValueSet = false;
 
-double abc_ambientBrightnessController_get(void)
+bool
+abc_ambientBrightnessController_get(double *const restrict pResult)
 {
     assert(s_isValueSet);
+    assert(pResult);
 
-    return s_value;
+    *pResult = s_value;
+
+    return true;
 }
 
-void fake_abc_ambientBrightnessController_set(double value)
+void
+fake_abc_ambientBrightnessController_set(double value)
 {
     s_value = value;
 

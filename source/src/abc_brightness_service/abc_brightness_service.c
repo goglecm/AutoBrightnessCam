@@ -100,6 +100,8 @@ abc_brightnessService_wakeUp(void)
         return ABC_BRIGHTNESSSERVICE_FAILURE;
     }
 
+    Result_t result = ABC_BRIGHTNESSSERVICE_SUCCESS;
+
     if (abc_powerController_isCharging())
     {
         abc_backlightBrightnessController_set(g_abc_BacklightBrightnessController_MAX);
@@ -110,13 +112,19 @@ abc_brightnessService_wakeUp(void)
 
         if (isNextPeriod(now))
         {
-            const double ambientBrightness = abc_ambientBrightnessController_get();
-
-            abc_backlightBrightnessController_set(ambientBrightness);
-
             s_lastTimestamp = now;
+
+            double ambientBrightness = 0;
+            if (!abc_ambientBrightnessController_get(&ambientBrightness))
+            {
+                result = ABC_BRIGHTNESSSERVICE_FAILURE;
+            }
+            else
+            {
+                abc_backlightBrightnessController_set(ambientBrightness);
+            }
         }
     }
 
-    return ABC_BRIGHTNESSSERVICE_SUCCESS;
+    return result;
 }
