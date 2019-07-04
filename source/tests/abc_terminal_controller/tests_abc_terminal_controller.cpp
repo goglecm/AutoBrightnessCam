@@ -6,8 +6,8 @@
 #include <string>
 #include <fstream>
 
-static std::string
-to_str(const int a)
+template <class T> static std::string
+to_str(const T a)
 {
     std::stringstream ss;
     ss << a;
@@ -70,12 +70,12 @@ TEST(abc_terminal_controller_files, integer_is_read_from_file)
     ASSERT_EQ(intRead, actualInt);
 }
 
-TEST(abc_terminal_controller_files, read_from_bad_file_causes_error)
+TEST(abc_terminal_controller_files, read_from_bad_file_returns_error)
 {
     ASSERT_FALSE(abc_terminalController_readFile(NULL, NULL));
 }
 
-TEST(abc_terminal_controller_files, read_from_non_existant_file_causes_error)
+TEST(abc_terminal_controller_files, read_from_non_existant_file_returns_error)
 {
     std::remove("invalid_file");
 
@@ -101,4 +101,40 @@ TEST(abc_terminal_controller_commands, command_without_return_is_executed)
 TEST(abc_terminal_controller_commands, bad_command_without_return_reports_false)
 {
     ASSERT_FALSE(abc_terminalController_send(NULL));
+}
+
+TEST(abc_terminal_controller_commands, command_returning_double_is_executed)
+{
+    const double expectedResult = 522.9;
+
+    const std::string cmd("echo " + to_str(expectedResult));
+
+    double result = 0;
+
+    ASSERT_TRUE(abc_terminalController_sendReturnDbl(&result, cmd.c_str()));
+
+    ASSERT_DOUBLE_EQ(expectedResult, result);
+}
+
+TEST(abc_terminal_controller_commands, command_returning_string_is_executed)
+{
+    const std::string expectedResult("Hello");
+
+    const std::string cmd("echo " + expectedResult);
+
+    const unsigned resultLen = 8;
+
+    char result[resultLen];
+
+    memset(result, 0, resultLen);
+
+    ASSERT_TRUE(abc_terminalController_sendReturnStr(8, result, cmd.c_str()));
+
+    // Limit the string length to prevent overflows.
+    result[resultLen - 1] = '\0';
+
+    // Kill the last newline character.
+    result[strlen(result) - 1] = '\0';
+
+    ASSERT_EQ(expectedResult, std::string(result));
 }
