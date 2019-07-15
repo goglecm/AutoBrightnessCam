@@ -7,6 +7,7 @@ TODO list:
 - add support for gmock
 - generalise project path (use the full to a makefile?)
 - add more build flags
+- add gtest as a devel library with this specific version
 
 Requirements:
 
