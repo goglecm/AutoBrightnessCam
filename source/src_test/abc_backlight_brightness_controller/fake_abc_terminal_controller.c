@@ -40,26 +40,6 @@ abc_terminalController_writeFile(int value, const char *pFileName)
     return true;
 }
 
-bool
-abc_terminalController_readFile(int *const restrict pValue,
-                                const char *const restrict pFileName)
-{
-    if (!s_isMaxBrightnessSet)
-    {
-        ABC_LOG_ERR("max brightness has not been set");
-        assert(false);
-    }
-
-    if (NULL == pValue || NULL == pFileName)
-    {
-        return false;
-    }
-
-    *pValue = s_maxBrightness;
-
-    return s_isReadFailed;
-}
-
 void fake_abc_terminalController_setMaxBrightness(const uint16_t value)
 {
     ABC_LOG("max brightness set to %u", value);
@@ -97,4 +77,21 @@ void
 fake_abc_terminalController_resetNumWriteCalls(void)
 {
     s_numWriteCalls = 0;
+}
+
+bool
+abc_terminalController_sendReturnStr(const unsigned resultLen,
+                                     char *const restrict pResult,
+                                     const char *const restrict pCmd)
+{
+    assert(pCmd);
+    assert(pResult);
+    assert(resultLen);
+    assert(s_isMaxBrightnessSet);
+
+    const int result = snprintf(pResult, resultLen, "%u", s_maxBrightness);
+
+    assert(result);
+
+    return true;
 }

@@ -111,46 +111,6 @@ abc_terminalController_writeFile(const int value,
 }
 
 bool
-abc_terminalController_readFile(int *const restrict pValue,
-                                const char *const restrict pFileName)
-{
-    if (NULL == pFileName)
-    {
-        ABC_LOG_ERR("Invalid filename");
-
-        return false;
-    }
-
-    char cmd[MAX_BUFF_SIZE] = { 0 };
-
-    int result;
-    result = snprintf(cmd, sizeof(cmd), "cat %s", pFileName);
-
-    if (result <= 0)
-    {
-        ABC_LOG_ERR("Returning false: Failed to construct the cmd to read the file");
-
-        return false;
-    }
-
-    char strValue[MAX_BUFF_SIZE] = { 0 };
-
-    if (!abc_terminalController_sendReturnStr(sizeof(strValue), strValue, cmd))
-    {
-        return false;
-    }
-
-    if (pValue)
-    {
-        *pValue = strtoimax(strValue, NULL, 10);
-
-        ABC_LOG("return value = %d", *pValue);
-    }
-
-    return true;
-}
-
-bool
 abc_terminalController_sendReturnDbl(double *const restrict pValue,
                                      const char *const restrict pCmd)
 {

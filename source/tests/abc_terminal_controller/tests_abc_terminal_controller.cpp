@@ -53,35 +53,6 @@ TEST(abc_terminal_controller_files, write_to_bad_file_causes_error)
     ASSERT_FALSE(abc_terminalController_writeFile(0, NULL));
 }
 
-TEST(abc_terminal_controller_files, integer_is_read_from_file)
-{
-    const std::string filename(std::string(__func__) + ".test");
-
-    int intRead = 60;
-
-    std::ofstream outfile;
-    outfile.open(filename.c_str());
-    outfile << intRead;
-    outfile.close();
-
-    int actualInt = -1;
-    ASSERT_TRUE(abc_terminalController_readFile(&actualInt, filename.c_str()));
-
-    ASSERT_EQ(intRead, actualInt);
-}
-
-TEST(abc_terminal_controller_files, read_from_bad_file_returns_error)
-{
-    ASSERT_FALSE(abc_terminalController_readFile(NULL, NULL));
-}
-
-TEST(abc_terminal_controller_files, read_from_non_existant_file_returns_error)
-{
-    std::remove("invalid_file");
-
-    ASSERT_FALSE(abc_terminalController_readFile(NULL, "invalid_file"));
-}
-
 TEST(abc_terminal_controller_commands, command_without_return_is_executed)
 {
     const std::string filename(std::string(__func__) + ".test");

@@ -9,7 +9,7 @@ run_all_tests:
 		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile -j exe_build
 
 	# Run tests
-	cd ./abc_logging_service; \
+	cd ./abc_terminal_controller; \
 		MODULE_NAME=abc_terminal_controller make -f Makefile -j tests_run
 
 	cd ./abc_logging_service; \

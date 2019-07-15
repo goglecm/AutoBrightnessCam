@@ -111,6 +111,7 @@ tests_build:
 		fakes_build \
 		tests_clean
 
+	cd ../abc_logging_service; \
 	MODULE_NAME=abc_logging_service make -j build_with_deps
 
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
