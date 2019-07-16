@@ -8,12 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-void fake_abc_terminalController_setMaxBrightness(uint16_t value);
-
 uint16_t fake_abc_terminalController_getCurrentBrightness(void);
-
-void
-fake_abc_terminalController_failRead(bool isFailed);
 
 unsigned
 fake_abc_terminalController_getNumWrites(void);

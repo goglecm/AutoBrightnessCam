@@ -1,13 +1,32 @@
 TODO list:
 
+features:
 - add support for seamless brightness change
 - add some sort of tap filtering when reading the ambient brightness
-- remove asserts and replace them with logs
-- add tests to check for errors
+- add logs in each condition/loop and before each return
+- add timestamp for the logs
+- (later) add module name appended to the log name (i.e. register each module
+  with the logger)
+
+testing:
 - add support for gmock
-- generalise project path (use the full to a makefile?)
-- add more build flags
+
+improvements:
+- move file manipulation functionality into a separate module (once used by multiple modules)
+- remove the terminal module and rather than calling system/popen properly
+  implement what the command are supposed to do
+- add support for multiple build trees to allow tests to run in parallel
+- add more build flags (but keep in mind that other compilers may not be happy)
+- simplify the commands to run individual tests from a module
+- perhaps allow to specify (via env var a path for the log)
+
+configuration:
 - add gtest as a devel library with this specific version
+- generalise file paths used (as they get created in ~)
+- generalise project path (use the full to a makefile?)
+- start looking at rpm generation (deb as well)
+
+Note: right now the logs are persistent across an entire test run
 
 Requirements:
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 
-template <class T> static std::string
+template <typename T> static std::string
 to_str(const T a)
 {
     std::stringstream ss;
