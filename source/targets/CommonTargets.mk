@@ -123,8 +123,6 @@ tests_build:
 		-o test_$(MODULE_NAME).exe; \
 
 tests_run:
-	#MODULE_NAME=$(MODULE_NAME) make -j tests_build
-
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(DYNAMIC_LIBS_PATH); \
 		./test_$(MODULE_NAME).exe \

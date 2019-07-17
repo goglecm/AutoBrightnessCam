@@ -46,6 +46,10 @@ Same mapping as the source, except these directories hold build files.
 
 ### TL;DR
 
+Clean, run all tests and build important targets:
+
+`make -f ~/source/targets/Makefile run_all_tests`
+
 Run production:
 
 `MODULE_NAME=main make -f ~/source/targets/main/Makefile -j exe_build`
@@ -54,13 +58,13 @@ then (with sudo) run the main exe:
 
 `sudo ~/build/src/main/main.exe`
 
+Other useful targets:
+
 Run tests on the abc_brightness module (or any other module):
 
-`MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile -j run_tests`
-
-Run all tests and build important targets:
-
-`make -f ~/source/targets/Makefile run_all_tests`
+`make -f ~/source/targets/Makefile -j clean_abc_brightness_service`
+`make -f ~/source/targets/Makefile -j test_abc_brightness_service`
+`make -f ~/source/targets/Makefile -j testrun_abc_brightness_service`
 
 Enable/disable logging:
 
@@ -81,12 +85,45 @@ For instance, to build the abc_brightness_service module:
 
 `MODULE_NAME=abc_brightness_service make -f ~/source/targets/abc_brightness_service/Makefile build_with_deps`
 
-### Build targets
+### Build targets 
 
-**build_no_deps** - cleans the module build area and builds the .o object files 
+#### Global targets
+
+These targets are defined in ~/source/targets/Makefile
+
+**run_all_tests** - builds a couple of versions of main, runs
+the tests for the logging module and then runs the tests of
+all other modules
+
+**run_all** - runs the tests of all modules except for the
+logging module
+
+**build_all_tests** - builds all modules and links them
+against the test dependencies. This produces the *.exe which
+when run, runs the tests for that module
+
+**build_main** - builds a couple of versions of main
+
+**clean** - purges the build area
+
+Individual modules can also be manipulated from here:
+
+**clean_abc_module** - cleans the module called abc_module
+
+**test_abc_module** - builds the module called abc_module and
+links it with the test dependencies
+
+**testrun_abc_module** - runs the tests for the module 
+called abc_module
+
+#### Targets per module
+
+These targets are defined in ~/source/targets/CommonTargets.mk
+
+**build_no_deps** - builds the .o object files 
 of the module
 
-**build_with_deps** - cleans the module build area, builds the .o object 
+**build_with_deps** - builds the .o object 
 files of the module, does a *build_with_deps* on each of its dependant modules 
 and links all these into a .a archive file
 

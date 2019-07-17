@@ -1,27 +1,37 @@
+MODULES_TO_CLEAN = \
+	abc_time_service \
+	abc_io_service \
+	abc_terminal_controller \
+	abc_logging_service \
+	abc_brightness_service \
+	abc_power_controller \
+	abc_backlight_brightness_controller \
+
+# Do not include abc_logging_service
+MODULES_TO_TEST = \
+	abc_io_service \
+	abc_terminal_controller \
+	abc_brightness_service \
+	abc_power_controller \
+	abc_backlight_brightness_controller \
+
+############
+# CLEANING #
+############
+
+MODULES_TO_CLEAN_TARGETS = \
+	$(foreach var, $(MODULES_TO_CLEAN), clean_$(var))
+
+$(MODULES_TO_CLEAN_TARGETS):
+	cd ./$(subst clean_,,$@); \
+		MODULE_NAME=$(subst clean_,,$@) make -f Makefile -j clean_all
+
 clean:
-	cd ./abc_time_service; \
-		MODULE_NAME=abc_terminal_controller make -f Makefile -j clean_all
+	make -j $(MODULES_TO_CLEAN_TARGETS)
 
-	cd ./abc_io_service; \
-		MODULE_NAME=abc_io_service make -f Makefile -j clean_all
-
-	cd ./abc_terminal_controller; \
-		MODULE_NAME=abc_terminal_controller make -f Makefile -j clean_all
-
-	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile -j clean_all
-
-	cd ./abc_brightness_service; \
-		MODULE_NAME=abc_brightness_service make -f Makefile -j clean_all
-
-	cd ./abc_brightness_service; \
-		MODULE_NAME=abc_ambient_brightness_controller make -f Makefile -j clean_all
-
-	cd ./abc_power_controller; \
-		MODULE_NAME=abc_power_controller make -f Makefile -j clean_all
-
-	cd ./abc_backlight_brightness_controller; \
-		MODULE_NAME=abc_backlight_brightness_controller make -f Makefile -j clean_all
+########
+# MAIN #
+########
 
 build_main:
 	# Build main (with logs)
@@ -34,49 +44,52 @@ build_main:
 	cd ./main; \
 		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile -j exe_build
 
+#########
+# BUILD #
+#########
+
+MODULES_TO_BUILD_TEST_TARGETS = \
+	$(foreach var, $(MODULES_TO_TEST), test_$(var))
+
+$(MODULES_TO_BUILD_TEST_TARGETS):
+	cd ./$(subst test_,,$@); \
+		MODULE_NAME=$(subst test_,,$@) make -f Makefile -j tests_build
+
 build_all_tests:
 	make -j clean
 
-	# Build tests
-	cd ./abc_terminal_controller; \
-		MODULE_NAME=abc_terminal_controller make -f Makefile -j tests_build
+	make -j $(MODULES_TO_BUILD_TEST_TARGETS)
+
+#############
+# RUN TESTS #
+#############
+
+MODULES_TO_RUN_TEST_TARGETS = \
+	$(foreach var, $(MODULES_TO_TEST), testrun_$(var))
+
+$(MODULES_TO_RUN_TEST_TARGETS):
+	cd ./$(subst testrun_,,$@); \
+		MODULE_NAME=$(subst testrun_,,$@) make -f Makefile -j tests_run
+
+run_all:
+	make -j $(MODULES_TO_RUN_TEST_TARGETS)
+
+#################
+# BUILD AND RUN #
+#################
+
+run_all_tests:
+
+	make -j clean
 
 	cd ./abc_logging_service; \
 		MODULE_NAME=abc_logging_service make -f Makefile -j tests_build
 
-	cd ./abc_brightness_service; \
-		MODULE_NAME=abc_brightness_service make -f Makefile -j tests_build
+	cd ./abc_logging_service; \
+		MODULE_NAME=abc_logging_service make -f Makefile -j tests_run
 
-	cd ./abc_power_controller; \
-		MODULE_NAME=abc_power_controller make -f Makefile -j tests_build
-
-	cd ./abc_backlight_brightness_controller; \
-		MODULE_NAME=abc_backlight_brightness_controller make -f Makefile -j tests_build
-
-	cd ./abc_io_service; \
-		MODULE_NAME=abc_io_service make -f Makefile -j tests_build
-
-
-run_all_tests:
 	make -j build_main
 
 	make -j build_all_tests
 
-	# Run tests
-	cd ./abc_terminal_controller; \
-		MODULE_NAME=abc_terminal_controller make -f Makefile -j tests_run
-
-	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile -j tests_run
-
-	cd ./abc_brightness_service; \
-		MODULE_NAME=abc_brightness_service make -f Makefile -j tests_run
-
-	cd ./abc_power_controller; \
-		MODULE_NAME=abc_power_controller make -f Makefile -j tests_run
-
-	cd ./abc_backlight_brightness_controller; \
-		MODULE_NAME=abc_backlight_brightness_controller make -f Makefile -j tests_run
-
-	cd ./abc_io_service; \
-		MODULE_NAME=abc_io_service make -f Makefile -j tests_run
+	make -j run_all
