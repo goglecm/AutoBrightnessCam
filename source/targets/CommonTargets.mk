@@ -1,3 +1,9 @@
+PARALLEL_FLAG = -j
+
+ifdef NUM_CORES_TO_USE
+PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
+endif
+
 $(MODULE_NAME)_MODULE_BUILD_PATH = $(BUILD_PATH)/src/$(MODULE_NAME)
 
 $(MODULE_NAME)_MODULE_FAKES_BUILD_PATH = $(BUILD_PATH)/src_test/$(MODULE_NAME)
@@ -52,7 +58,7 @@ fakes_clean:
 		rm -rf *.o *.a *.exe
 
 clean_all:
-	MODULE_NAME=$(MODULE_NAME) make -j clean fakes_clean tests_clean
+	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) clean fakes_clean tests_clean
 
 build_no_deps:
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
@@ -63,12 +69,12 @@ build_no_deps:
 
 build_with_deps:
 	cd $(TARGETS_PATH)/$(MODULE_NAME); \
-		MODULE_NAME=$(MODULE_NAME) make -j build_no_deps
+		MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) build_no_deps
 
 	$(foreach dep, \
 		$($(MODULE_NAME)_DEPENDENCIES), \
 		MODULE_NAME=$(dep) \
-			make -f $(TARGETS_PATH)/$(dep)/Makefile -j build_with_deps;)
+			make -f $(TARGETS_PATH)/$(dep)/Makefile $(PARALLEL_FLAG) build_with_deps;)
 
 	$(foreach dep, \
 		$($(MODULE_NAME)_DEPENDENCIES), \
@@ -80,7 +86,7 @@ build_with_deps:
 			$($(MODULE_NAME)_MODULE_BUILD_PATH)/*.o \
 
 exe_build:
-	MODULE_NAME=$(MODULE_NAME) make -j build_with_deps
+	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) build_with_deps
 
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) \
@@ -102,12 +108,12 @@ tests_clean:
 # Include the logging service here explicitly
 
 tests_build:
-	MODULE_NAME=$(MODULE_NAME) make -j \
+	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) \
 		build_no_deps \
 		fakes_build \
 
 	cd ../abc_logging_service; \
-	MODULE_NAME=abc_logging_service make -j build_with_deps
+	MODULE_NAME=abc_logging_service make $(PARALLEL_FLAG) build_with_deps
 
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		$(CXX) \

@@ -66,9 +66,16 @@ Run tests on the abc_brightness module (or any other module):
 `make -f ~/source/targets/Makefile -j test_abc_brightness_service`
 `make -f ~/source/targets/Makefile -j testrun_abc_brightness_service`
 
+### Environment variables
+
 Enable/disable logging:
 
 `ABC_LOGGING_ON=1 make ...`
+
+Set the number of cores to use for building and running the
+tests:
+
+`NUM_CORES_TO_USE=4 make ...`
 
 ### Background
 

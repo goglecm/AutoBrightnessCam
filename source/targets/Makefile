@@ -1,3 +1,9 @@
+PARALLEL_FLAG = -j
+
+ifdef NUM_CORES_TO_USE
+PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
+endif
+
 MODULES_TO_CLEAN = \
 	abc_time_service \
 	abc_io_service \
@@ -24,10 +30,10 @@ MODULES_TO_CLEAN_TARGETS = \
 
 $(MODULES_TO_CLEAN_TARGETS):
 	cd ./$(subst clean_,,$@); \
-		MODULE_NAME=$(subst clean_,,$@) make -f Makefile -j clean_all
+		MODULE_NAME=$(subst clean_,,$@) make -f Makefile $(PARALLEL_FLAG) clean_all
 
 clean:
-	make -j $(MODULES_TO_CLEAN_TARGETS)
+	make $(PARALLEL_FLAG) $(MODULES_TO_CLEAN_TARGETS)
 
 ########
 # MAIN #
@@ -35,14 +41,14 @@ clean:
 
 build_main:
 	# Build main (with logs)
-	make -j clean
+	make $(PARALLEL_FLAG) clean
 	cd ./main; \
-		MODULE_NAME=main ABC_LOGGING_ON=1 make -f Makefile -j exe_build
+		MODULE_NAME=main ABC_LOGGING_ON=1 make -f Makefile $(PARALLEL_FLAG) exe_build
 
 	# Build main (no logs)
 	make -j clean
 	cd ./main; \
-		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile -j exe_build
+		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile $(PARALLEL_FLAG) exe_build
 
 #########
 # BUILD #
@@ -56,9 +62,9 @@ $(MODULES_TO_BUILD_TEST_TARGETS):
 		MODULE_NAME=$(subst test_,,$@) make -f Makefile -j tests_build
 
 build_all_tests:
-	make -j clean
+	make $(PARALLEL_FLAG) clean
 
-	make -j $(MODULES_TO_BUILD_TEST_TARGETS)
+	make $(PARALLEL_FLAG) $(MODULES_TO_BUILD_TEST_TARGETS)
 
 #############
 # RUN TESTS #
@@ -69,10 +75,10 @@ MODULES_TO_RUN_TEST_TARGETS = \
 
 $(MODULES_TO_RUN_TEST_TARGETS):
 	cd ./$(subst testrun_,,$@); \
-		MODULE_NAME=$(subst testrun_,,$@) make -f Makefile -j tests_run
+		MODULE_NAME=$(subst testrun_,,$@) make -f Makefile $(PARALLEL_FLAG) tests_run
 
 run_all:
-	make -j $(MODULES_TO_RUN_TEST_TARGETS)
+	make $(PARALLEL_FLAG) $(MODULES_TO_RUN_TEST_TARGETS)
 
 #################
 # BUILD AND RUN #
@@ -80,16 +86,16 @@ run_all:
 
 run_all_tests:
 
-	make -j clean
+	make $(PARALLEL_FLAG) clean
 
 	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile -j tests_build
+		MODULE_NAME=abc_logging_service make -f Makefile $(PARALLEL_FLAG) tests_build
 
 	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile -j tests_run
+		MODULE_NAME=abc_logging_service make -f Makefile $(PARALLEL_FLAG) tests_run
 
-	make -j build_main
+	make $(PARALLEL_FLAG) build_main
 
-	make -j build_all_tests
+	make $(PARALLEL_FLAG) build_all_tests
 
-	make -j run_all
+	make $(PARALLEL_FLAG) run_all
