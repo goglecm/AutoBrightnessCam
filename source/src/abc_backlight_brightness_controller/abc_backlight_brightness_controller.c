@@ -1,4 +1,3 @@
-#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 #include "abc_io_service/abc_io_service.h"
 #include "abc_logging_service/abc_logging_service.h"
 
@@ -33,109 +32,6 @@ s_PATH_MAX_BRIGHTNESS[MAX_BUFF_SIZE];
 static char
 s_PATH_CURRENT_BRIGHTNESS[MAX_BUFF_SIZE];
 
-static bool
-strToInt(int *const restrict pValue, const char *const restrict pStr)
-{
-    assert(pValue && pStr);
-
-    char *pEnd;
-    const long readNum = strtol(pStr, &pEnd, 10);
-    if (errno)
-    {
-        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
-
-        return false;
-    }
-
-    // Check if anything was read.
-    if (pEnd == pStr)
-    {
-        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
-
-        return false;
-    }
-
-    // A full conversion occurs when pEnd is null or '\n'.
-    if (*pEnd && *pEnd != '\n')
-    {
-        ABC_LOG_ERR("Failed to convert the string fully to long");
-
-        return false;
-    }
-
-    if (readNum > INT_MAX || readNum < INT_MIN)
-    {
-        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
-
-        return false;
-    }
-
-    *pValue = readNum;
-
-    return true;
-}
-
-static bool
-readIntFromFile(int *const restrict pValue,
-                const char *const restrict pFileName)
-{
-    if (NULL == pFileName || NULL == pValue)
-    {
-        ABC_LOG_ERR("Bad filename = %p or bad ret value = %p",
-                    (void *)pFileName, (void *)pValue);
-
-        assert(false);
-
-        return false;
-    }
-
-    FILE *const pFile = fopen(pFileName, "r");
-
-    if (NULL == pFile)
-    {
-        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
-
-        return false;
-    }
-
-    bool isReturnOK = true;
-
-    char readLine[10] = { 0 };
-
-    if (NULL == fgets(readLine, sizeof(readLine), pFile))
-    {
-        ABC_LOG_ERR("Reached EOF too early");
-
-        isReturnOK = false;
-    }
-    else if (errno)
-    {
-        ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
-
-        isReturnOK = false;
-    }
-    else
-    {
-        ABC_LOG("Read `%s` from file %s", readLine, pFileName);
-    }
-
-    fclose(pFile);
-
-    if (!isReturnOK)
-    {
-        return false;
-    }
-
-    if (!strToInt(pValue, readLine))
-    {
-        ABC_LOG_ERR("Failed to read convert string to int");
-
-        return false;
-    }
-
-    return true;
-}
-
 // return true on success
 static bool
 readMaxBrightness(uint32_t *const restrict pRetValue)
@@ -151,7 +47,7 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
 
     int maxBrightness = 0;
 
-    if (!readIntFromFile(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
+    if (!abc_ioService_read(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
     {
         ABC_LOG_ERR("Failed to read max brightness");
 

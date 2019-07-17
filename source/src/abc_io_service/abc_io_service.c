@@ -7,9 +7,11 @@
 #include <stddef.h>
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
+#include <limits.h>
 
 bool
-abc_ioService_write(int value, const char *pFileName)
+abc_ioService_write(const int value, const char *const restrict pFileName)
 {
     if (NULL == pFileName)
     {
@@ -67,49 +69,112 @@ abc_ioService_write(int value, const char *pFileName)
     return isReturnOK;
 }
 
-bool
-abc_ioService_read(int *pValue, const char *pFileName)
+static bool
+strToInt(int *const restrict pValue, const char *const restrict pStr)
 {
-    (void)pValue;
-    (void)pFileName;
+    assert(pValue && pStr);
+
+    char *pEnd;
+    const long readNum = strtol(pStr, &pEnd, 10);
+    if (errno)
+    {
+        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
+
+        return false;
+    }
+
+    // Check if anything was read.
+    if (pEnd == pStr)
+    {
+        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
+
+        return false;
+    }
+
+    // A full conversion occurs when pEnd is null or '\n'.
+    if (*pEnd && *pEnd != '\n')
+    {
+        ABC_LOG_ERR("Failed to convert the string fully to long");
+
+        return false;
+    }
+
+    if (readNum > INT_MAX || readNum < INT_MIN)
+    {
+        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
+
+        return false;
+    }
+
+    *pValue = readNum;
+
     return true;
 }
 
-#if 0
-
-
 bool
-abc_terminalController_writeFile(const int value,
-                                 const char *const restrict pFileName)
+abc_ioService_read(int *const restrict pValue,
+                   const char *const restrict pFileName)
 {
-    if (NULL == pFileName)
+    if (NULL == pFileName || NULL == pValue)
     {
-        ABC_LOG_ERR("Invalid filename");
+        ABC_LOG_ERR("Bad filename = %p or bad ret value = %p",
+                    (void *)pFileName, (void *)pValue);
 
         return false;
     }
 
-    ABC_LOG("writing %d to %s", value, pFileName);
+    FILE *const pFile = fopen(pFileName, "r");
 
-    char cmd[MAX_BUFF_SIZE] = { 0 };
-
-    int result;
-    result = snprintf(cmd, sizeof(cmd), "echo %"PRId32" > %s", value, pFileName);
-
-    if (result <= 0)
+    if (NULL == pFile)
     {
-        ABC_LOG_ERR("Returning false: Failed to construct the cmd to write the file");
+        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
 
         return false;
     }
 
-    if (!abc_terminalController_sendReturnStr(0, NULL, cmd))
+    bool isReturnOK = true;
+
+    char readLine[10] = { 0 };
+
+    if (NULL == fgets(readLine, sizeof(readLine), pFile))
     {
+        ABC_LOG_ERR("Reached EOF too early");
+
+        isReturnOK = false;
+    }
+    else if (errno)
+    {
+        ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+
+        isReturnOK = false;
+    }
+    else
+    {
+        ABC_LOG("Read `%s` from file %s", readLine, pFileName);
+    }
+
+    errno = 0;
+
+    if (0 != fclose(pFile))
+    {
+        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+                    "File is left in an undefined state.",
+                    pFileName, strerror(errno));
+
+        return false;
+    }
+
+    if (!isReturnOK)
+    {
+        return false;
+    }
+
+    if (!strToInt(pValue, readLine))
+    {
+        ABC_LOG_ERR("Failed to read convert string to int");
+
         return false;
     }
 
     return true;
 }
-
-
-#endif

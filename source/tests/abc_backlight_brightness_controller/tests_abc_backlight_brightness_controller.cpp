@@ -4,7 +4,7 @@
 
 #include "abc_io_service/abc_io_service.h"
 
-#include "abc_backlight_brightness_controller/fake_abc_terminal_controller.h"
+#include "abc_backlight_brightness_controller/fake_abc_io_service.h"
 
 #include "abc_logging_service/abc_logging_service.h"
 
@@ -31,46 +31,6 @@ toRawBrightness(const double target)
     return target / 100.0 * s_DEFAULT_MAX;
 }
 
-inline bool exists(const std::string &name)
-{
-    struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
-}
-
-template <typename T> static void
-setValue(const std::string &fileName, const T value)
-{
-    if (exists(fileName))
-    {
-        ASSERT_EQ(0, std::remove(fileName.c_str()));
-    }
-
-    std::stringstream outValue;
-
-    outValue << value;
-
-    std::ofstream outfile (fileName.c_str());
-
-    ABC_LOG("written %s to file %s", outValue.str().c_str(), fileName.c_str());
-
-    outfile << outValue.str() << std::endl;
-
-    outfile.close();
-}
-
-static void
-createFile(const std::string &fileName)
-{
-    if (exists(fileName))
-    {
-        ASSERT_EQ(0, std::remove(fileName.c_str()));
-    }
-
-    std::ofstream outfile (fileName.c_str());
-
-    outfile.close();
-}
-
 class abc_backlight_brightness_controller: public ::testing::Test
 {
 
@@ -91,11 +51,11 @@ public:
 
         abc_backlightBrightnessController_resetMax();
 
-        setValue<int>(std::string(s_MAX_BRIGHTNESS_PATH), s_DEFAULT_MAX);
+        fake_abc_ioService_resetNumWriteCalls();
 
-        setValue<int>(std::string(s_CURRENT_BRIGHTNESS_PATH), toRawBrightness(getMidBrightness()));
+        fake_abc_ioService_setMaxBrightness(s_DEFAULT_MAX);
 
-        fake_abc_terminalController_resetNumWriteCalls();
+        fake_abc_ioService_failReads(false);
     }
 
     void TearDown(void)
@@ -120,7 +80,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_v
     abc_backlightBrightnessController_set(target);
 
     ASSERT_EQ(toRawBrightness(target),
-              fake_abc_terminalController_getCurrentBrightness());
+              fake_abc_ioService_getCurrentBrightness());
 }
 
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed_maximum_brightness)
@@ -130,7 +90,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed
     abc_backlightBrightnessController_set(target);
 
     ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MAX),
-              fake_abc_terminalController_getCurrentBrightness());
+              fake_abc_ioService_getCurrentBrightness());
 }
 
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_recede_minimum_brightness)
@@ -140,41 +100,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_recede
     abc_backlightBrightnessController_set(target);
 
     ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MIN),
-              fake_abc_terminalController_getCurrentBrightness());
-}
-
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_file_does_not_exist_or_has_a_bad_name)
-{
-    const double target = (g_abc_BacklightBrightnessController_MIN + g_abc_BacklightBrightnessController_MAX) / 2;
-
-    // Remove file (this can also be done by specifying a bad file name)
-    ASSERT_EQ(0, std::remove(s_MAX_BRIGHTNESS_PATH));
-
-    abc_backlightBrightnessController_set(target);
-
-    ASSERT_EQ(0, fake_abc_terminalController_getNumWrites());
-}
-
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_file_is_empty)
-{
-    const double target = (g_abc_BacklightBrightnessController_MIN + g_abc_BacklightBrightnessController_MAX) / 2;
-
-    createFile(s_MAX_BRIGHTNESS_PATH);
-
-    abc_backlightBrightnessController_set(target);
-
-    ASSERT_EQ(0, fake_abc_terminalController_getNumWrites());
-}
-
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_file_has_bad_data)
-{
-    const double target = (g_abc_BacklightBrightnessController_MIN + g_abc_BacklightBrightnessController_MAX) / 2;
-
-    setValue<const char *const>(s_MAX_BRIGHTNESS_PATH, "hello");
-
-    abc_backlightBrightnessController_set(target);
-
-    ASSERT_EQ(0, fake_abc_terminalController_getNumWrites());
+              fake_abc_ioService_getCurrentBrightness());
 }
 
 TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_is_zero)
@@ -182,9 +108,21 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maxim
     // Mid point between min and max
     const double target = getMidBrightness();
 
-    setValue<int>(s_MAX_BRIGHTNESS_PATH, 0);
+    fake_abc_ioService_setMaxBrightness(0);
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ(0, fake_abc_terminalController_getNumWrites());
+    ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
+}
+
+TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_maximum_brightness_cannot_be_read)
+{
+    // Mid point between min and max
+    const double target = getMidBrightness();
+
+    fake_abc_ioService_failReads(true);
+
+    abc_backlightBrightnessController_set(target);
+
+    ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
 }
