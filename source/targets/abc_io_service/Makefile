@@ -1,7 +1,6 @@
-# MODULE_NAME = abc_backlight_brightness_controller
+# MODULE_NAME = abc_io_service
 
 $(MODULE_NAME)_DEPENDENCIES = \
 	abc_logging_service \
-	abc_io_service \
 
 include ../Common.mk

@@ -1,4 +1,4 @@
-#include "abc_terminal_controller/abc_terminal_controller.h"
+#include "abc_io_service/abc_io_service.h"
 #include "abc_backlight_brightness_controller/fake_abc_terminal_controller.h"
 
 #include "abc_logging_service/abc_logging_service.h"
@@ -17,7 +17,7 @@ static unsigned
 s_numWriteCalls;
 
 bool
-abc_terminalController_writeFile(int value, const char *pFileName)
+abc_ioService_write(int value, const char *pFileName)
 {
     if (NULL == pFileName)
     {

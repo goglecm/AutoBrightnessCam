@@ -1,5 +1,5 @@
 #include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
-#include "abc_terminal_controller/abc_terminal_controller.h"
+#include "abc_io_service/abc_io_service.h"
 #include "abc_logging_service/abc_logging_service.h"
 
 #include <assert.h>
@@ -175,7 +175,7 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
 static void
 writeBrightness(const uint32_t value)
 {
-    if (!abc_terminalController_writeFile(value, s_PATH_CURRENT_BRIGHTNESS))
+    if (!abc_ioService_write(value, s_PATH_CURRENT_BRIGHTNESS))
     {
         ABC_LOG_ERR("failed to set the brightness to %u", value);
     }

@@ -55,8 +55,6 @@ clean_all:
 	MODULE_NAME=$(MODULE_NAME) make -j clean fakes_clean tests_clean
 
 build_no_deps:
-	MODULE_NAME=$(MODULE_NAME) make -j clean
-
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) -fPIC -c \
 			$($(MODULE_NAME)_MODULE_SOURCES) \
@@ -91,8 +89,6 @@ exe_build:
 			-o $(MODULE_NAME).exe; \
 
 fakes_build:
-	MODULE_NAME=$(MODULE_NAME) make -j fakes_clean
-
 	cd $($(MODULE_NAME)_MODULE_FAKES_BUILD_PATH); \
 		$(CC) -fPIC -c \
 		$($(MODULE_NAME)_MODULE_FAKES_SOURCES) \
@@ -109,7 +105,6 @@ tests_build:
 	MODULE_NAME=$(MODULE_NAME) make -j \
 		build_no_deps \
 		fakes_build \
-		tests_clean
 
 	cd ../abc_logging_service; \
 	MODULE_NAME=abc_logging_service make -j build_with_deps
@@ -128,7 +123,7 @@ tests_build:
 		-o test_$(MODULE_NAME).exe; \
 
 tests_run:
-	MODULE_NAME=$(MODULE_NAME) make -j tests_build
+	#MODULE_NAME=$(MODULE_NAME) make -j tests_build
 
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(DYNAMIC_LIBS_PATH); \

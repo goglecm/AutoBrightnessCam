@@ -21,9 +21,6 @@ abc_terminalController_send(const char *pCmd);
 bool
 abc_terminalController_sendReturnDbl(double *pValue, const char *pCmd);
 
-bool
-abc_terminalController_writeFile(int value, const char *pFileName);
-
 #ifdef __cplusplus
 }
 #endif

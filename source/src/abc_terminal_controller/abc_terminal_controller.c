@@ -78,39 +78,6 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
 }
 
 bool
-abc_terminalController_writeFile(const int value,
-                                 const char *const restrict pFileName)
-{
-    if (NULL == pFileName)
-    {
-        ABC_LOG_ERR("Invalid filename");
-
-        return false;
-    }
-
-    ABC_LOG("writing %d to %s", value, pFileName);
-
-    char cmd[MAX_BUFF_SIZE] = { 0 };
-
-    int result;
-    result = snprintf(cmd, sizeof(cmd), "echo %"PRId32" > %s", value, pFileName);
-
-    if (result <= 0)
-    {
-        ABC_LOG_ERR("Returning false: Failed to construct the cmd to write the file");
-
-        return false;
-    }
-
-    if (!abc_terminalController_sendReturnStr(0, NULL, cmd))
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool
 abc_terminalController_sendReturnDbl(double *const restrict pValue,
                                      const char *const restrict pCmd)
 {

@@ -14,45 +14,6 @@ to_str(const T a)
     return ss.str();
 }
 
-TEST(abc_terminal_controller_files, write_to_non_existant_file_creates_the_file_and_writes_to_it)
-{
-    const std::string filename(std::string(__func__) + ".test");
-
-    std::remove(filename.c_str());
-
-    const int intWritten = 10;
-
-    ASSERT_TRUE(abc_terminalController_writeFile(intWritten, filename.c_str()));
-
-    std::ifstream infile(filename.c_str());
-
-    std::string line;
-    std::getline(infile, line);
-
-    ASSERT_EQ(line, to_str(intWritten));
-}
-
-TEST(abc_terminal_controller_files, file_is_written_an_integer)
-{
-    const std::string filename(std::string(__func__) + ".test");
-
-    const int intWritten = 50;
-
-    ASSERT_TRUE(abc_terminalController_writeFile(intWritten, filename.c_str()));
-
-    std::ifstream infile(filename.c_str());
-
-    std::string line;
-    std::getline(infile, line);
-
-    ASSERT_EQ(line, to_str(intWritten));
-}
-
-TEST(abc_terminal_controller_files, write_to_bad_file_causes_error)
-{
-    ASSERT_FALSE(abc_terminalController_writeFile(0, NULL));
-}
-
 TEST(abc_terminal_controller_commands, command_without_return_is_executed)
 {
     const std::string filename(std::string(__func__) + ".test");
