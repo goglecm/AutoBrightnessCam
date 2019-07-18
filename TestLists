@@ -12,7 +12,6 @@ testing:
 - add support for gmock
 
 improvements:
-- move file manipulation functionality into a separate module (once used by multiple modules)
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
 - add more build flags (but keep in mind that other compilers may not be happy)
@@ -23,7 +22,6 @@ configuration:
 - generalise file paths used (as they get created in ~)
 - generalise project path (use the full to a makefile?)
 - start looking at rpm generation (deb as well)
-- enable option to run in parallel with a specific number of cores
 
 Note: right now the logs are persistent across an entire test run
 

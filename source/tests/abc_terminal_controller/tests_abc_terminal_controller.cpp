@@ -2,6 +2,8 @@
 
 #include "abc_terminal_controller/abc_terminal_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 #include <sstream>
 #include <string>
 #include <fstream>
@@ -14,9 +16,21 @@ to_str(const T a)
     return ss.str();
 }
 
+inline bool
+exists(const std::string &name)
+{
+    struct stat buffer;
+    return (stat (name.c_str(), &buffer) == 0);
+}
+
 TEST(abc_terminal_controller_commands, command_without_return_is_executed)
 {
     const std::string filename(std::string(__func__) + ".test");
+
+    if (exists(filename))
+    {
+        ASSERT_EQ(0, std::remove(filename.c_str()));
+    }
 
     const std::string cmd = "echo Hello > " + filename;
 

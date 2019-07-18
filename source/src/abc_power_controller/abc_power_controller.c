@@ -17,6 +17,8 @@ s_DEFAULT_CHARGING_STATE = false;
 bool
 abc_powerController_isCharging(void)
 {
+    // todo: read /sys/class/power_supply/BAT1/status
+
     const char cmd[] = "upower -i `upower -e | "
                        "grep 'BAT'` | "
                        "grep state | "

@@ -5,6 +5,7 @@ PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
 endif
 
 MODULES_TO_CLEAN = \
+	main \
 	abc_time_service \
 	abc_io_service \
 	abc_terminal_controller \
@@ -12,6 +13,7 @@ MODULES_TO_CLEAN = \
 	abc_brightness_service \
 	abc_power_controller \
 	abc_backlight_brightness_controller \
+	abc_ambient_brightness_controller \
 
 # Do not include abc_logging_service
 MODULES_TO_TEST = \

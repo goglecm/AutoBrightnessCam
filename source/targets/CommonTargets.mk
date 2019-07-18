@@ -51,11 +51,11 @@ clean_all
 
 clean:
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
-		rm -rf *.o *.a *.exe
+		rm -rf *.o *.a *.exe *.log
 
 fakes_clean:
 	cd $($(MODULE_NAME)_MODULE_FAKES_BUILD_PATH); \
-		rm -rf *.o *.a *.exe
+		rm -rf *.o *.a *.exe *.log
 
 clean_all:
 	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) clean fakes_clean tests_clean
