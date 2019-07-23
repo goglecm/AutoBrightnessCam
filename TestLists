@@ -108,3 +108,8 @@ Dependencies:
 Future ideas:
 
 - allow the user to point the paths for any unavailable optional features
+
+====
+
+- The read ambient brightness values should be passed through a filter of size
+  64 and the average value should be taken.

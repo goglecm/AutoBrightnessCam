@@ -14,16 +14,16 @@ s_PICTURE_PATH[] = "/tmp/brightness.jpg";
 static void
 takePicture_fswebcam(const char *const restrict pPicPath)
 {
-    const char s[] = "fswebcam --no-banner -r 160x120 --jpeg 50 %s";
+    const char cameraCmd[] = "fswebcam --no-banner -r 160x120 --jpeg 50";
 
-    char cmdCamera[MAX_BUFF_SIZE] = { 0 };
+    char fullCmd[MAX_BUFF_SIZE] = { 0 };
 
-    if (0 >= snprintf(cmdCamera, sizeof(cmdCamera), s, pPicPath))
+    if (0 >= snprintf(fullCmd, sizeof(fullCmd), "%s %s", cameraCmd, pPicPath))
     {
         assert(false);
     }
 
-    const bool result = abc_terminalController_send(cmdCamera);
+    const bool result = abc_terminalController_send(fullCmd);
 
     assert(result);
 }

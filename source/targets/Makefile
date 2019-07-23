@@ -22,6 +22,7 @@ MODULES_TO_TEST = \
 	abc_brightness_service \
 	abc_power_controller \
 	abc_backlight_brightness_controller \
+	abc_ambient_brightness_controller \
 
 ############
 # CLEANING #
@@ -35,6 +36,7 @@ $(MODULES_TO_CLEAN_TARGETS):
 		MODULE_NAME=$(subst clean_,,$@) make -f Makefile $(PARALLEL_FLAG) clean_all
 
 clean:
+	rm -f ./*.test
 	make $(PARALLEL_FLAG) $(MODULES_TO_CLEAN_TARGETS)
 
 ########
