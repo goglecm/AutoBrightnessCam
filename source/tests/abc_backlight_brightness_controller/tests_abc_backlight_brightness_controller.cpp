@@ -56,6 +56,12 @@ public:
         fake_abc_ioService_setMaxBrightness(s_DEFAULT_MAX);
 
         fake_abc_ioService_failReads(false);
+
+        ASSERT_TRUE(abc_backlightBrightnessController_setNumIncrements(10));
+
+        abc_backlightBrightnessController_setIncrementsPeriod_ms(50);
+
+        fake_abc_ioService_setCurrentBrightness((getMidBrightness() / 100) * (double)s_DEFAULT_MAX - 1);
     }
 
     void TearDown(void)
@@ -81,6 +87,30 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_v
 
     ASSERT_EQ(toRawBrightness(target),
               fake_abc_ioService_getCurrentBrightness());
+}
+
+TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_updated_gradually)
+{
+    abc_backlightBrightnessController_setNumIncrements(3);
+    abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
+
+    // Mid point between min and max
+    const double currentBrightness = fake_abc_ioService_getCurrentBrightness();
+    const double targetBrightness = g_abc_BacklightBrightnessController_MAX -
+                                    currentBrightness +
+                                    g_abc_BacklightBrightnessController_MIN;
+
+    abc_backlightBrightnessController_set(targetBrightness);
+
+    // 2 parameters control the seamless-ness of the brightness change:
+    // - the number of change increments (X)
+    // - the period of one full brightness update (Y)
+    // Calls to the brightness update are blocking, so the X*Y ideally would be
+    // less than the brightness service minimum period, otherwise, each wake
+    // call would result in a brightness change. Though this is not a
+    // restriction as the brightness changes would still be seamless.
+
+    ASSERT_EQ(3, fake_abc_ioService_getNumWrites());
 }
 
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed_maximum_brightness)
@@ -125,4 +155,25 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_maximum_b
     abc_backlightBrightnessController_set(target);
 
     ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
+}
+
+TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_new_value_is_the_same_as_the_old_value)
+{
+    abc_backlightBrightnessController_set((fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX);
+
+    ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
+}
+
+TEST_F(abc_backlight_brightness_controller, setting_the_number_of_brightness_increments_to_0_fails)
+{
+    ASSERT_FALSE(abc_backlightBrightnessController_setNumIncrements(0));
+}
+
+TEST_F(abc_backlight_brightness_controller, setting_the_brightness_increment_period_to_0_causes_the_brightness_to_be_set_with_one_write)
+{
+    abc_backlightBrightnessController_setIncrementsPeriod_ms(0);
+
+    abc_backlightBrightnessController_set((getMidBrightness() / 100.0) * (double)s_DEFAULT_MAX);
+
+    ASSERT_EQ(1, fake_abc_ioService_getNumWrites());
 }

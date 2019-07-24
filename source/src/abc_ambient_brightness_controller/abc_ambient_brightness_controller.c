@@ -1,5 +1,6 @@
 #include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
 #include "abc_terminal_controller/abc_terminal_controller.h"
+#include "abc_logging_service/abc_logging_service.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -14,6 +15,8 @@ s_PICTURE_PATH[] = "/tmp/brightness.jpg";
 static void
 takePicture_fswebcam(const char *const restrict pPicPath)
 {
+    ABC_LOG("taking picture");
+
     const char cameraCmd[] = "fswebcam --no-banner -r 160x120 --jpeg 50";
 
     char fullCmd[MAX_BUFF_SIZE] = { 0 };
@@ -31,6 +34,8 @@ takePicture_fswebcam(const char *const restrict pPicPath)
 static double
 getBrightnessFromPicture_convert(const char *const restrict pPicPath)
 {
+    ABC_LOG("retrieving brightness from picture");
+
     const char s[] = "convert %s "
                      "-colorspace gray "
                      "-format %%[fx:100*mean]%%%% info:";

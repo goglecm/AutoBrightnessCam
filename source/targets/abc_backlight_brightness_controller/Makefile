@@ -3,5 +3,6 @@
 $(MODULE_NAME)_DEPENDENCIES = \
 	abc_logging_service \
 	abc_io_service \
+	abc_time_service \
 
 include ../Common.mk

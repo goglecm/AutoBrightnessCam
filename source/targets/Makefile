@@ -36,7 +36,7 @@ $(MODULES_TO_CLEAN_TARGETS):
 		MODULE_NAME=$(subst clean_,,$@) make -f Makefile $(PARALLEL_FLAG) clean_all
 
 clean:
-	rm -f ./*.test
+	rm -f ./*.test ./*.exe
 	make $(PARALLEL_FLAG) $(MODULES_TO_CLEAN_TARGETS)
 
 ########

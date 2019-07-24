@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
+#include <stdbool.h>
+
 extern const double
 g_abc_BacklightBrightnessController_MAX;
 
@@ -26,6 +30,12 @@ abc_backlightBrightnessController_setCurrentPath(const char *pPath);
 // Used when the maximum brightness has changed.
 void
 abc_backlightBrightnessController_resetMax(void);
+
+bool
+abc_backlightBrightnessController_setNumIncrements(uint16_t num);
+
+void
+abc_backlightBrightnessController_setIncrementsPeriod_ms(uint32_t period_ms);
 
 #ifdef __cplusplus
 }

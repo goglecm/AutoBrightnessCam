@@ -1,5 +1,6 @@
 #include "abc_io_service/abc_io_service.h"
 #include "abc_logging_service/abc_logging_service.h"
+#include "abc_time_service/abc_time_service.h"
 
 #include <assert.h>
 #include <stdbool.h>
@@ -26,11 +27,19 @@ s_isMaxSet = false;
 static uint32_t
 s_maxBrightness = -1;
 
+
 static char
 s_PATH_MAX_BRIGHTNESS[MAX_BUFF_SIZE];
 
 static char
 s_PATH_CURRENT_BRIGHTNESS[MAX_BUFF_SIZE];
+
+
+static uint16_t
+s_numIncrements = 60;
+
+static uint32_t
+s_incrementPeriod_ms = 20;
 
 // return true on success
 static bool
@@ -64,6 +73,35 @@ readMaxBrightness(uint32_t *const restrict pRetValue)
     *pRetValue = maxBrightness;
 
     ABC_LOG("max brightness = %u", *pRetValue);
+
+    return true;
+}
+
+// return true on success
+static bool
+readCurrentBrightness(uint16_t *const restrict pRetValue)
+{
+    if (NULL == pRetValue)
+    {
+        ABC_LOG_ERR("Invalid result pointer, not returning the brightness");
+
+        assert(false);
+
+        return false;
+    }
+
+    int currentBrightness = 0;
+
+    if (!abc_ioService_read(&currentBrightness, s_PATH_CURRENT_BRIGHTNESS))
+    {
+        ABC_LOG_ERR("Failed to read current brightness");
+
+        return false;
+    }
+
+    *pRetValue = currentBrightness;
+
+    ABC_LOG("current brightness = %u", *pRetValue);
 
     return true;
 }
@@ -138,7 +176,43 @@ abc_backlightBrightnessController_set(const double value)
         s_isMaxSet = true;
     }
 
-    writeBrightness(s_maxBrightness * (limitBrightness(value) / 100.0));
+    uint16_t previousBrightness = 0;
+
+    readCurrentBrightness(&previousBrightness);
+
+    const int targetBrightness = s_maxBrightness * (limitBrightness(value) / 100.0);
+
+    ABC_LOG("target = %d", targetBrightness);
+
+    if (targetBrightness == previousBrightness)
+    {
+        ABC_LOG("old brightness is the same as new");
+
+        return;
+    }
+
+    if (0 == s_incrementPeriod_ms)
+    {
+        ABC_LOG("period is 0, setting the new brightness in one go");
+
+        writeBrightness(targetBrightness);
+
+        return;
+    }
+
+    for (uint16_t incNum = 0; incNum < s_numIncrements; ++incNum)
+    {
+        const int intermediateValue =
+            (int)previousBrightness + ((targetBrightness - (int)previousBrightness) * (incNum + 1)) / s_numIncrements;
+
+        ABC_LOG("intermediateValue = %d (%u of %u)", intermediateValue, incNum + 1, s_numIncrements);
+
+        assert(intermediateValue > 0);
+
+        writeBrightness((uint16_t)intermediateValue);
+
+        abc_timeService_sleep_ms(s_incrementPeriod_ms);
+    }
 }
 
 void
@@ -179,4 +253,31 @@ abc_backlightBrightnessController_setCurrentPath(const char *const restrict pPat
 
         assert(false);
     }
+}
+
+bool
+abc_backlightBrightnessController_setNumIncrements(const uint16_t num)
+{
+    if (num)
+    {
+        ABC_LOG("setting numIncrements to %u", num);
+
+        s_numIncrements = num;
+    }
+    else
+    {
+        ABC_LOG_WRN("cannot set numIncrements to 0");
+
+        return false;
+    }
+
+    return true;
+}
+
+void
+abc_backlightBrightnessController_setIncrementsPeriod_ms(const uint32_t period_ms)
+{
+    ABC_LOG("setting period to %u", period_ms);
+
+    s_incrementPeriod_ms = period_ms;
 }

@@ -21,6 +21,9 @@ void
 fake_abc_ioService_setMaxBrightness(uint16_t value);
 
 void
+fake_abc_ioService_setCurrentBrightness(uint16_t value);
+
+void
 fake_abc_ioService_failReads(bool isReadFail);
 
 #ifdef __cplusplus
