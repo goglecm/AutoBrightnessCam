@@ -1,4 +1,4 @@
-# MODULE_NAME = abc_brightness_service
+MODULE_NAME = abc_brightness_service
 
 $(MODULE_NAME)_DEPENDENCIES = \
 	abc_ambient_brightness_controller \
@@ -7,4 +7,4 @@ $(MODULE_NAME)_DEPENDENCIES = \
 	abc_time_service \
 	abc_logging_service \
 
-include ../Common.mk
+include Common.mk

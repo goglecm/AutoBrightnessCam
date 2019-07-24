@@ -12,6 +12,8 @@
 
 #include "abc_brightness_service/fake_abc_power_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 const abc_brightnessService_PeriodSec_t s_TEST_DEFAULT_PERIOD_SEC = 30;
 
 const double s_TEST_DEFAULT_AMBIENT_BRIGHTNESS = 30;
@@ -26,16 +28,14 @@ isAtIntegerLimit(const abc_brightnessService_PeriodSec_t period)
 
 class abc_brightness_service: public ::testing::Test
 {
-
 public:
-    abc_brightness_service(void)
-    {
-        // initialization code here
-    }
-
     void SetUp(void)
     {
         // code here will execute just before the test ensues
+
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
         abc_brightnessService_stop();
 
@@ -58,21 +58,40 @@ public:
         abc_brightnessService_stop();
 
     }
-
-    ~abc_brightness_service(void)
-    {
-        // cleanup any pending stuff, but no exceptions allowed
-    }
-
-    // put in any custom data members that you need
 };
 
-TEST(abc_brightness_service_initial_conditions, minimum_period_is_not_zero)
+class abc_brightness_service_initial_conditions: public ::testing::Test
+{
+public:
+    void SetUp(void)
+    {
+        // code here will execute just before the test ensues
+
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    }
+};
+
+class abc_brightness_service_period: public ::testing::Test
+{
+public:
+    void SetUp(void)
+    {
+        // code here will execute just before the test ensues
+
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    }
+};
+
+TEST_F(abc_brightness_service_initial_conditions, minimum_period_is_not_zero)
 {
     ASSERT_NE(0, g_abc_brightnessService_MIN_PERIOD);
 }
 
-TEST(abc_brightness_service_initial_conditions, default_period_between_the_min_and_max_periods)
+TEST_F(abc_brightness_service_initial_conditions, default_period_between_the_min_and_max_periods)
 {
     ASSERT_GE(g_abc_brightnessService_DEFAULT_PERIOD,
               g_abc_brightnessService_MIN_PERIOD);
@@ -81,7 +100,7 @@ TEST(abc_brightness_service_initial_conditions, default_period_between_the_min_a
               g_abc_brightnessService_MAX_PERIOD);
 }
 
-TEST(abc_brightness_service_period, period_is_set_when_the_service_is_not_running)
+TEST_F(abc_brightness_service_period, period_is_set_when_the_service_is_not_running)
 {
     abc_brightnessService_stop();
 
@@ -91,7 +110,7 @@ TEST(abc_brightness_service_period, period_is_set_when_the_service_is_not_runnin
     ASSERT_EQ(s_TEST_DEFAULT_PERIOD_SEC, abc_brightnessService_getPeriod());
 }
 
-TEST(abc_brightness_service_period, period_is_not_set_when_the_service_is_running)
+TEST_F(abc_brightness_service_period, period_is_not_set_when_the_service_is_running)
 {
     abc_brightnessService_start();
 
@@ -99,7 +118,7 @@ TEST(abc_brightness_service_period, period_is_not_set_when_the_service_is_runnin
               abc_brightnessService_setPeriod(s_TEST_DEFAULT_PERIOD_SEC));
 }
 
-TEST(abc_brightness_service_period, period_is_not_set_lower_than_the_minimum_period)
+TEST_F(abc_brightness_service_period, period_is_not_set_lower_than_the_minimum_period)
 {
     abc_brightnessService_stop();
 
@@ -110,7 +129,7 @@ TEST(abc_brightness_service_period, period_is_not_set_lower_than_the_minimum_per
               abc_brightnessService_setPeriod(belowMinimum));
 }
 
-TEST(abc_brightness_service_period, period_is_not_set_higher_than_the_maximum_period)
+TEST_F(abc_brightness_service_period, period_is_not_set_higher_than_the_maximum_period)
 {
     if (isAtIntegerLimit(g_abc_brightnessService_MAX_PERIOD))
     {

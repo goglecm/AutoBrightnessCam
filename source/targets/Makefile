@@ -1,10 +1,24 @@
+
+
+
+###############################################################
+# Contains the shortcut targets needed to:                    #
+# - clean and build any modules                               #
+# - clean, build and run the tests of any modules             #
+# - clean, build and run the tests of all modules in parallel #
+# - build the main application                                #
+###############################################################
+
+
+
+
 PARALLEL_FLAG = -j
 
 ifdef NUM_CORES_TO_USE
 PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
 endif
 
-MODULES_TO_CLEAN = \
+ALL_MODULES = \
 	main \
 	abc_time_service \
 	abc_io_service \
@@ -23,18 +37,35 @@ MODULES_TO_TEST = \
 	abc_power_controller \
 	abc_backlight_brightness_controller \
 	abc_ambient_brightness_controller \
+	abc_logging_service \
+
+#################
+# BUILD AND RUN #
+#################
+
+## Target to clean, build and run all tests from all modules (and build mains)
+all:
+	make $(PARALLEL_FLAG) clean
+
+	make $(PARALLEL_FLAG) build_all_mains
+
+	make $(PARALLEL_FLAG) clean
+
+	make $(PARALLEL_FLAG) build_all_tests
+
+	make $(PARALLEL_FLAG) run_tests
 
 ############
 # CLEANING #
 ############
 
 MODULES_TO_CLEAN_TARGETS = \
-	$(foreach var, $(MODULES_TO_CLEAN), clean_$(var))
+	$(foreach var, $(ALL_MODULES), clean_$(var))
 
 $(MODULES_TO_CLEAN_TARGETS):
-	cd ./$(subst clean_,,$@); \
-		MODULE_NAME=$(subst clean_,,$@) make -f Makefile $(PARALLEL_FLAG) clean_all
+	make -f $(subst clean_,,$@)/Makefile $(PARALLEL_FLAG) module_clean_all
 
+## Target to clean everything
 clean:
 	rm -f ./*.test ./*.exe
 	make $(PARALLEL_FLAG) $(MODULES_TO_CLEAN_TARGETS)
@@ -43,32 +74,51 @@ clean:
 # MAIN #
 ########
 
-build_main:
-	# Build main (with logs)
-	make $(PARALLEL_FLAG) clean
-	cd ./main; \
-		MODULE_NAME=main ABC_LOGGING_ON=1 make -f Makefile $(PARALLEL_FLAG) exe_build
+## Target to build the main application with logging on
+build_main_with_logs:
+	ABC_LOGGING_ON=1 make -f main/Makefile $(PARALLEL_FLAG) module_exe_build
 
-	# Build main (no logs)
-	make -j clean
-	cd ./main; \
-		MODULE_NAME=main ABC_LOGGING_ON=0 make -f Makefile $(PARALLEL_FLAG) exe_build
+## Target to build the main application with logging off
+build_main_without_logs:
+	ABC_LOGGING_ON=0 make -f main/Makefile $(PARALLEL_FLAG) module_exe_build
+
+## Target to build the main application (with and without logging) with the
+## former available at the end of the recipe
+build_all_mains:
+	make $(PARALLEL_FLAG) build_main_with_logs
+	make $(PARALLEL_FLAG) build_main_without_logs
 
 #########
 # BUILD #
 #########
 
 MODULES_TO_BUILD_TEST_TARGETS = \
-	$(foreach var, $(MODULES_TO_TEST), test_$(var))
+	$(foreach var, $(MODULES_TO_TEST), testbuild_$(var))
 
+MODULES_TO_BUILD_TARGETS = \
+	$(foreach var, $(ALL_MODULES), build_$(var))
+
+## Target to build individual modules for testing. The targets are:
+## testbuild_abc_module, where module is the module
 $(MODULES_TO_BUILD_TEST_TARGETS):
-	cd ./$(subst test_,,$@); \
-		MODULE_NAME=$(subst test_,,$@) make -f Makefile -j tests_build
+	make -f $(subst testbuild_,,$@)/Makefile -j module_tests_build
 
+## Target to build individual modules for production. The targets are:
+## build_abc_module, where module is the module
+$(MODULES_TO_BUILD_TARGETS):
+	make -f $(subst build_,,$@)/Makefile $(PARALLEL_FLAG) module_build_with_deps
+
+## Target to build all modules for testing
 build_all_tests:
 	make $(PARALLEL_FLAG) clean
 
 	make $(PARALLEL_FLAG) $(MODULES_TO_BUILD_TEST_TARGETS)
+
+## Target to build all modules for production
+build_all_modules:
+	make $(PARALLEL_FLAG) clean
+
+	make $(PARALLEL_FLAG) $(MODULES_TO_BUILD_TARGETS)
 
 #############
 # RUN TESTS #
@@ -78,28 +128,21 @@ MODULES_TO_RUN_TEST_TARGETS = \
 	$(foreach var, $(MODULES_TO_TEST), testrun_$(var))
 
 $(MODULES_TO_RUN_TEST_TARGETS):
-	cd ./$(subst testrun_,,$@); \
-		MODULE_NAME=$(subst testrun_,,$@) make -f Makefile $(PARALLEL_FLAG) tests_run
+	make -f $(subst testrun_,,$@)/Makefile $(PARALLEL_FLAG) module_tests_run
 
-run_all:
+## Target to run all tests from all modules (assuming everything is built)
+run_tests:
 	make $(PARALLEL_FLAG) $(MODULES_TO_RUN_TEST_TARGETS)
 
-#################
-# BUILD AND RUN #
-#################
-
-run_all_tests:
-
-	make $(PARALLEL_FLAG) clean
-
-	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile $(PARALLEL_FLAG) tests_build
-
-	cd ./abc_logging_service; \
-		MODULE_NAME=abc_logging_service make -f Makefile $(PARALLEL_FLAG) tests_run
-
-	make $(PARALLEL_FLAG) build_main
-
-	make $(PARALLEL_FLAG) build_all_tests
-
-	make $(PARALLEL_FLAG) run_all
+.PHONY: \
+	all \
+	clean \
+	build_all_mains \
+	build_all_modules \
+	build_all_tests \
+	build_main_basic \
+	run_tests \
+	$(MODULES_TO_RUN_TEST_TARGETS) \
+	$(MODULES_TO_BUILD_TARGETS) \
+	$(MODULES_TO_BUILD_TEST_TARGETS) \
+	$(MODULES_TO_CLEAN_TARGETS) \

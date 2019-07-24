@@ -1,7 +1,7 @@
 #include "abc_brightness_service/abc_brightness_service.h"
 
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
 
 int main(void)
 {

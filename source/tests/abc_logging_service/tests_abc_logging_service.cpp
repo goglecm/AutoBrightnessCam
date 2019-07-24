@@ -17,6 +17,19 @@
 
 #endif // #ifdef ABC_LOGGING_ON
 
+class abc_logging_service: public ::testing::Test
+{
+public:
+    void SetUp(void)
+    {
+        // code here will execute just before the test ensues
+
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    }
+};
+
 static void resetLogger(void)
 {
     g_isFirstLog = true;
@@ -50,7 +63,7 @@ static void checkLogFormat(const std::string &targetMessage,
 }
 
 
-TEST(abc_logging_service, initial_message_is_logged_before_first_log)
+TEST_F(abc_logging_service, initial_message_is_logged_before_first_log)
 {
     resetLogger();
 
@@ -67,7 +80,7 @@ TEST(abc_logging_service, initial_message_is_logged_before_first_log)
     ASSERT_EQ(newLineAfterInitialMessage, line);
 }
 
-TEST(abc_logging_service, message_is_logged_in_a_file_with_newline_and_function_name_before_it)
+TEST_F(abc_logging_service, message_is_logged_in_a_file_with_newline_and_function_name_before_it)
 {
     resetLogger();
 
@@ -78,7 +91,7 @@ TEST(abc_logging_service, message_is_logged_in_a_file_with_newline_and_function_
     checkLogFormat(targetMessage, "", __func__);
 }
 
-TEST(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning_and_function_name_before_it)
+TEST_F(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning_and_function_name_before_it)
 {
     resetLogger();
 
@@ -89,7 +102,7 @@ TEST(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning_a
     checkLogFormat(targetMessage, "WARNING", __func__);
 }
 
-TEST(abc_logging_service, error_is_logged_in_a_file_with_newline_and_error_and_function_name_before_it)
+TEST_F(abc_logging_service, error_is_logged_in_a_file_with_newline_and_error_and_function_name_before_it)
 {
     resetLogger();
 

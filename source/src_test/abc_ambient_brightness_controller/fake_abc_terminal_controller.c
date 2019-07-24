@@ -43,7 +43,10 @@ abc_terminalController_send(const char *pCmd)
 
     const size_t cmdSize = strnlen(cameraCmd, strlen(cameraCmd));
 
-    s_numShots += (0 == memcmp(cameraCmd, pCmd, cmdSize));
+    if (0 == memcmp(cameraCmd, pCmd, cmdSize))
+    {
+        ++s_numShots;
+    }
 
     return true;
 }
@@ -58,7 +61,10 @@ abc_terminalController_sendReturnDbl(double *const restrict pValue,
 
     const size_t cmdSize = strnlen(calcCmd, strlen(calcCmd));
 
-    s_numCalcs += (0 == memcmp(calcCmd, pCmd, cmdSize));
+    if (0 == memcmp(calcCmd, pCmd, cmdSize))
+    {
+        ++s_numCalcs;
+    }
 
     *pValue = 10;
 

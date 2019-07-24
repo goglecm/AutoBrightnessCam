@@ -1,3 +1,5 @@
+#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+
 #include "abc_io_service/abc_io_service.h"
 #include "abc_logging_service/abc_logging_service.h"
 #include "abc_time_service/abc_time_service.h"
@@ -99,7 +101,7 @@ readCurrentBrightness(uint16_t *const restrict pRetValue)
         return false;
     }
 
-    *pRetValue = currentBrightness;
+    *pRetValue = (uint16_t)currentBrightness;
 
     ABC_LOG("current brightness = %u", *pRetValue);
 
@@ -180,7 +182,7 @@ abc_backlightBrightnessController_set(const double value)
 
     readCurrentBrightness(&previousBrightness);
 
-    const int targetBrightness = s_maxBrightness * (limitBrightness(value) / 100.0);
+    const int targetBrightness = (int)(s_maxBrightness * (limitBrightness(value) / 100));
 
     ABC_LOG("target = %d", targetBrightness);
 

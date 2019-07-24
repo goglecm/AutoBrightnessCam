@@ -2,9 +2,20 @@
 
 #include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
 #include "abc_logging_service/abc_logging_service.h"
-#include <abc_ambient_brightness_controller/fake_abc_terminal_controller.h>
+#include "abc_ambient_brightness_controller/fake_abc_terminal_controller.h"
 
-TEST(abc_ambient_brightness_controller, one_picture_is_shot_externally_when_ambient_brightness_is_read)
+class abc_ambient_brightness_controller: public ::testing::Test
+{
+public:
+    void SetUp(void)
+    {
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    }
+};
+
+TEST_F(abc_ambient_brightness_controller, one_picture_is_shot_externally_when_ambient_brightness_is_read)
 {
     fake_abc_terminalController_resetNumShots();
 
@@ -15,7 +26,7 @@ TEST(abc_ambient_brightness_controller, one_picture_is_shot_externally_when_ambi
     ASSERT_EQ(1, fake_abc_terminalController_getNumShots());
 }
 
-TEST(abc_ambient_brightness_controller, picture_brightness_is_calculated_externally_when_ambient_brightness_is_read)
+TEST_F(abc_ambient_brightness_controller, picture_brightness_is_calculated_externally_when_ambient_brightness_is_read)
 {
     fake_abc_terminalController_resetNumCalcs();
 

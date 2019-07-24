@@ -33,15 +33,11 @@ toRawBrightness(const double target)
 
 class abc_backlight_brightness_controller: public ::testing::Test
 {
-
 public:
-    abc_backlight_brightness_controller(void)
-    {
-        // initialization code here
-    }
-
     void SetUp(void)
     {
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
         // code here will execute just before the test ensues
@@ -63,19 +59,6 @@ public:
 
         fake_abc_ioService_setCurrentBrightness((getMidBrightness() / 100) * (double)s_DEFAULT_MAX - 1);
     }
-
-    void TearDown(void)
-    {
-        // code here will be called just after the test completes
-        // ok to through exceptions from here if need be
-    }
-
-    ~abc_backlight_brightness_controller(void)
-    {
-        // cleanup any pending stuff, but no exceptions allowed
-    }
-
-    // put in any custom data members that you need
 };
 
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_value)

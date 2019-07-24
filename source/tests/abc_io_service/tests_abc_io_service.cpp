@@ -8,6 +8,19 @@
 #include <string>
 #include <fstream>
 
+class abc_io_service: public ::testing::Test
+{
+public:
+    void SetUp(void)
+    {
+        // code here will execute just before the test ensues
+
+        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+
+        ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    }
+};
+
 template <typename T> static std::string
 to_str(const T a)
 {
@@ -49,7 +62,7 @@ createFile(const std::string &fileName)
     setValue<const char *>(fileName, "");
 }
 
-TEST(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to_it)
+TEST_F(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to_it)
 {
     const std::string filename(std::string(__func__) + ".test");
 
@@ -67,7 +80,7 @@ TEST(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to_i
     ASSERT_EQ(line, to_str(intWritten));
 }
 
-TEST(abc_io_service, file_is_written_an_integer)
+TEST_F(abc_io_service, file_is_written_an_integer)
 {
     const std::string filename(std::string(__func__) + ".test");
 
@@ -83,12 +96,12 @@ TEST(abc_io_service, file_is_written_an_integer)
     ASSERT_EQ(line, to_str(intWritten));
 }
 
-TEST(abc_io_service, write_to_invalid_file_fails)
+TEST_F(abc_io_service, write_to_invalid_file_fails)
 {
     ASSERT_FALSE(abc_ioService_write(0, NULL));
 }
 
-TEST(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
+TEST_F(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
 {
     const std::string filename(std::string(__func__) + ".test");
 
@@ -97,7 +110,7 @@ TEST(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
     ASSERT_FALSE(abc_ioService_read(NULL, filename.c_str()));
 }
 
-TEST(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
+TEST_F(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
 {
     const std::string filename(std::string(__func__) + ".test");
 
@@ -108,7 +121,7 @@ TEST(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
     ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
 }
 
-TEST(abc_io_service, read_fails_when_file_is_empty)
+TEST_F(abc_io_service, read_fails_when_file_is_empty)
 {
     const std::string filename(std::string(__func__) + ".test");
 
@@ -119,7 +132,7 @@ TEST(abc_io_service, read_fails_when_file_is_empty)
     ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
 }
 
-TEST(abc_io_service, read_fails_when_file_has_alphanumeric_data)
+TEST_F(abc_io_service, read_fails_when_file_has_alphanumeric_data)
 {
     const std::string filename(std::string(__func__) + ".test");
 

@@ -106,7 +106,7 @@ strToInt(int *const restrict pValue, const char *const restrict pStr)
         return false;
     }
 
-    *pValue = readNum;
+    *pValue = (int)readNum;
 
     return true;
 }
@@ -118,7 +118,7 @@ abc_ioService_read(int *const restrict pValue,
     if (NULL == pFileName || NULL == pValue)
     {
         ABC_LOG_ERR("Bad filename = %p or bad ret value = %p",
-                    (void *)pFileName, (void *)pValue);
+                    pFileName, (void *)pValue);
 
         return false;
     }

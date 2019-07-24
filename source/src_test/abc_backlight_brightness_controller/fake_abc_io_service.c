@@ -40,7 +40,7 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
 
     ++s_numWriteCalls;
 
-    s_currentBrightness = value;
+    s_currentBrightness = (uint16_t)value;
 
     s_isCurrentBrightnessSet = true;
 

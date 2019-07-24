@@ -1,12 +1,21 @@
-PARALLEL_FLAG = -j
 
-ifdef NUM_CORES_TO_USE
-PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
-endif
+
+
+########################################################################
+#                                                                      #
+#                          ### WARNING ###                             #
+#                                                                      #
+# Internal build infrastructure, refer to the Makefile for the targets #
+#                                                                      #
+########################################################################
+
+
 
 $(MODULE_NAME)_MODULE_BUILD_PATH = $(BUILD_PATH)/src/$(MODULE_NAME)
 
 $(MODULE_NAME)_MODULE_FAKES_BUILD_PATH = $(BUILD_PATH)/src_test/$(MODULE_NAME)
+
+$(MODULE_NAME)_MODULE_TESTS_BUILD_PATH = $(BUILD_PATH)/tests/$(MODULE_NAME)
 
 $(MODULE_NAME)_MODULE_MASTER_INC_PATH += \
 	$(SOURCE_PATH) \
@@ -20,17 +29,9 @@ $(MODULE_NAME)_MODULE_FAKES_SOURCES = $(SOURCE_PATH)/src_test/$(MODULE_NAME)/*.c
 
 $(MODULE_NAME)_TEST_SOURCES = $(SOURCE_PATH)/tests/$(MODULE_NAME)/*.cpp
 
-ifndef ABC_LOGGING_ON
-ABC_LOGGING_ON = 1
-endif
-
-C_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
-
-CXX_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
-
-##########################
-# Add -I and -L prefixes #
-##########################
+###################
+# Add -I prefixes #
+###################
 
 $(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED = \
 	$(foreach var, $($(MODULE_NAME)_MODULE_MASTER_INC_PATH), -I$(var))
@@ -40,53 +41,65 @@ $(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED = \
 ###########
 
 .PHONY: \
-clean \
-build_no_deps \
-build_with_deps \
-fakes_clean \
-fakes_build \
-tests_clean \
-tests_run \
-clean_all
+module_clean \
+module_clean_logs \
+module_clean_fakes \
+module_clean_tests \
+module_clean_all \
+module_build_with_deps \
+module_tests_run \
 
-clean:
+module_clean_logs:
+	cd $(ABC_LOGGING_PATH); \
+		rm -f *$(MODULE_NAME)*.log
+
+module_clean:
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		rm -rf *.o *.a *.exe *.log
 
-fakes_clean:
+module_clean_fakes:
 	cd $($(MODULE_NAME)_MODULE_FAKES_BUILD_PATH); \
 		rm -rf *.o *.a *.exe *.log
 
-clean_all:
-	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) clean fakes_clean tests_clean
+module_clean_all:
+	make -f $(MODULE_NAME)/Makefile $(PARALLEL_FLAG) \
+		module_clean \
+		module_clean_fakes \
+		module_clean_tests \
+		module_clean_logs
 
-build_no_deps:
+module_clean_tests:
+	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
+		rm -rf *.o *.a *.exe *.out *.jpeg *.log
+
+module_build_no_deps : $($(MODULE_NAME)_MODULE_SOURCES)
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) -fPIC -c \
 			$($(MODULE_NAME)_MODULE_SOURCES) \
 			$($(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED) \
 			$(C_FLAGS)
 
-build_with_deps:
-	cd $(TARGETS_PATH)/$(MODULE_NAME); \
-		MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) build_no_deps
+module_build_with_deps:
+	make -f $(TARGETS_PATH)/$(MODULE_NAME)/Makefile $(PARALLEL_FLAG) \
+		module_build_no_deps
 
 	$(foreach dep, \
 		$($(MODULE_NAME)_DEPENDENCIES), \
-		MODULE_NAME=$(dep) \
-			make -f $(TARGETS_PATH)/$(dep)/Makefile $(PARALLEL_FLAG) build_with_deps;)
+			make -f $(TARGETS_PATH)/$(dep)/Makefile $(PARALLEL_FLAG) \
+				module_build_with_deps;)
 
 	$(foreach dep, \
 		$($(MODULE_NAME)_DEPENDENCIES), \
-		cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
-			ar x $(BUILD_PATH)/src/$(dep)/*.a; )
+			cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
+				ar x $(BUILD_PATH)/src/$(dep)/*.a; )
 
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(AR) rcs lib$(MODULE_NAME).a \
 			$($(MODULE_NAME)_MODULE_BUILD_PATH)/*.o \
 
-exe_build:
-	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) build_with_deps
+module_exe_build:
+	make -f $(MODULE_NAME)/Makefile $(PARALLEL_FLAG) \
+		module_build_with_deps
 
 	cd $($(MODULE_NAME)_MODULE_BUILD_PATH); \
 		$(CC) \
@@ -94,26 +107,21 @@ exe_build:
 			$(C_FLAGS) \
 			-o $(MODULE_NAME).exe; \
 
-fakes_build:
+module_fakes_build : $($(MODULE_NAME)_MODULE_FAKES_SOURCES)
 	cd $($(MODULE_NAME)_MODULE_FAKES_BUILD_PATH); \
 		$(CC) -fPIC -c \
 		$($(MODULE_NAME)_MODULE_FAKES_SOURCES) \
 		$($(MODULE_NAME)_MODULE_MASTER_INC_PATH_PREFIXED) \
 		$(C_FLAGS) \
 
-tests_clean:
-	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
-		rm -rf *.o *.a *.exe *.out *.jpeg
-
 # Include the logging service here explicitly
 
-tests_build:
-	MODULE_NAME=$(MODULE_NAME) make $(PARALLEL_FLAG) \
-		build_no_deps \
-		fakes_build \
+module_tests_build:
+	make -f $(MODULE_NAME)/Makefile $(PARALLEL_FLAG) \
+		module_build_no_deps \
+		module_fakes_build \
 
-	cd ../abc_logging_service; \
-	MODULE_NAME=abc_logging_service make $(PARALLEL_FLAG) build_with_deps
+	make -f $(TARGETS_PATH)/abc_logging_service/Makefile $(PARALLEL_FLAG) module_build_with_deps
 
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		$(CXX) \
@@ -128,7 +136,7 @@ tests_build:
 		$(CXX_FLAGS) \
 		-o test_$(MODULE_NAME).exe; \
 
-tests_run:
+module_tests_run :
 	cd $($(MODULE_NAME)_MODULE_TESTS_BUILD_PATH); \
 		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(DYNAMIC_LIBS_PATH); \
-		./test_$(MODULE_NAME).exe \
+		./test_$(MODULE_NAME).exe | tee $(ABC_LOGGING_PATH)/$(MODULE_NAME)_run_log.log \
