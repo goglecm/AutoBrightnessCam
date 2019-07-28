@@ -46,7 +46,7 @@ MODULES_TO_TEST = \
 #################
 
 ## Target to clean, build and run all tests from all modules (and build mains)
-all:
+all :
 	$(MAKE) clean
 
 	$(MAKE) build_all_mains
@@ -78,7 +78,8 @@ $(MODULES_TO_CLEAN_TARGETS) :
 
 ## Target to clean everything
 clean :
-	rm -f ./*.test ./*.exe
+	rm -f $(PROJ_DIR)/run/*.test
+	rm -f $(PROJ_DIR)/build/logs/*.log
 	$(MAKE) $(PARALLEL_FLAG) $(MODULES_TO_CLEAN_TARGETS)
 
 ########
