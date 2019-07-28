@@ -8,6 +8,12 @@
 #include <string>
 #include <fstream>
 
+#ifndef ABC_TESTRUN_PATH
+#define ABC_TESTRUN_PATH "."
+#endif
+
+#define DEFAULT_FILENAME (( std::string(ABC_TESTRUN_PATH) + "/" + std::string(  ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()  ) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".test"  ).c_str())
+
 class abc_io_service: public ::testing::Test
 {
 public:
@@ -64,7 +70,7 @@ createFile(const std::string &fileName)
 
 TEST_F(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to_it)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     std::remove(filename.c_str());
 
@@ -82,7 +88,7 @@ TEST_F(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to
 
 TEST_F(abc_io_service, file_is_written_an_integer)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     const int intWritten = 50;
 
@@ -103,7 +109,7 @@ TEST_F(abc_io_service, write_to_invalid_file_fails)
 
 TEST_F(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     setValue(filename, "10");
 
@@ -112,9 +118,12 @@ TEST_F(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
 
 TEST_F(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
-    ASSERT_EQ(0, std::remove(filename.c_str()));
+    if (exists(filename))
+    {
+        ASSERT_EQ(0, std::remove(filename.c_str()));
+    }
 
     int ret;
 
@@ -123,7 +132,7 @@ TEST_F(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
 
 TEST_F(abc_io_service, read_fails_when_file_is_empty)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     createFile(filename);
 
@@ -134,7 +143,7 @@ TEST_F(abc_io_service, read_fails_when_file_is_empty)
 
 TEST_F(abc_io_service, read_fails_when_file_has_alphanumeric_data)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     setValue(filename, "abc10");
 

@@ -16,12 +16,6 @@
 # General definitions #
 #######################
 
-PARALLEL_FLAG = -j
-
-ifdef NUM_CORES_TO_USE
-PARALLEL_FLAG = -j$(NUM_CORES_TO_USE)
-endif
-
 ifndef ABC_LOGGING_ON
 ABC_LOGGING_ON = 1
 endif
@@ -34,10 +28,12 @@ CC=gcc
 CXX=g++
 AR=ar
 
-SOURCE_PATH = /home/john/CLionProjects/AutoBrightnessCam/source
-BUILD_PATH = /home/john/CLionProjects/AutoBrightnessCam/build
-LIBS_PATH = /home/john/CLionProjects/AutoBrightnessCam/libs
-TARGETS_PATH = /home/john/CLionProjects/AutoBrightnessCam/source/targets
+
+SOURCE_PATH = $(PROJ_DIR)/source
+BUILD_PATH = $(PROJ_DIR)/build
+LIBS_PATH = $(PROJ_DIR)/libs
+RUN_PATH = $(PROJ_DIR)/run
+TARGETS_PATH = $(SOURCE_PATH)/targets
 
 ABC_LOGGING_PATH = $(BUILD_PATH)/logs
 
@@ -124,7 +120,11 @@ CXX_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
 
 C_FLAGS += -DABC_LOGGING_PATH=\"$(ABC_LOGGING_PATH)\"
 
+C_FLAGS += -DABC_TESTRUN_PATH=\"$(RUN_PATH)\"
+
 CXX_FLAGS += -DABC_LOGGING_PATH=\"$(ABC_LOGGING_PATH)\"
+
+CXX_FLAGS += -DABC_TESTRUN_PATH=\"$(RUN_PATH)\"
 
 #############
 # Libraries #
@@ -146,5 +146,19 @@ DYNAMIC_LIBS = \
 
 DYNAMIC_LIBS_PATH_PREFIXED = \
 	$(foreach var, $(DYNAMIC_LIBS_PATH), -L$(var))
+
+#######################
+# Header search paths #
+#######################
+
+MODULE_MASTER_INC_PATH = \
+	$(SOURCE_PATH) \
+	$(COMMON_INC_PATH) \
+	$(SOURCE_PATH)/inc \
+	$(SOURCE_PATH)/inc_test \
+
+MODULE_MASTER_INC_PATH_PREFIXED = \
+	$(foreach var, $(MODULE_MASTER_INC_PATH), -I$(var))
+
 
 include $(TARGETS_PATH)/CommonTargets.mk

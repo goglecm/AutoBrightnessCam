@@ -5,4 +5,4 @@ $(MODULE_NAME)_DEPENDENCIES = \
 	abc_io_service \
 	abc_time_service \
 
-include Common.mk
+include $(PROJ_DIR)/source/targets/Common.mk

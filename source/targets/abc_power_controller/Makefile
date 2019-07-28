@@ -4,4 +4,4 @@ $(MODULE_NAME)_DEPENDENCIES = \
 	abc_terminal_controller \
 	abc_logging_service \
 
-include Common.mk
+include $(PROJ_DIR)/source/targets/Common.mk

@@ -7,4 +7,4 @@ $(MODULE_NAME)_DEPENDENCIES = \
 	abc_time_service \
 	abc_logging_service \
 
-include Common.mk
+include $(PROJ_DIR)/source/targets/Common.mk

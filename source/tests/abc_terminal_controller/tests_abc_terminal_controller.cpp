@@ -8,6 +8,12 @@
 #include <string>
 #include <fstream>
 
+#ifndef ABC_TESTRUN_PATH
+#define ABC_TESTRUN_PATH "."
+#endif
+
+#define DEFAULT_FILENAME (( std::string(ABC_TESTRUN_PATH) + "/" + std::string(  ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()  ) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".test"  ).c_str())
+
 template <typename T> static std::string
 to_str(const T a)
 {
@@ -38,7 +44,7 @@ public:
 
 TEST_F(abc_terminal_controller_commands, command_without_return_is_executed)
 {
-    const std::string filename(std::string(__func__) + ".test");
+    const std::string filename(DEFAULT_FILENAME);
 
     if (exists(filename))
     {
