@@ -1,9 +1,9 @@
 TODO list:
 
 features:
-- add support for seamless brightness change
 - add some sort of tap filtering when reading the ambient brightness
-- add logs in each condition/loop and before each return
+  The read ambient brightness values should be passed through a filter of size
+  64 and the average value should be taken.
 - add timestamp for the logs
 - (later) add module name appended to the log name (i.e. register each module
   with the logger)
@@ -14,16 +14,10 @@ testing:
 improvements:
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
-- add more build flags (but keep in mind that other compilers may not be happy)
-- perhaps allow to specify (via env var a path for the log)
 
 configuration:
 - add gtest as a devel library with this specific version
-- generalise file paths used (as they get created in ~)
-- generalise project path (use the full to a makefile?)
 - start looking at rpm generation (deb as well)
-
-Note: right now the logs are persistent across an entire test run
 
 Requirements:
 
@@ -108,8 +102,3 @@ Dependencies:
 Future ideas:
 
 - allow the user to point the paths for any unavailable optional features
-
-====
-
-- The read ambient brightness values should be passed through a filter of size
-  64 and the average value should be taken.

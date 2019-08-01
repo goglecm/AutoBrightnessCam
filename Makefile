@@ -31,6 +31,7 @@ ALL_MODULES = \
 	abc_power_controller \
 	abc_backlight_brightness_controller \
 	abc_ambient_brightness_controller \
+	abc_filter \
 
 MODULES_TO_TEST = \
 	abc_io_service \
@@ -39,6 +40,7 @@ MODULES_TO_TEST = \
 	abc_power_controller \
 	abc_backlight_brightness_controller \
 	abc_ambient_brightness_controller \
+	abc_filter \
 	abc_logging_service \
 
 #################
@@ -65,7 +67,7 @@ check_test_results:
 	@echo = Failures: =
 	@echo =============
 	@echo
-	@cat $(PROJ_DIR)/build/logs/*run_log.log | grep FAIL | cat
+	@cat $(PROJ_DIR)/build/logs/*run_log.log | grep "FAILED\|Failure\|Value of: \|Actual: \|Expected: \|Which is: " | cat
 
 ############
 # CLEANING #

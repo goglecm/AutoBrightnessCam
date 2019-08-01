@@ -77,21 +77,13 @@ C_MISC_FLAGS = \
 	-std=gnu99
 
 C_OPTIMISATION_FLAGS = \
-	-O3 \
+	-O2 \
 	-g0 \
 	-fstrict-aliasing \
 	-fstrict-overflow \
 	-fmodulo-sched \
 	-fmodulo-sched-allow-regmoves \
 	-fgcse-lm -fgcse-sm -fgcse-las -fgcse-after-reload \
-	-funsafe-loop-optimizations \
-	-fipa-pta \
-	-fgraphite-identity \
-	-floop-flatten \
-	-ftree-loop-if-convert \
-	-ftree-loop-if-convert-stores \
-	-ftree-loop-distribution \
-	-funroll-loops \
 	-freorder-blocks-and-partition \
 	-ffast-math \
 	-fno-signed-zeros \
@@ -107,7 +99,7 @@ CXX_WARNING_FLAGS = \
 	-Werror \
 
 CXX_OPTIMISATION_FLAGS = \
-	-O3 \
+	-O2 \
 	-g0 \
 
 CXX_FLAGS = \
