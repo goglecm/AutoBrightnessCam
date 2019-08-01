@@ -5,10 +5,13 @@
 #include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
 #include "abc_power_controller/abc_power_controller.h"
 #include "abc_logging_service/abc_logging_service.h"
+#include "abc_filter/abc_filter.h"
 
 #include <stdbool.h>
 
 #define ABC_DEFAULT_PERIOD (5U)
+
+#define ABC_FILTER_SIZE (8U)
 
 typedef abc_brightnessService_PeriodSec_t PeriodSec_t;
 
@@ -20,7 +23,8 @@ s_status = ABC_BRIGHTNESSSERVICE_STOPPED;
 static PeriodSec_t
 s_period = ABC_DEFAULT_PERIOD;
 
-static time_t s_lastTimestamp;
+static time_t
+s_lastTimestamp;
 
 const PeriodSec_t
 g_abc_brightnessService_DEFAULT_PERIOD = ABC_DEFAULT_PERIOD;
@@ -121,7 +125,38 @@ abc_brightnessService_wakeUp(void)
             }
             else
             {
-                abc_backlightBrightnessController_set(ambientBrightness);
+                static double s_filterState[ABC_FILTER_SIZE];
+
+                static abc_filter_AveragerData_t
+                    s_filter = {
+                    .SIZE = ABC_FILTER_SIZE,
+                    .internal_pos = 0,
+                    .pValues = &s_filterState[0],
+                };
+
+                static bool
+                s_isInitialFilterStateSet = false;
+
+                if (!s_isInitialFilterStateSet)
+                {
+                    for (uint16_t i = 0; i < ABC_FILTER_SIZE; ++i)
+                    {
+                        s_filterState[i] = ambientBrightness;
+                    }
+
+                    s_isInitialFilterStateSet = true;
+                }
+
+                double meanValue = 0;
+
+                if (!abc_filter_average(&s_filter, ambientBrightness, &meanValue))
+                {
+                    result = ABC_BRIGHTNESSSERVICE_FAILURE;
+                }
+                else
+                {
+                    abc_backlightBrightnessController_set(meanValue);
+                }
             }
         }
     }

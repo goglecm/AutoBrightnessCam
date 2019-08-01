@@ -54,7 +54,7 @@ getBrightnessFromPicture_convert(const char *const restrict pPicPath)
 
     assert(result);
 
-    return ambientBrightness;
+    return ambientBrightness * 2;
 }
 
 bool

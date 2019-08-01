@@ -8,7 +8,7 @@
 
 #define DEFAULT_FILTER_SIZE 64U
 
-static uint16_t s_vec[DEFAULT_FILTER_SIZE];
+static double s_vec[DEFAULT_FILTER_SIZE];
 
 static abc_filter_AveragerData_t filter =
     {
@@ -36,13 +36,13 @@ public:
 
 TEST_F(abc_filter, averages_64_values)
 {
-    uint16_t output = 0;
+    double output = 0;
     for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE; ++i)
     {
         ASSERT_TRUE(abc_filter_average(&filter, i, &output));
     }
 
-    uint32_t avg = 0;
+    double avg = 0;
     for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE; ++i)
     {
         avg += i;
@@ -50,12 +50,12 @@ TEST_F(abc_filter, averages_64_values)
 
     avg /= DEFAULT_FILTER_SIZE;
 
-    ASSERT_EQ(avg, output);
+    ASSERT_DOUBLE_EQ(avg, output);
 }
 
 TEST_F(abc_filter, internal_position_wraps_around_the_filter_size)
 {
-    uint16_t output = 0;
+    double output = 0;
     for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE * 2; ++i)
     {
         ASSERT_TRUE(abc_filter_average(&filter, i, &output));
@@ -73,7 +73,7 @@ TEST_F(abc_filter, filter_fails_when_the_internal_position_is_beyond_the_filter_
 {
     filter.internal_pos = DEFAULT_FILTER_SIZE;
 
-    uint16_t output = 0;
+    double output = 0;
     ASSERT_FALSE(abc_filter_average(&filter, 0, &output));
 }
 
@@ -88,6 +88,6 @@ TEST_F(abc_filter, filter_fails_when_the_filter_size_is_0)
             .internal_pos = 0,
         };
 
-    uint16_t output = 0;
+    double output = 0;
     ASSERT_FALSE(abc_filter_average(&f, 0, &output));
 }

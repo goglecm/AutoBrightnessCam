@@ -6,5 +6,6 @@ $(MODULE_NAME)_DEPENDENCIES = \
 	abc_power_controller \
 	abc_time_service \
 	abc_logging_service \
+	abc_filter \
 
 include $(PROJ_DIR)/source/targets/Common.mk

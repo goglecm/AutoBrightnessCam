@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    abc_brightnessService_setPeriod(5);
+    abc_brightnessService_setPeriod(1);
 
     abc_brightnessService_start();
 

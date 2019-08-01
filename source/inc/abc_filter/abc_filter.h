@@ -13,7 +13,7 @@ typedef struct abc_filter_AveragerData_t
 {
     const uint16_t SIZE; // Filter size
 
-    uint16_t *const pValues; // Filter state
+    double *const pValues; // Filter state
 
     uint16_t internal_pos; // Index in the filter state where the next sample is written
 
@@ -21,8 +21,8 @@ typedef struct abc_filter_AveragerData_t
 
 bool
 abc_filter_average(abc_filter_AveragerData_t *pFilter,
-                   uint16_t nextSample,
-                   uint16_t *pAverage);
+                   double nextSample,
+                   double *pAverage);
 
 #ifdef __cplusplus
 }

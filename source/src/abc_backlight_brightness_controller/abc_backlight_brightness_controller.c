@@ -21,7 +21,7 @@ const double
 g_abc_BacklightBrightnessController_MAX = 100;
 
 const double
-g_abc_BacklightBrightnessController_MIN = 50;
+g_abc_BacklightBrightnessController_MIN = 5;
 
 static bool
 s_isMaxSet = false;
@@ -38,10 +38,10 @@ s_PATH_CURRENT_BRIGHTNESS[MAX_BUFF_SIZE];
 
 
 static uint16_t
-s_numIncrements = 60;
+s_numIncrements = 20;
 
 static uint32_t
-s_incrementPeriod_ms = 20;
+s_incrementPeriod_ms = 60;
 
 // return true on success
 static bool
@@ -120,6 +120,7 @@ writeBrightness(const uint32_t value)
 static double
 limitBrightness(const double value)
 {
+    ABC_LOG("limiting %f", value);
     if (value > g_abc_BacklightBrightnessController_MAX)
     {
         ABC_LOG("returning %f", g_abc_BacklightBrightnessController_MAX);
@@ -184,7 +185,7 @@ abc_backlightBrightnessController_set(const double value)
 
     const int targetBrightness = (int)(s_maxBrightness * (limitBrightness(value) / 100));
 
-    ABC_LOG("target = %d", targetBrightness);
+    ABC_LOG("target = %d, previous = %u", targetBrightness, previousBrightness);
 
     if (targetBrightness == previousBrightness)
     {
@@ -202,10 +203,19 @@ abc_backlightBrightnessController_set(const double value)
         return;
     }
 
+    int prevIntermediateValue = previousBrightness;
+
     for (uint16_t incNum = 0; incNum < s_numIncrements; ++incNum)
     {
         const int intermediateValue =
             (int)previousBrightness + ((targetBrightness - (int)previousBrightness) * (incNum + 1)) / s_numIncrements;
+
+        if (prevIntermediateValue == intermediateValue)
+        {
+            continue;
+        }
+
+        prevIntermediateValue = intermediateValue;
 
         ABC_LOG("intermediateValue = %d (%u of %u)", intermediateValue, incNum + 1, s_numIncrements);
 

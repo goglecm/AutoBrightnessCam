@@ -5,9 +5,9 @@
 typedef abc_filter_AveragerData_t AveragerData_t;
 
 bool
-abc_filter_average(AveragerData_t *const pFilter,
-                   const uint16_t nextSample,
-                   uint16_t *const pAverage)
+abc_filter_average(AveragerData_t *const restrict pFilter,
+                   const double nextSample,
+                   double *const restrict pAverage)
 {
     if (!(pFilter && pAverage))
     {
@@ -33,7 +33,7 @@ abc_filter_average(AveragerData_t *const pFilter,
     // Write value into the filter at current position.
     pFilter->pValues[pFilter->internal_pos] = nextSample;
 
-    ABC_LOG("values[%u] = %u", pFilter->internal_pos, nextSample);
+    ABC_LOG("values[%u] = %f", pFilter->internal_pos, nextSample);
 
     // Advance to to the next position.
     ++pFilter->internal_pos;
@@ -43,16 +43,16 @@ abc_filter_average(AveragerData_t *const pFilter,
     }
 
     // Calculate the average.
-    uint32_t runningAverage = 0;
+    double runningAverage = 0;
     for (uint16_t i = 0; i < pFilter->SIZE; ++i)
     {
         runningAverage += pFilter->pValues[i];
     }
     runningAverage /= pFilter->SIZE;
 
-    ABC_LOG("final avg = %u", runningAverage);
+    ABC_LOG("final avg = %f", runningAverage);
 
-    *pAverage = (uint16_t)runningAverage;
+    *pAverage = runningAverage;
 
     return true;
 }

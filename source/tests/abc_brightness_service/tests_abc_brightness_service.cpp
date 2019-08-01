@@ -14,6 +14,8 @@
 
 #include "abc_logging_service/abc_logging_service.h"
 
+#include "abc_brightness_service/fake_abc_filter.h"
+
 const abc_brightnessService_PeriodSec_t s_TEST_DEFAULT_PERIOD_SEC = 30;
 
 const double s_TEST_DEFAULT_AMBIENT_BRIGHTNESS = 30;
@@ -48,6 +50,8 @@ public:
         fake_abc_ambientBrightnessController_set(s_TEST_DEFAULT_AMBIENT_BRIGHTNESS);
 
         fake_abc_backlightBrightnessController_resetNumSetCalls();
+
+        fake_abc_filter_resetNumAverageCalls();
     }
 
     void TearDown(void)
@@ -175,6 +179,30 @@ TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_
             fake_abc_backlightBrightnessController_resetNumSetCalls();
         }
     }
+}
+
+TEST_F(abc_brightness_service, the_new_backlight_brightness_is_the_ambient_brightness_passed_through_a_mean_filter)
+{
+    abc_brightnessService_start();
+
+    fake_abc_timeService_forward(s_TEST_DEFAULT_PERIOD_SEC);
+
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS,
+              abc_brightnessService_wakeUp());
+
+    ASSERT_EQ(1, fake_abc_filter_getNumAverageCalls());
+}
+
+TEST_F(abc_brightness_service, the_initial_state_of_the_mean_filter_is_the_first_recorded_ambient_brightness)
+{
+    abc_brightnessService_start();
+
+    fake_abc_timeService_forward(s_TEST_DEFAULT_PERIOD_SEC);
+
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS,
+              abc_brightnessService_wakeUp());
+
+    ASSERT_TRUE(fake_abc_filter_areAllFilterStatesEqualAndNonZero());
 }
 
 TEST_F(abc_brightness_service, backlight_brightness_is_not_changed_if_service_is_woken_when_not_started)

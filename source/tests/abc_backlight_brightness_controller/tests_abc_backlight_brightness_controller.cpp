@@ -78,22 +78,28 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_updated_grad
     abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
 
     // Mid point between min and max
-    const double currentBrightness = fake_abc_ioService_getCurrentBrightness();
+    const double currentBrightness = (fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX;
     const double targetBrightness = g_abc_BacklightBrightnessController_MAX -
                                     currentBrightness +
                                     g_abc_BacklightBrightnessController_MIN;
 
     abc_backlightBrightnessController_set(targetBrightness);
 
-    // 2 parameters control the seamless-ness of the brightness change:
-    // - the number of change increments (X)
-    // - the period of one full brightness update (Y)
-    // Calls to the brightness update are blocking, so the X*Y ideally would be
-    // less than the brightness service minimum period, otherwise, each wake
-    // call would result in a brightness change. Though this is not a
-    // restriction as the brightness changes would still be seamless.
-
     ASSERT_EQ(3, fake_abc_ioService_getNumWrites());
+}
+
+TEST_F(abc_backlight_brightness_controller, only_unique_intermediate_brightness_updates_are_applied)
+{
+    abc_backlightBrightnessController_setNumIncrements(3);
+    abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
+
+    const double targetBrightness = ((fake_abc_ioService_getCurrentBrightness() + 1) * 100.0) / s_DEFAULT_MAX;
+
+    abc_backlightBrightnessController_set(targetBrightness);
+
+    // The difference between the current and target is 1, but the number of
+    // increments is 3 of which only 1 is applied.
+    ASSERT_EQ(1, fake_abc_ioService_getNumWrites());
 }
 
 TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed_maximum_brightness)
