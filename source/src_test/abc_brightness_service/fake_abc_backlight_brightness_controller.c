@@ -3,16 +3,21 @@
 
 typedef fake_abc_BacklightBrightnessValue_t RawValue_t;
 
-static unsigned s_numSetCalls;
+static unsigned
+s_numSetCalls;
 
-const double g_abc_BacklightBrightnessController_MAX = 100;
+const double
+g_abc_BacklightBrightnessController_MAX = 100;
 
-const double g_abc_BacklightBrightnessController_MIN = 10;
+const double
+g_abc_BacklightBrightnessController_MIN = 10;
 
-static RawValue_t s_value = {
-    .value = 0,
-    .set = FAKE_ABC_BACKLIGHT_BRIGHTNESS_NOT_SET
-};
+static RawValue_t
+    s_value =
+    {
+        .value = 0,
+        .set = FAKE_ABC_BACKLIGHT_BRIGHTNESS_NOT_SET
+    };
 
 void
 abc_backlightBrightnessController_set(const double value)

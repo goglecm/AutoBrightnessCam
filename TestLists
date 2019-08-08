@@ -1,9 +1,6 @@
 TODO list:
 
 features:
-- add some sort of tap filtering when reading the ambient brightness
-  The read ambient brightness values should be passed through a filter of size
-  64 and the average value should be taken.
 - add timestamp for the logs
 - (later) add module name appended to the log name (i.e. register each module
   with the logger)
@@ -14,6 +11,7 @@ testing:
 improvements:
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
+- allow the user to point the paths for any unavailable optional features
 
 configuration:
 - add gtest as a devel library with this specific version
@@ -96,9 +94,3 @@ Dependencies:
 - [optional] laptop battery state
 - [optional] laptop lid state
 - [optional] power manager mode
-
-----
-
-Future ideas:
-
-- allow the user to point the paths for any unavailable optional features

@@ -69,48 +69,6 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     return isReturnOK;
 }
 
-static bool
-strToInt(int *const restrict pValue, const char *const restrict pStr)
-{
-    assert(pValue && pStr);
-
-    char *pEnd;
-    const long readNum = strtol(pStr, &pEnd, 10);
-    if (errno)
-    {
-        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
-
-        return false;
-    }
-
-    // Check if anything was read.
-    if (pEnd == pStr)
-    {
-        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
-
-        return false;
-    }
-
-    // A full conversion occurs when pEnd is null or '\n'.
-    if (*pEnd && *pEnd != '\n')
-    {
-        ABC_LOG_ERR("Failed to convert the string fully to long");
-
-        return false;
-    }
-
-    if (readNum > INT_MAX || readNum < INT_MIN)
-    {
-        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
-
-        return false;
-    }
-
-    *pValue = (int)readNum;
-
-    return true;
-}
-
 bool
 abc_ioService_read(int *const restrict pValue,
                    const char *const restrict pFileName)
@@ -169,12 +127,41 @@ abc_ioService_read(int *const restrict pValue,
         return false;
     }
 
-    if (!strToInt(pValue, readLine))
+    errno = 0;
+
+    char *pEnd;
+    const long readNum = strtol(readLine, &pEnd, 10);
+    if (errno)
     {
-        ABC_LOG_ERR("Failed to read convert string to int");
+        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
 
         return false;
     }
+
+    // Check if anything was read.
+    if (pEnd == readLine)
+    {
+        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
+
+        return false;
+    }
+
+    // A full conversion occurs when pEnd is null or '\n'.
+    if (*pEnd && *pEnd != '\n')
+    {
+        ABC_LOG_ERR("Failed to convert the string fully to long");
+
+        return false;
+    }
+
+    if (readNum > INT_MAX || readNum < INT_MIN)
+    {
+        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
+
+        return false;
+    }
+
+    *pValue = (int)readNum;
 
     return true;
 }

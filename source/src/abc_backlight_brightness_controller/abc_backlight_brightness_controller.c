@@ -26,10 +26,6 @@ g_abc_BacklightBrightnessController_MIN = 5;
 static bool
 s_isMaxSet = false;
 
-static uint32_t
-s_maxBrightness = -1;
-
-
 static char
 s_PATH_MAX_BRIGHTNESS[MAX_BUFF_SIZE];
 
@@ -43,73 +39,8 @@ s_numIncrements = 20;
 static uint32_t
 s_incrementPeriod_ms = 60;
 
-// return true on success
-static bool
-readMaxBrightness(uint32_t *const restrict pRetValue)
-{
-    if (NULL == pRetValue)
-    {
-        ABC_LOG_ERR("Invalid result pointer, not returning the max brightness");
-
-        assert(false);
-
-        return false;
-    }
-
-    int maxBrightness = 0;
-
-    if (!abc_ioService_read(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
-    {
-        ABC_LOG_ERR("Failed to read max brightness");
-
-        return false;
-    }
-
-    if (0 == maxBrightness)
-    {
-        ABC_LOG_ERR("max brightness is zero");
-
-        return false;
-    }
-
-    *pRetValue = maxBrightness;
-
-    ABC_LOG("max brightness = %u", *pRetValue);
-
-    return true;
-}
-
-// return true on success
-static bool
-readCurrentBrightness(uint16_t *const restrict pRetValue)
-{
-    if (NULL == pRetValue)
-    {
-        ABC_LOG_ERR("Invalid result pointer, not returning the brightness");
-
-        assert(false);
-
-        return false;
-    }
-
-    int currentBrightness = 0;
-
-    if (!abc_ioService_read(&currentBrightness, s_PATH_CURRENT_BRIGHTNESS))
-    {
-        ABC_LOG_ERR("Failed to read current brightness");
-
-        return false;
-    }
-
-    *pRetValue = (uint16_t)currentBrightness;
-
-    ABC_LOG("current brightness = %u", *pRetValue);
-
-    return true;
-}
-
 static void
-writeBrightness(const uint32_t value)
+writeBrightness(const int value)
 {
     if (!abc_ioService_write(value, s_PATH_CURRENT_BRIGHTNESS))
     {
@@ -117,79 +48,55 @@ writeBrightness(const uint32_t value)
     }
 }
 
-static double
-limitBrightness(const double value)
-{
-    ABC_LOG("limiting %f", value);
-    if (value > g_abc_BacklightBrightnessController_MAX)
-    {
-        ABC_LOG("returning %f", g_abc_BacklightBrightnessController_MAX);
-
-        return g_abc_BacklightBrightnessController_MAX;
-    }
-    else if (value < g_abc_BacklightBrightnessController_MIN)
-    {
-        ABC_LOG("returning %f", g_abc_BacklightBrightnessController_MIN);
-
-        return g_abc_BacklightBrightnessController_MIN;
-    }
-    else
-    {
-        ABC_LOG("returning %f", value);
-
-        return value;
-    }
-}
-
-static bool
-arePathsSet(void)
-{
-    return !(s_PATH_MAX_BRIGHTNESS[0] == 0 || s_PATH_CURRENT_BRIGHTNESS[0] == 0);
-}
-
-static void
-setDefaultPaths(void)
-{
-    const char defaultMaxPath[] = "/sys/class/backlight/intel_backlight/max_brightness";
-    const char defaultCurrentPath[] = "/sys/class/backlight/intel_backlight/brightness";
-    memcpy(s_PATH_MAX_BRIGHTNESS, defaultMaxPath,
-           strnlen(defaultMaxPath, sizeof(s_PATH_MAX_BRIGHTNESS) - 1) + 1);
-
-    memcpy(s_PATH_CURRENT_BRIGHTNESS, defaultCurrentPath,
-           strnlen(defaultCurrentPath, sizeof(s_PATH_CURRENT_BRIGHTNESS) - 1) + 1);
-}
-
 void
 abc_backlightBrightnessController_set(const double value)
 {
-    if (!arePathsSet())
+    // Make sure the paths are set (at least to their default values).
+    const bool arePathsSet = s_PATH_MAX_BRIGHTNESS[0] && s_PATH_CURRENT_BRIGHTNESS[0];
+    if (!arePathsSet)
     {
-        setDefaultPaths();
+        abc_backlightBrightnessController_setMaxPath("/sys/class/backlight/intel_backlight/max_brightness");
+        abc_backlightBrightnessController_setCurrentPath("/sys/class/backlight/intel_backlight/brightness");
     }
 
+    // Make sure there is an up-to-date max brightness.
+    static int s_maxBrightness = -1;
     if (!s_isMaxSet)
     {
-        if (!readMaxBrightness(&s_maxBrightness))
+        int maxBrightness;
+        if (!abc_ioService_read(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
         {
-            ABC_LOG_ERR("failed to read max brightness, returning");
+            ABC_LOG_ERR("Failed to read max brightness");
 
             return;
         }
 
+        s_maxBrightness = maxBrightness;
+
         s_isMaxSet = true;
     }
 
-    uint16_t previousBrightness = 0;
+    int previousBrightness = 0;
+    if (!abc_ioService_read(&previousBrightness, s_PATH_CURRENT_BRIGHTNESS))
+    {
+        ABC_LOG_ERR("Failed to read current brightness");
 
-    readCurrentBrightness(&previousBrightness);
+        return;
+    }
 
-    const int targetBrightness = (int)(s_maxBrightness * (limitBrightness(value) / 100));
+    // Make sure the value is within the min/max limits.
+    const double validValue =
+        value > g_abc_BacklightBrightnessController_MAX ? g_abc_BacklightBrightnessController_MAX :
+        value < g_abc_BacklightBrightnessController_MIN ? g_abc_BacklightBrightnessController_MIN :
+        value;
 
-    ABC_LOG("target = %d, previous = %u", targetBrightness, previousBrightness);
+    const int targetBrightness = (int)(s_maxBrightness * (validValue / 100));
+
+    ABC_LOG("target = %d, previous = %d", targetBrightness, previousBrightness);
 
     if (targetBrightness == previousBrightness)
     {
-        ABC_LOG("old brightness is the same as new");
+        ABC_LOG("old brightness is the same as new, returning");
 
         return;
     }
@@ -204,12 +111,12 @@ abc_backlightBrightnessController_set(const double value)
     }
 
     int prevIntermediateValue = previousBrightness;
-
     for (uint16_t incNum = 0; incNum < s_numIncrements; ++incNum)
     {
         const int intermediateValue =
-            (int)previousBrightness + ((targetBrightness - (int)previousBrightness) * (incNum + 1)) / s_numIncrements;
+            previousBrightness + ((targetBrightness - previousBrightness) * (incNum + 1)) / s_numIncrements;
 
+        // Next increment is the same as the previous one, skip it.
         if (prevIntermediateValue == intermediateValue)
         {
             continue;
@@ -217,11 +124,12 @@ abc_backlightBrightnessController_set(const double value)
 
         prevIntermediateValue = intermediateValue;
 
-        ABC_LOG("intermediateValue = %d (%u of %u)", intermediateValue, incNum + 1, s_numIncrements);
+        ABC_LOG("intermediateValue = %d (%u of %u)",
+                intermediateValue, incNum + 1, s_numIncrements);
 
         assert(intermediateValue > 0);
 
-        writeBrightness((uint16_t)intermediateValue);
+        writeBrightness(intermediateValue);
 
         abc_timeService_sleep_ms(s_incrementPeriod_ms);
     }
@@ -237,51 +145,49 @@ abc_backlightBrightnessController_resetMax(void)
 void
 abc_backlightBrightnessController_setMaxPath(const char *const restrict pPath)
 {
-    if (pPath)
-    {
-        memcpy(s_PATH_MAX_BRIGHTNESS, pPath,
-               strnlen(pPath, sizeof(s_PATH_MAX_BRIGHTNESS) - 1) + 1);
-    }
-    else
+    if (NULL == pPath)
     {
         ABC_LOG_ERR("bad max path, path remains unchanged");
 
         assert(false);
+
+        return;
     }
+
+    memcpy(s_PATH_MAX_BRIGHTNESS, pPath,
+           strnlen(pPath, sizeof(s_PATH_MAX_BRIGHTNESS) - 1) + 1);
 }
 
 // Function to set the path where the current brightness can be set/read.
 void
 abc_backlightBrightnessController_setCurrentPath(const char *const restrict pPath)
 {
-    if (pPath)
-    {
-        memcpy(s_PATH_CURRENT_BRIGHTNESS, pPath,
-               strnlen(pPath, sizeof(s_PATH_CURRENT_BRIGHTNESS) - 1) + 1);
-    }
-    else
+    if (NULL == pPath)
     {
         ABC_LOG_ERR("bad current path, path remains unchanged");
 
         assert(false);
+
+        return;
     }
+
+    memcpy(s_PATH_CURRENT_BRIGHTNESS, pPath,
+           strnlen(pPath, sizeof(s_PATH_CURRENT_BRIGHTNESS) - 1) + 1);
 }
 
 bool
 abc_backlightBrightnessController_setNumIncrements(const uint16_t num)
 {
-    if (num)
+    if (num == 0)
     {
-        ABC_LOG("setting numIncrements to %u", num);
-
-        s_numIncrements = num;
-    }
-    else
-    {
-        ABC_LOG_WRN("cannot set numIncrements to 0");
+        ABC_LOG_ERR("cannot set numIncrements to 0");
 
         return false;
     }
+
+    ABC_LOG("setting numIncrements to %u", num);
+
+    s_numIncrements = num;
 
     return true;
 }

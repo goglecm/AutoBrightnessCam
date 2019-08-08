@@ -1,6 +1,8 @@
 #include "abc_terminal_controller/abc_terminal_controller.h"
 #include "abc_ambient_brightness_controller/fake_abc_terminal_controller.h"
 
+#include "abc_logging_service/abc_logging_service.h"
+
 #include <string.h>
 #include <assert.h>
 
@@ -25,13 +27,13 @@ fake_abc_terminalController_resetNumShots(void)
 uint16_t
 fake_abc_terminalController_getNumCalcs(void)
 {
-    return s_numShots;
+    return s_numCalcs;
 }
 
 void
 fake_abc_terminalController_resetNumCalcs(void)
 {
-    s_numShots = 0;
+    s_numCalcs = 0;
 }
 
 bool
@@ -41,9 +43,11 @@ abc_terminalController_send(const char *pCmd)
 
     const char cameraCmd[] = "fswebcam";
 
-    const size_t cmdSize = strnlen(cameraCmd, strlen(cameraCmd));
+    const size_t cmdLen = strnlen(pCmd, strlen(cameraCmd));
 
-    if (0 == memcmp(cameraCmd, pCmd, cmdSize))
+    assert(cmdLen >= strlen(cameraCmd));
+
+    if (0 == memcmp(cameraCmd, pCmd, strlen(cameraCmd)))
     {
         ++s_numShots;
     }
@@ -59,10 +63,14 @@ abc_terminalController_sendReturnDbl(double *const restrict pValue,
 
     const char calcCmd[] = "convert";
 
-    const size_t cmdSize = strnlen(calcCmd, strlen(calcCmd));
+    const size_t cmdLen = strnlen(pCmd, strlen(calcCmd));
 
-    if (0 == memcmp(calcCmd, pCmd, cmdSize))
+    assert(cmdLen >= strlen(calcCmd));
+
+    if (0 == memcmp(calcCmd, pCmd, strlen(calcCmd)))
     {
+        ABC_LOG("match `%s` = `%s`", calcCmd, pCmd);
+
         ++s_numCalcs;
     }
 

@@ -11,9 +11,6 @@
 
 #define BUFF_SIZE 32U
 
-static const bool
-s_DEFAULT_CHARGING_STATE = false;
-
 bool
 abc_powerController_isCharging(void)
 {
@@ -32,15 +29,14 @@ abc_powerController_isCharging(void)
 
     const unsigned bufferLen = sizeof(batteryStateStr);
 
-    const bool isCmdSuccess =
-        abc_terminalController_sendReturnStr(bufferLen, batteryStateStr, cmd);
-
-    if (!isCmdSuccess)
+    if (!abc_terminalController_sendReturnStr(bufferLen, batteryStateStr, cmd))
     {
-        ABC_LOG_ERR("Failed to get the charging state, returning default (%s)",
-                    s_DEFAULT_CHARGING_STATE ? chargingStr : dischargingStr);
+        const bool DEFAULT_CHARGING_STATE = false;
 
-        return s_DEFAULT_CHARGING_STATE;
+        ABC_LOG_ERR("Failed to get the charging state, returning default (%s)",
+                    DEFAULT_CHARGING_STATE ? chargingStr : dischargingStr);
+
+        return DEFAULT_CHARGING_STATE;
     }
 
     // Truncate the string if overflown.

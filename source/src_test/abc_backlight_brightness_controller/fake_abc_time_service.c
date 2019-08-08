@@ -6,5 +6,4 @@ void
 abc_timeService_sleep_ms(const uint32_t ms)
 {
     assert(ms > 0);
-    (void) ms;
 }
