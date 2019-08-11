@@ -68,3 +68,13 @@ What:
 When:
 - the configuration file does not exist
 - the configuration file is corrupt or has invalid configuration
+
+# Dependencies
+
+- make
+- g++
+- gcc
+- gtest
+- fswebcam
+- convert
+- upower

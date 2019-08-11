@@ -31,7 +31,6 @@ AR=ar
 
 SOURCE_PATH = $(PROJ_DIR)/source
 BUILD_PATH = $(PROJ_DIR)/build
-LIBS_PATH = $(PROJ_DIR)/libs
 RUN_PATH = $(PROJ_DIR)/run
 TARGETS_PATH = $(SOURCE_PATH)/targets
 
@@ -122,22 +121,9 @@ CXX_FLAGS += -DABC_TESTRUN_PATH=\"$(RUN_PATH)\"
 # Libraries #
 #############
 
-COMMON_INC_PATH += \
-	$(LIBS_PATH)/google-test/googletest-release-1.7.0/include \
-
-DYNAMIC_LIBS_PATH = \
-	$(LIBS_PATH)/google-test/googletest-release-1.7.0/ \
-
 DYNAMIC_LIBS = \
 	-lgtest \
 	-lgtest_main \
-
-###################
-# Add -L prefixes #
-###################
-
-DYNAMIC_LIBS_PATH_PREFIXED = \
-	$(foreach var, $(DYNAMIC_LIBS_PATH), -L$(var))
 
 #######################
 # Header search paths #
