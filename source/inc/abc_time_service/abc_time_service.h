@@ -14,7 +14,7 @@ time_t
 abc_timeService_get(void);
 
 void
-abc_timeService_sleep_ms(uint32_t ms);
+abc_timeService_sleep_ms(unsigned ms);
 
 #ifdef __cplusplus
 }

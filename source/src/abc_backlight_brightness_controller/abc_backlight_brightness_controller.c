@@ -33,13 +33,13 @@ static char
 s_PATH_CURRENT_BRIGHTNESS[MAX_BUFF_SIZE];
 
 
-static uint16_t
+static int
 s_numIncrements = 20;
 
-static uint32_t
+static unsigned
 s_incrementPeriod_ms = 60;
 
-static void
+static inline void
 writeBrightness(const int value)
 {
     if (!abc_ioService_write(value, s_PATH_CURRENT_BRIGHTNESS))
@@ -67,6 +67,13 @@ abc_backlightBrightnessController_set(const double value)
         if (!abc_ioService_read(&maxBrightness, s_PATH_MAX_BRIGHTNESS))
         {
             ABC_LOG_ERR("Failed to read max brightness");
+
+            return;
+        }
+
+        if (maxBrightness == 0)
+        {
+            ABC_LOG_ERR("bad max brightness");
 
             return;
         }
@@ -111,7 +118,7 @@ abc_backlightBrightnessController_set(const double value)
     }
 
     int prevIntermediateValue = previousBrightness;
-    for (uint16_t incNum = 0; incNum < s_numIncrements; ++incNum)
+    for (int incNum = 0; incNum < s_numIncrements; ++incNum)
     {
         const int intermediateValue =
             previousBrightness + ((targetBrightness - previousBrightness) * (incNum + 1)) / s_numIncrements;
@@ -124,10 +131,15 @@ abc_backlightBrightnessController_set(const double value)
 
         prevIntermediateValue = intermediateValue;
 
-        ABC_LOG("intermediateValue = %d (%u of %u)",
+        ABC_LOG("intermediateValue = %d (%d of %d)",
                 intermediateValue, incNum + 1, s_numIncrements);
 
-        assert(intermediateValue > 0);
+        if (intermediateValue == 0)
+        {
+            ABC_LOG_ERR("bad intermediate value");
+
+            assert(false);
+        }
 
         writeBrightness(intermediateValue);
 
@@ -176,24 +188,31 @@ abc_backlightBrightnessController_setCurrentPath(const char *const restrict pPat
 }
 
 bool
-abc_backlightBrightnessController_setNumIncrements(const uint16_t num)
+abc_backlightBrightnessController_setNumIncrements(const unsigned num)
 {
     if (num == 0)
     {
-        ABC_LOG_ERR("cannot set numIncrements to 0");
+        ABC_LOG_ERR("cannot set numIncrements to 0 or less");
 
         return false;
     }
 
-    ABC_LOG("setting numIncrements to %u", num);
+    if (num > INT_MAX)
+    {
+        ABC_LOG_ERR("numIncrements is too large");
 
-    s_numIncrements = num;
+        return false;
+    }
+
+    ABC_LOG("setting numIncrements to %d", num);
+
+    s_numIncrements = (int)num;
 
     return true;
 }
 
 void
-abc_backlightBrightnessController_setIncrementsPeriod_ms(const uint32_t period_ms)
+abc_backlightBrightnessController_setIncrementsPeriod_ms(const unsigned period_ms)
 {
     ABC_LOG("setting period to %u", period_ms);
 

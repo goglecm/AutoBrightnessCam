@@ -37,13 +37,13 @@ public:
 TEST_F(abc_filter, averages_64_values)
 {
     double output = 0;
-    for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE; ++i)
+    for (unsigned i = 0; i < DEFAULT_FILTER_SIZE; ++i)
     {
         ASSERT_TRUE(abc_filter_average(&filter, i, &output));
     }
 
     double avg = 0;
-    for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE; ++i)
+    for (unsigned i = 0; i < DEFAULT_FILTER_SIZE; ++i)
     {
         avg += i;
     }
@@ -56,7 +56,7 @@ TEST_F(abc_filter, averages_64_values)
 TEST_F(abc_filter, internal_position_wraps_around_the_filter_size)
 {
     double output = 0;
-    for (uint16_t i = 0; i < DEFAULT_FILTER_SIZE * 2; ++i)
+    for (unsigned i = 0; i < DEFAULT_FILTER_SIZE * 2; ++i)
     {
         ASSERT_TRUE(abc_filter_average(&filter, i, &output));
 
@@ -79,7 +79,7 @@ TEST_F(abc_filter, filter_fails_when_the_internal_position_is_beyond_the_filter_
 
 TEST_F(abc_filter, filter_fails_when_the_filter_size_is_0)
 {
-    const uint16_t filterSize = 0;
+    const unsigned filterSize = 0;
 
     abc_filter_AveragerData_t f =
         {

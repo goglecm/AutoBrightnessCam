@@ -16,16 +16,18 @@ abc_filter_average(AveragerData_t *const restrict pFilter,
         return false;
     }
 
-    if (pFilter->SIZE == 0)
+    const unsigned fSize = pFilter->SIZE;
+
+    if (fSize == 0)
     {
         ABC_LOG_ERR("filter size is 0");
 
         return false;
     }
 
-    if (pFilter->internal_pos >= pFilter->SIZE)
+    if (pFilter->internal_pos >= fSize)
     {
-        ABC_LOG_ERR("filter position (%u) beyond filter size (%u)", pFilter->internal_pos, pFilter->SIZE);
+        ABC_LOG_ERR("filter position (%u) beyond filter size (%u)", pFilter->internal_pos, fSize);
 
         return false;
     }
@@ -37,18 +39,21 @@ abc_filter_average(AveragerData_t *const restrict pFilter,
 
     // Advance to to the next position.
     ++pFilter->internal_pos;
-    if (pFilter->internal_pos >= pFilter->SIZE)
+    if (pFilter->internal_pos >= fSize)
     {
         pFilter->internal_pos = 0;
     }
 
     // Calculate the average.
     double runningAverage = 0;
-    for (uint16_t i = 0; i < pFilter->SIZE; ++i)
     {
-        runningAverage += pFilter->pValues[i];
+        const double *const restrict pValues = pFilter->pValues;
+        for (unsigned i = 0; i < fSize; ++i)
+        {
+            runningAverage += pValues[i];
+        }
     }
-    runningAverage /= pFilter->SIZE;
+    runningAverage /= fSize;
 
     ABC_LOG("final avg = %f", runningAverage);
 

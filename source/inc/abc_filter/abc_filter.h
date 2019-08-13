@@ -7,15 +7,13 @@ extern "C" {
 
 #include <stdbool.h>
 
-#include <stdint.h>
-
 typedef struct abc_filter_AveragerData_t
 {
-    const uint16_t SIZE; // Filter size
+    const unsigned SIZE; // Filter size
 
     double *const pValues; // Filter state
 
-    uint16_t internal_pos; // Index in the filter state where the next sample is written
+    unsigned internal_pos; // Index in the filter state where the next sample is written
 
 } abc_filter_AveragerData_t;
 

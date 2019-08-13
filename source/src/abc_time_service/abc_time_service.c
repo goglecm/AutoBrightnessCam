@@ -12,7 +12,7 @@ abc_timeService_get(void)
 }
 
 void
-abc_timeService_sleep_ms(const uint32_t ms)
+abc_timeService_sleep_ms(const unsigned ms)
 {
     usleep(ms * 1000U);
 }

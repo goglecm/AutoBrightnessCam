@@ -22,8 +22,7 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
 
     errno = 0;
 
-    FILE *pFile = fopen(pFileName, "w");
-
+    FILE *const restrict pFile = fopen(pFileName, "w");
     if (NULL == pFile)
     {
         ABC_LOG_ERR("Failed to open the file `%s` due to: %s",
@@ -35,7 +34,6 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     bool isReturnOK = true;
 
     const int numWrittenBytes = fprintf(pFile, "%d", value);
-
     if (numWrittenBytes < 0)
     {
         ABC_LOG_ERR("Failed to write to file `%s` due to: %s",
@@ -69,6 +67,50 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     return isReturnOK;
 }
 
+static inline bool
+strToInt(int *const restrict pResult, const char *const restrict pStr)
+{
+    assert(pResult && pStr);
+
+    errno = 0;
+
+    char *pEnd;
+    const long readNum = strtol(pStr, &pEnd, 10);
+    if (errno)
+    {
+        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
+
+        return false;
+    }
+
+    // Check if anything was read.
+    if (pEnd == pStr)
+    {
+        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
+
+        return false;
+    }
+
+    // A full conversion occurs when pEnd is null or '\n'.
+    if (*pEnd && *pEnd != '\n')
+    {
+        ABC_LOG_ERR("Failed to convert the string fully to long");
+
+        return false;
+    }
+
+    if (readNum > INT_MAX || readNum < INT_MIN)
+    {
+        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
+
+        return false;
+    }
+
+    *pResult = (int)readNum;
+
+    return true;
+}
+
 bool
 abc_ioService_read(int *const restrict pValue,
                    const char *const restrict pFileName)
@@ -76,12 +118,12 @@ abc_ioService_read(int *const restrict pValue,
     if (NULL == pFileName || NULL == pValue)
     {
         ABC_LOG_ERR("Bad filename = %p or bad ret value = %p",
-                    pFileName, (void *)pValue);
+                    (const void *)pFileName, (void *)pValue);
 
         return false;
     }
 
-    FILE *const pFile = fopen(pFileName, "r");
+    FILE *const restrict pFile = fopen(pFileName, "r");
 
     if (NULL == pFile)
     {
@@ -92,7 +134,7 @@ abc_ioService_read(int *const restrict pValue,
 
     bool isReturnOK = true;
 
-    char readLine[10] = { 0 };
+    char readLine[10];
 
     if (NULL == fgets(readLine, sizeof(readLine), pFile))
     {
@@ -127,41 +169,11 @@ abc_ioService_read(int *const restrict pValue,
         return false;
     }
 
-    errno = 0;
-
-    char *pEnd;
-    const long readNum = strtol(readLine, &pEnd, 10);
-    if (errno)
+    readLine[9] = '\0';
+    if (!strToInt(pValue, readLine))
     {
-        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
-
         return false;
     }
-
-    // Check if anything was read.
-    if (pEnd == readLine)
-    {
-        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
-
-        return false;
-    }
-
-    // A full conversion occurs when pEnd is null or '\n'.
-    if (*pEnd && *pEnd != '\n')
-    {
-        ABC_LOG_ERR("Failed to convert the string fully to long");
-
-        return false;
-    }
-
-    if (readNum > INT_MAX || readNum < INT_MIN)
-    {
-        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
-
-        return false;
-    }
-
-    *pValue = (int)readNum;
 
     return true;
 }

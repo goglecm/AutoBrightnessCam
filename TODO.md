@@ -3,7 +3,6 @@
 ### High priority
 
 - Fix readme
-- add gtest as a devel library with this specific version
 
 ### Medium priority
 

@@ -32,10 +32,10 @@ void
 abc_backlightBrightnessController_resetMax(void);
 
 bool
-abc_backlightBrightnessController_setNumIncrements(uint16_t num);
+abc_backlightBrightnessController_setNumIncrements(unsigned num);
 
 void
-abc_backlightBrightnessController_setIncrementsPeriod_ms(uint32_t period_ms);
+abc_backlightBrightnessController_setIncrementsPeriod_ms(unsigned period_ms);
 
 #ifdef __cplusplus
 }

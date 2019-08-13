@@ -98,6 +98,11 @@ build_main_without_logs :
 	ABC_LOGGING_ON=0 $(MAKE) -f $(PROJ_DIR)/source/targets/main/Makefile \
 		$(PROJ_DIR)/build/src/main/main.exe
 
+## Target to build the main application with logging and debugging off
+build_main_without_logs_or_debug :
+	ABC_LOGGING_ON=0 ABC_NO_DEBUG=1 $(MAKE) -f $(PROJ_DIR)/source/targets/main/Makefile \
+		$(PROJ_DIR)/build/src/main/main.exe
+
 ## Target to build the main application (with and without logging) with the
 ## former available at the end of the recipe
 build_all_mains :

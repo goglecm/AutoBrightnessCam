@@ -30,7 +30,7 @@ fake_abc_filter_areAllFilterStatesEqualAndNonZero(void)
     }
 
     // Check if the states are the same.
-    for (uint16_t i = 0; i < pTestFilter->SIZE - 1; ++i)
+    for (unsigned i = 0; i < pTestFilter->SIZE - 1; ++i)
     {
         const double diff = fabs(pTestFilter->pValues[i] - pTestFilter->pValues[i + 1]);
 

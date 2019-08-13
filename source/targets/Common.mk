@@ -77,7 +77,6 @@ C_MISC_FLAGS = \
 
 C_OPTIMISATION_FLAGS = \
 	-O2 \
-	-g0 \
 	-fstrict-aliasing \
 	-fstrict-overflow \
 	-fmodulo-sched \
@@ -86,6 +85,12 @@ C_OPTIMISATION_FLAGS = \
 	-freorder-blocks-and-partition \
 	-ffast-math \
 	-fno-signed-zeros \
+
+ifdef ABC_NO_DEBUG
+C_OPTIMISATION_FLAGS += -g0
+else
+C_OPTIMISATION_FLAGS += -g3
+endif
 
 C_FLAGS = \
 	$(C_WARNING_FLAGS) \
@@ -112,6 +117,10 @@ CXX_FLAGS += -DABC_LOGGING_ON=$(ABC_LOGGING_ON)
 C_FLAGS += -DABC_LOGGING_PATH=\"$(ABC_LOGGING_PATH)\"
 
 C_FLAGS += -DABC_TESTRUN_PATH=\"$(RUN_PATH)\"
+
+ifdef ABC_NO_DEBUG
+C_FLAGS += -DNDEBUG
+endif
 
 CXX_FLAGS += -DABC_LOGGING_PATH=\"$(ABC_LOGGING_PATH)\"
 

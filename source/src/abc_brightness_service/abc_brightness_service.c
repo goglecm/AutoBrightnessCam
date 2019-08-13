@@ -105,8 +105,8 @@ abc_brightnessService_wakeUp(void)
 
     // Wait until one period has passed since the last timestamp.
     const time_t now = abc_timeService_get();
-    const bool isAtNextPeriod = (s_lastTimestamp + s_period) > now;
-    if (isAtNextPeriod)
+    const bool isAtNextPeriod = (s_lastTimestamp + s_period) <= now;
+    if (!isAtNextPeriod)
     {
         return ABC_BRIGHTNESSSERVICE_SUCCESS;
     }

@@ -41,7 +41,7 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
 
     // Compare the strings.
     bool isUpowerCalled = true;
-    for (unsigned i = 0; i < sizeof(upowerStr) - 1; ++i)
+    for (size_t i = 0; i < sizeof(upowerStr) - 1; ++i)
     {
         if (upowerStr[i] != pCmd[i])
         {
