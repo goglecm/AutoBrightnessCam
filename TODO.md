@@ -6,7 +6,6 @@
 
 ### Medium priority
 
-- add some infrastructure to allow common code between tests to be shared
 - start looking at rpm generation (deb as well)
 - try to develop code from a new repo checkout and see how it goes
 - try different compilers

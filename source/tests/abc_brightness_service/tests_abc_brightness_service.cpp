@@ -16,6 +16,8 @@
 
 #include "abc_brightness_service/fake_abc_filter.h"
 
+#include "testlib_io.h"
+
 const abc_brightnessService_PeriodSec_t s_TEST_DEFAULT_PERIOD_SEC = 30;
 
 const double s_TEST_DEFAULT_AMBIENT_BRIGHTNESS = 30;
@@ -35,7 +37,7 @@ public:
     {
         // code here will execute just before the test ensues
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
@@ -71,7 +73,7 @@ public:
     {
         // code here will execute just before the test ensues
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
     }

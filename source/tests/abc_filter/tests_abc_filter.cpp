@@ -4,7 +4,9 @@
 
 #include "abc_filter/abc_filter.h"
 
-#include <cstring>
+#include "testlib_io.h"
+
+#include <string>
 
 #define DEFAULT_FILTER_SIZE 64U
 
@@ -26,7 +28,7 @@ public:
         memset(filter.pValues, 0, DEFAULT_FILTER_SIZE * sizeof(s_vec[0]));
         filter.internal_pos = 0;
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
 

@@ -4,15 +4,12 @@
 
 #include "abc_logging_service/abc_logging_service.h"
 
+#include "testlib_io.h"
+#include "testlib_parsing.h"
+
 #include <sstream>
 #include <string>
 #include <fstream>
-
-#ifndef ABC_TESTRUN_PATH
-#define ABC_TESTRUN_PATH "."
-#endif
-
-#define DEFAULT_FILENAME (( std::string(ABC_TESTRUN_PATH) + "/" + std::string(  ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()  ) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".test"  ).c_str())
 
 class abc_io_service: public ::testing::Test
 {
@@ -21,30 +18,16 @@ public:
     {
         // code here will execute just before the test ensues
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
     }
 };
 
-template <typename T> static std::string
-to_str(const T a)
-{
-    std::stringstream ss;
-    ss << a;
-    return ss.str();
-}
-
-inline bool exists(const std::string &name)
-{
-    struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
-}
-
 template <typename T> static void
 setValue(const std::string &fileName, const T value)
 {
-    if (exists(fileName))
+    if (testlib_io_exists(fileName))
     {
         ASSERT_EQ(0, std::remove(fileName.c_str()));
     }
@@ -83,7 +66,7 @@ TEST_F(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to
     std::string line;
     std::getline(infile, line);
 
-    ASSERT_EQ(line, to_str(intWritten));
+    ASSERT_EQ(line, testlib_parsing_toStr(intWritten));
 }
 
 TEST_F(abc_io_service, file_is_written_an_integer)
@@ -99,7 +82,7 @@ TEST_F(abc_io_service, file_is_written_an_integer)
     std::string line;
     std::getline(infile, line);
 
-    ASSERT_EQ(line, to_str(intWritten));
+    ASSERT_EQ(line, testlib_parsing_toStr(intWritten));
 }
 
 TEST_F(abc_io_service, write_to_invalid_file_fails)
@@ -120,7 +103,7 @@ TEST_F(abc_io_service, read_fails_when_file_does_not_exist_or_has_a_bad_name)
 {
     const std::string filename(DEFAULT_FILENAME);
 
-    if (exists(filename))
+    if (testlib_io_exists(filename))
     {
         ASSERT_EQ(0, std::remove(filename.c_str()));
     }

@@ -4,30 +4,11 @@
 
 #include "abc_logging_service/abc_logging_service.h"
 
-#include <sstream>
+#include "testlib_io.h"
+#include "testlib_parsing.h"
+
 #include <string>
 #include <fstream>
-
-#ifndef ABC_TESTRUN_PATH
-#define ABC_TESTRUN_PATH "."
-#endif
-
-#define DEFAULT_FILENAME (( std::string(ABC_TESTRUN_PATH) + "/" + std::string(  ::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()  ) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".test"  ).c_str())
-
-template <typename T> static std::string
-to_str(const T a)
-{
-    std::stringstream ss;
-    ss << a;
-    return ss.str();
-}
-
-inline bool
-exists(const std::string &name)
-{
-    struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
-}
 
 class abc_terminal_controller_commands: public ::testing::Test
 {
@@ -36,7 +17,7 @@ public:
     {
         // code here will execute just before the test ensues
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
     }
@@ -46,7 +27,7 @@ TEST_F(abc_terminal_controller_commands, command_without_return_is_executed)
 {
     const std::string filename(DEFAULT_FILENAME);
 
-    if (exists(filename))
+    if (testlib_io_exists(filename))
     {
         ASSERT_EQ(0, std::remove(filename.c_str()));
     }
@@ -72,7 +53,7 @@ TEST_F(abc_terminal_controller_commands, command_returning_double_is_executed)
 {
     const double expectedResult = 522.9;
 
-    const std::string cmd("echo " + to_str(expectedResult));
+    const std::string cmd("echo " + testlib_parsing_toStr(expectedResult));
 
     double result = 0;
 

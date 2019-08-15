@@ -6,6 +6,8 @@
 
 #include "abc_logging_service/abc_logging_service.h"
 
+#include "testlib_io.h"
+
 class abc_power_controller: public ::testing::Test
 {
 public:
@@ -13,7 +15,7 @@ public:
     {
         // code here will execute just before the test ensues
 
-        ASSERT_TRUE(abc_loggingService_setLogName((std::string(::testing::UnitTest::GetInstance()->current_test_info()->test_case_name()) + "_" + ::testing::UnitTest::GetInstance()->current_test_info()->name() + ".log").c_str()));
+        ASSERT_TRUE(abc_loggingService_setLogName(SPECIFIC_LOG_NAME));
 
         ABC_LOG("\n ## Starting test %s ## \n", ::testing::UnitTest::GetInstance()->current_test_info()->name());
     }

@@ -134,15 +134,16 @@ DYNAMIC_LIBS = \
 	-lgtest \
 	-lgtest_main \
 
+COMMON_TEST_LIB_SOURCES = $(SOURCE_PATH)/tests/test_lib/src/*.cpp
+
 #######################
 # Header search paths #
 #######################
 
 MODULE_MASTER_INC_PATH = \
-	$(SOURCE_PATH) \
-	$(COMMON_INC_PATH) \
 	$(SOURCE_PATH)/inc \
 	$(SOURCE_PATH)/inc_test \
+	$(SOURCE_PATH)/tests/test_lib/inc \
 
 MODULE_MASTER_INC_PATH_PREFIXED = \
 	$(foreach var, $(MODULE_MASTER_INC_PATH), -I$(var))
