@@ -43,6 +43,17 @@ TEST_F(abc_power_controller, battery_is_charging_when_upower_reports_charging)
     ASSERT_TRUE(isCharging);
 }
 
+TEST_F(abc_power_controller, battery_is_charging_when_upower_reports_fully_charged)
+{
+    fake_abc_terminalController_setUpowerState(FAKE_ABC_TERMINAL_CONTROLLER_STATE_FULLY_CHARGED);
+
+    const bool isCharging = abc_powerController_isCharging();
+
+    ASSERT_TRUE(fake_abc_terminalController_calledUpower());
+
+    ASSERT_TRUE(isCharging);
+}
+
 TEST_F(abc_power_controller, battery_is_discharging_when_the_charging_state_cannot_be_determined)
 {
     fake_abc_terminalController_setUpowerState(FAKE_ABC_TERMINAL_CONTROLLER_STATE_UNKNOWN);

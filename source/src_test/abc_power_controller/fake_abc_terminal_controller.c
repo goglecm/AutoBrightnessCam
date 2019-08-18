@@ -65,6 +65,10 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
             strcpy(pResult, "discharging\n");
             break;
 
+        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_FULLY_CHARGED:
+            strcpy(pResult, "fully-charged\n");
+            break;
+
         default:
             strcpy(pResult, "unknown");
             result = false;

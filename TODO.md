@@ -1,5 +1,9 @@
 # Improvements
 
+### Bugs
+
+- none
+
 ### High priority
 
 - Fix readme

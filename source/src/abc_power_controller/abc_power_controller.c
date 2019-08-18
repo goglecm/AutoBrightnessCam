@@ -14,13 +14,14 @@ abc_powerController_isCharging(void)
     // todo: read /sys/class/power_supply/BAT1/status
 
     static const char cmd[] = "upower -i `upower -e | "
-                              "grep 'BAT'` | "
-                              "grep state | "
+                              "fgrep 'BAT'` | "
+                              "fgrep state | "
                               "sed 's^state:^^g' | "
                               "sed 's^ ^^g'";
 
     static const char chargingStr[] = "charging";
     static const char dischargingStr[] = "discharging";
+    static const char fullyChargedStr[] = "fully-charged";
 
     char batteryStateStr[BUFF_SIZE];
 
@@ -40,7 +41,8 @@ abc_powerController_isCharging(void)
     // Remove the newline from the end of the string.
     batteryStateStr[strlen(batteryStateStr) - 1] = '\0';
 
-    const bool isCharging = (0 == strcmp(chargingStr, batteryStateStr));
+    const bool isCharging = (0 == strcmp(chargingStr, batteryStateStr)) ||
+                            (0 == strcmp(fullyChargedStr, batteryStateStr));
 
     ABC_LOG("isCharging = %u, battery state = `%s`", isCharging, batteryStateStr);
 
