@@ -1,23 +1,18 @@
 #include "abc_brightness_service/abc_brightness_service.h"
 
+#include <unistd.h>
+
 int main(void)
 {
-    unsigned wakeups = 50;
-
-    abc_brightnessService_setPeriod(1);
+    abc_brightnessService_setPeriod(4);
 
     abc_brightnessService_start();
 
     do
     {
-        --wakeups;
-
-        if (wakeups == 0)
-        {
-            break;
-        }
+        sleep(4);
     }
     while (abc_brightnessService_wakeUp() == ABC_BRIGHTNESSSERVICE_SUCCESS);
 
-    return 0;
+    return -1;
 }
