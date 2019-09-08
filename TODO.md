@@ -6,7 +6,14 @@
 
 ### High priority
 
-- Fix readme
+- Fix/create readme
+- Fix the 99 character limit
+- Learn about NEWS and ChangeLog and how to write a good readme
+- Write a development guide and make a note that gtest 1.7 or above is required
+- Add the additional warning flags
+- Fix the tests log outputs
+- Add optimisation and debugging flags
+- Add option for Debug or Release builds
 
 ### Medium priority
 
