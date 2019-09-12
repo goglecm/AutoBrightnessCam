@@ -1,17 +1,30 @@
 #include "abc_logging_service/abc_logging_service.h"
 
+#if ABC_LOGGING_ON == 1
+
+
 #include <stddef.h>
 #include <string.h>
 
-bool g_isFirstLog = true;
 
-FILE *g_pLogFile = NULL;
+bool
+g_isFirstLog = true;
 
+FILE
+*g_pLogFile = NULL;
+
+
+// By default, store logs in the pwd.
 #ifndef ABC_LOGGING_PATH
+
 #define ABC_LOGGING_PATH "."
+
 #endif
 
-char g_logFilename[512] = ABC_LOGGING_PATH "/log.log";
+
+char
+g_logFilename[512] = ABC_LOGGING_PATH "/log.log";
+
 
 bool
 abc_loggingService_setLogName(const char *const restrict pLogName)
@@ -44,3 +57,5 @@ abc_loggingService_setLogName(const char *const restrict pLogName)
 
     return true;
 }
+
+#endif // #if ABC_LOGGING_ON == 1

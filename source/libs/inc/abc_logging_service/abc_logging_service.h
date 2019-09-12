@@ -8,17 +8,21 @@ extern "C" {
 #include <stdbool.h>
 #include <stdio.h>
 
+// File logging is disabled by default.
 #ifndef ABC_LOGGING_ON
 
-#define ABC_LOGGING_ON 1
+#define ABC_LOGGING_ON 0
 
 #endif // #ifndef ABC_LOGGING_ON
 
+// stdout logging is disabled by default.
 #ifndef ABC_STDOUT_LOGGING_ON
 
 #define ABC_STDOUT_LOGGING_ON 0
 
 #endif // #ifndef ABC_LOGGING_ON
+
+#if ABC_LOGGING_ON == 1
 
 extern bool g_isFirstLog;
 extern FILE *g_pLogFile;
@@ -43,7 +47,7 @@ abc_loggingService_setLogName(const char *pLogName);
     fflush(stdout); \
 } while (0)
 
-#define ABC_LOG_STDOUT(...) if (ABC_STDOUT_LOGGING_ON) do { \
+#define ABC_LOG_STDOUT(...) do { \
     printf("\n%s: ", __func__); \
     printf(__VA_ARGS__); \
 } while (0)
@@ -58,7 +62,7 @@ abc_loggingService_setLogName(const char *pLogName);
     } \
 } while (0)
 
-#define ABC_LOG(...) if (ABC_LOGGING_ON) do { \
+#define ABC_LOG(...) do { \
     if (g_isFirstLog) { \
         g_pLogFile = fopen(g_logFilename, "w"); \
         if (g_pLogFile) \
@@ -76,6 +80,16 @@ abc_loggingService_setLogName(const char *pLogName);
         fclose(g_pLogFile); \
     } \
 } while (0)
+
+#else
+
+#define ABC_LOG_ERR(...) ;
+#define ABC_LOG_STDOUT_ERR(...) ;
+#define ABC_LOG_STDOUT(...) ;
+#define ABC_LOG_WRN(...) ;
+#define ABC_LOG(...) ;
+
+#endif // #if ABC_LOGGING_ON == 1
 
 #ifdef __cplusplus
 }

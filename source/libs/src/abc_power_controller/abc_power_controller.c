@@ -20,15 +20,13 @@ abc_powerController_isCharging(void)
                               "sed 's^ ^^g'";
 
     static const char chargingStr[] = "charging";
-    static const char dischargingStr[] = "discharging";
     static const char fullyChargedStr[] = "fully-charged";
 
     char batteryStateStr[BUFF_SIZE];
 
     if (!abc_terminalController_sendReturnStr(BUFF_SIZE, batteryStateStr, cmd))
     {
-        ABC_LOG_ERR("Failed to get the charging state, returning default (%s)",
-                    dischargingStr);
+        ABC_LOG_ERR("Failed to get the charging state, returning default (discharging)");
 
         return false;
     }

@@ -1,5 +1,5 @@
 #include "abc_io_service/abc_io_service.h"
-#include "abc_backlight_brightness_controller/fake_abc_io_service.h"
+#include "abc_backlight_controller/fake_abc_io_service.h"
 
 #include "abc_logging_service/abc_logging_service.h"
 

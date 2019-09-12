@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+#include "abc_backlight_controller/abc_backlight_controller.h"
 
 #include "abc_io_service/abc_io_service.h"
 
-#include "abc_backlight_brightness_controller/fake_abc_io_service.h"
+#include "abc_backlight_controller/fake_abc_io_service.h"
 
 #include "abc_logging_service/abc_logging_service.h"
 
@@ -33,7 +33,7 @@ toRawBrightness(const double target)
     return target / 100.0 * s_DEFAULT_MAX;
 }
 
-class abc_backlight_brightness_controller: public ::testing::Test
+class abc_backlight_controller: public ::testing::Test
 {
 public:
     void SetUp(void)
@@ -63,7 +63,7 @@ public:
     }
 };
 
-TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_value)
+TEST_F(abc_backlight_controller, backlight_is_set_to_new_value)
 {
     // Mid point between min and max
     const double target = getMidBrightness();
@@ -74,7 +74,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_set_to_new_v
               fake_abc_ioService_getCurrentBrightness());
 }
 
-TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_updated_gradually)
+TEST_F(abc_backlight_controller, backlight_is_updated_gradually)
 {
     abc_backlightBrightnessController_setNumIncrements(3);
     abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
@@ -90,7 +90,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_is_updated_grad
     ASSERT_EQ(3, fake_abc_ioService_getNumWrites());
 }
 
-TEST_F(abc_backlight_brightness_controller, only_unique_intermediate_brightness_updates_are_applied)
+TEST_F(abc_backlight_controller, only_unique_intermediate_brightness_updates_are_applied)
 {
     abc_backlightBrightnessController_setNumIncrements(3);
     abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
@@ -104,7 +104,7 @@ TEST_F(abc_backlight_brightness_controller, only_unique_intermediate_brightness_
     ASSERT_EQ(1, fake_abc_ioService_getNumWrites());
 }
 
-TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed_maximum_brightness)
+TEST_F(abc_backlight_controller, backlight_does_not_exceed_maximum_brightness)
 {
     const double target = g_abc_BacklightBrightnessController_MAX * 1.5;
 
@@ -114,7 +114,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_exceed
               fake_abc_ioService_getCurrentBrightness());
 }
 
-TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_recede_minimum_brightness)
+TEST_F(abc_backlight_controller, backlight_does_not_recede_minimum_brightness)
 {
     const double target = g_abc_BacklightBrightnessController_MIN / 2;
 
@@ -124,7 +124,7 @@ TEST_F(abc_backlight_brightness_controller, backlight_brightness_does_not_recede
               fake_abc_ioService_getCurrentBrightness());
 }
 
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maximum_brightness_is_zero)
+TEST_F(abc_backlight_controller, brightness_is_not_set_when_the_maximum_brightness_is_zero)
 {
     // Mid point between min and max
     const double target = getMidBrightness();
@@ -136,7 +136,7 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_maxim
     ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
 }
 
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_maximum_brightness_cannot_be_read)
+TEST_F(abc_backlight_controller, brightness_is_not_set_when_maximum_brightness_cannot_be_read)
 {
     // Mid point between min and max
     const double target = getMidBrightness();
@@ -148,19 +148,19 @@ TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_maximum_b
     ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
 }
 
-TEST_F(abc_backlight_brightness_controller, brightness_is_not_set_when_the_new_value_is_the_same_as_the_old_value)
+TEST_F(abc_backlight_controller, brightness_is_not_set_when_the_new_value_is_the_same_as_the_old_value)
 {
     abc_backlightBrightnessController_set((fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX);
 
     ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
 }
 
-TEST_F(abc_backlight_brightness_controller, setting_the_number_of_brightness_increments_to_0_fails)
+TEST_F(abc_backlight_controller, setting_the_number_of_brightness_increments_to_0_fails)
 {
     ASSERT_FALSE(abc_backlightBrightnessController_setNumIncrements(0));
 }
 
-TEST_F(abc_backlight_brightness_controller, setting_the_brightness_increment_period_to_0_causes_the_brightness_to_be_set_with_one_write)
+TEST_F(abc_backlight_controller, setting_the_brightness_increment_period_to_0_causes_the_brightness_to_be_set_with_one_write)
 {
     abc_backlightBrightnessController_setIncrementsPeriod_ms(0);
 

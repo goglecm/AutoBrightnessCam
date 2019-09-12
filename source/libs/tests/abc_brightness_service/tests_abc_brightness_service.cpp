@@ -2,11 +2,11 @@
 
 #include "abc_brightness_service/abc_brightness_service.h"
 
-#include "abc_brightness_service/fake_abc_ambient_brightness_controller.h"
+#include "abc_brightness_service/fake_abc_ambient_controller.h"
 
-#include "abc_brightness_service/fake_abc_backlight_brightness_controller.h"
+#include "abc_brightness_service/fake_abc_backlight_controller.h"
 
-#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+#include "abc_backlight_controller/abc_backlight_controller.h"
 
 #include "abc_brightness_service/fake_abc_time_service.h"
 
@@ -157,7 +157,7 @@ TEST_F(abc_brightness_service, report_error_if_woken_when_not_started)
     ASSERT_EQ(ABC_BRIGHTNESSSERVICE_FAILURE, abc_brightnessService_wakeUp());
 }
 
-TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_periods)
+TEST_F(abc_brightness_service, backlight_is_updated_6_times_during_6_periods)
 {
     const abc_brightnessService_PeriodSec_t period = 5;
 
@@ -183,7 +183,7 @@ TEST_F(abc_brightness_service, backlight_brightness_is_updated_6_times_during_6_
     }
 }
 
-TEST_F(abc_brightness_service, the_new_backlight_brightness_is_the_ambient_brightness_passed_through_a_mean_filter)
+TEST_F(abc_brightness_service, the_new_backlight_is_the_ambient_passed_through_a_mean_filter)
 {
     abc_brightnessService_start();
 
@@ -195,7 +195,7 @@ TEST_F(abc_brightness_service, the_new_backlight_brightness_is_the_ambient_brigh
     ASSERT_EQ(1, fake_abc_filter_getNumAverageCalls());
 }
 
-TEST_F(abc_brightness_service, the_initial_state_of_the_mean_filter_is_the_first_recorded_ambient_brightness)
+TEST_F(abc_brightness_service, the_initial_state_of_the_mean_filter_is_the_first_recorded_ambient)
 {
     abc_brightnessService_start();
 
@@ -207,7 +207,7 @@ TEST_F(abc_brightness_service, the_initial_state_of_the_mean_filter_is_the_first
     ASSERT_TRUE(fake_abc_filter_areAllFilterStatesEqualAndNonZero());
 }
 
-TEST_F(abc_brightness_service, backlight_brightness_is_not_changed_if_service_is_woken_when_not_started)
+TEST_F(abc_brightness_service, backlight_is_not_changed_if_service_is_woken_when_not_started)
 {
     fake_abc_backlightBrightnessController_resetNumSetCalls();
 
@@ -218,7 +218,7 @@ TEST_F(abc_brightness_service, backlight_brightness_is_not_changed_if_service_is
     ASSERT_EQ(0, fake_abc_backlightBrightnessController_numSetCalls());
 }
 
-TEST_F(abc_brightness_service, backlight_brightness_is_set_to_maximum_when_charging)
+TEST_F(abc_brightness_service, backlight_is_set_to_maximum_when_charging)
 {
     fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_CHARGING);
 

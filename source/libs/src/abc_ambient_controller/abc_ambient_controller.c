@@ -1,4 +1,4 @@
-#include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
+#include "abc_ambient_controller/abc_ambient_controller.h"
 #include "abc_terminal_controller/abc_terminal_controller.h"
 #include "abc_logging_service/abc_logging_service.h"
 

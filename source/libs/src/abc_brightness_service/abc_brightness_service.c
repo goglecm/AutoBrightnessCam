@@ -1,8 +1,8 @@
 #include "abc_brightness_service/abc_brightness_service.h"
 
 #include "abc_time_service/abc_time_service.h"
-#include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
-#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
+#include "abc_ambient_controller/abc_ambient_controller.h"
+#include "abc_backlight_controller/abc_backlight_controller.h"
 #include "abc_power_controller/abc_power_controller.h"
 #include "abc_logging_service/abc_logging_service.h"
 #include "abc_filter/abc_filter.h"

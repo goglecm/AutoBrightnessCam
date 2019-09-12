@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "abc_ambient_brightness_controller/abc_ambient_brightness_controller.h"
+#include "abc_ambient_controller/abc_ambient_controller.h"
 #include "abc_logging_service/abc_logging_service.h"
-#include "abc_ambient_brightness_controller/fake_abc_terminal_controller.h"
+#include "abc_ambient_controller/fake_abc_terminal_controller.h"
 
 #include "testlib_io.h"
 
-class abc_ambient_brightness_controller: public ::testing::Test
+class abc_ambient_controller: public ::testing::Test
 {
 public:
     void SetUp(void)
@@ -21,7 +21,7 @@ public:
     }
 };
 
-TEST_F(abc_ambient_brightness_controller, one_picture_is_shot_externally_when_ambient_brightness_is_read)
+TEST_F(abc_ambient_controller, one_picture_is_shot_externally_when_ambient_is_read)
 {
     double readValue;
 
@@ -30,7 +30,7 @@ TEST_F(abc_ambient_brightness_controller, one_picture_is_shot_externally_when_am
     ASSERT_EQ(1, fake_abc_terminalController_getNumShots());
 }
 
-TEST_F(abc_ambient_brightness_controller, picture_brightness_is_calculated_externally_when_ambient_brightness_is_read)
+TEST_F(abc_ambient_controller, picture_brightness_is_calculated_externally_when_ambient_is_read)
 {
     double readValue;
 

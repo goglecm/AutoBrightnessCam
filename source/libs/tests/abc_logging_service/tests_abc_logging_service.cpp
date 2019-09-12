@@ -8,16 +8,18 @@
 #include <string>
 #include <fstream>
 
-#ifdef ABC_LOGGING_ON
 
-    #undef ABC_LOGGING_ON
-    #define ABC_LOGGING_ON 1
+// Require logging to be turned on to be able to test it.
+#ifndef ABC_LOGGING_ON
 
-#else
+    #error ABC_LOGGING_ON should be defined.
 
-    #define ABC_LOGGING_ON 1
+#elif ABC_LOGGING_ON != 1
+
+    #error ABC_LOGGING_ON should be set to 1.
 
 #endif // #ifdef ABC_LOGGING_ON
+
 
 class abc_logging_service: public ::testing::Test
 {

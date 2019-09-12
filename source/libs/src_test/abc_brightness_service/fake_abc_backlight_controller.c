@@ -1,5 +1,5 @@
-#include "abc_backlight_brightness_controller/abc_backlight_brightness_controller.h"
-#include "abc_brightness_service/fake_abc_backlight_brightness_controller.h"
+#include "abc_backlight_controller/abc_backlight_controller.h"
+#include "abc_brightness_service/fake_abc_backlight_controller.h"
 
 typedef fake_abc_BacklightBrightnessValue_t RawValue_t;
 
