@@ -112,6 +112,70 @@ strToInt(int *const restrict pResult, const char *const restrict pStr)
 }
 
 bool
+abc_ioService_readStr(char *const restrict pBuf,
+                      const int bufMaxLen,
+                      const char *const restrict pFileName)
+{
+    if (NULL == pFileName || NULL == pBuf || bufMaxLen < 1 || bufMaxLen > 32)
+    {
+        ABC_LOG_ERR("Bad filename = %p or bad ret value = %p or max len = %d",
+                    (const void *)pFileName, (void *)pBuf, bufMaxLen);
+
+        return false;
+    }
+
+    FILE *const restrict pFile = fopen(pFileName, "r");
+
+    if (NULL == pFile)
+    {
+        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
+
+        return false;
+    }
+
+    bool isReturnOK = true;
+
+    char readLine[bufMaxLen];
+
+    if (NULL == fgets(readLine, bufMaxLen, pFile))
+    {
+        ABC_LOG_ERR("Reached EOF too early");
+
+        isReturnOK = false;
+    }
+    else if (errno)
+    {
+        ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+
+        isReturnOK = false;
+    }
+    else
+    {
+        ABC_LOG("Read `%s` from file %s", readLine, pFileName);
+    }
+
+    errno = 0;
+
+    if (0 != fclose(pFile))
+    {
+        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+                    "File is left in an undefined state.",
+                    pFileName, strerror(errno));
+
+        return false;
+    }
+
+    if (!isReturnOK)
+    {
+        return false;
+    }
+
+    memcpy(pBuf, readLine, strnlen(readLine, bufMaxLen - 1) + 1);
+
+    return true;
+}
+
+bool
 abc_ioService_read(int *const restrict pValue,
                    const char *const restrict pFileName)
 {

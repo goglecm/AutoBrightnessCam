@@ -7,19 +7,16 @@ extern "C" {
 
 #include <stdbool.h>
 
-typedef enum fake_abc_terminalController_ChargingState_t
-{
-    FAKE_ABC_TERMINAL_CONTROLLER_STATE_UNKNOWN,
-    FAKE_ABC_TERMINAL_CONTROLLER_STATE_DISCHARGING,
-    FAKE_ABC_TERMINAL_CONTROLLER_STATE_CHARGING,
-    FAKE_ABC_TERMINAL_CONTROLLER_STATE_FULLY_CHARGED
-} fake_abc_terminalController_ChargingState_t;
+#include "abc_power_controller/abc_power_controller.h"
 
 void
-fake_abc_terminalController_setUpowerState(fake_abc_terminalController_ChargingState_t chargingState);
+fake_abc_terminalController_setUpowerState(abc_powerController_State_t state);
 
 bool
 fake_abc_terminalController_calledUpower(void);
+
+void
+fake_abc_terminalController_resetStates(void);
 
 #ifdef __cplusplus
 }

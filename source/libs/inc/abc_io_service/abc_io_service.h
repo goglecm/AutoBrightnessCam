@@ -13,6 +13,9 @@ abc_ioService_write(int value, const char *pFileName);
 bool
 abc_ioService_read(int *pValue, const char *pFileName);
 
+bool
+abc_ioService_readStr(char *pBuf, int bufMaxLen, const char *pFileName);
+
 #ifdef __cplusplus
 }
 #endif

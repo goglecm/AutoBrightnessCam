@@ -4,8 +4,12 @@
 #include <assert.h>
 #include <string.h>
 
-static fake_abc_terminalController_ChargingState_t
-s_chargingState;
+#include "abc_logging_service/abc_logging_service.h"
+
+typedef abc_powerController_State_t ChargingState_t;
+
+static ChargingState_t
+s_chargingState = ABC_POWER_CONTROLLER_STATE_UNKNOWN;
 
 static bool
 s_isChargingStateSet = false;
@@ -14,10 +18,18 @@ static bool
 s_isUpowerCalled = false;
 
 void
-fake_abc_terminalController_setUpowerState(const fake_abc_terminalController_ChargingState_t chargingState)
+fake_abc_terminalController_resetStates(void)
 {
-    s_chargingState = chargingState;
+    s_isUpowerCalled     = false;
+    s_isChargingStateSet = false;
+}
 
+void
+fake_abc_terminalController_setUpowerState(const ChargingState_t state)
+{
+    assert(state < ABC_POWER_CONTROLLER_STATE__COUNT);
+
+    s_chargingState      = state;
     s_isChargingStateSet = true;
 }
 
@@ -32,48 +44,43 @@ abc_terminalController_sendReturnStr(const unsigned resultLen,
                                      char *const restrict pResult,
                                      const char *const restrict pCmd)
 {
-    assert(pResult);
-    assert(pCmd);
-    assert(s_isChargingStateSet);
-    assert(resultLen > sizeof("discharging"));
+    assert(pResult && pCmd && s_isChargingStateSet && resultLen > 16);
 
     const char upowerStr[] = "upower";
 
     // Compare the strings.
-    bool isUpowerCalled = true;
-    for (size_t i = 0; i < sizeof(upowerStr) - 1; ++i)
+    if (0 != memcmp(upowerStr, pCmd, strlen(upowerStr)))
     {
-        if (upowerStr[i] != pCmd[i])
-        {
-            isUpowerCalled = false;
-            break;
-        }
+        ABC_LOG_ERR("expecting a upower command");
+
+        assert(false);
     }
 
-    s_isUpowerCalled = isUpowerCalled;
+    s_isUpowerCalled = true;
 
     bool result = true;
 
     // Report the result.
     switch (s_chargingState)
     {
-        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_CHARGING:
+        case ABC_POWER_CONTROLLER_STATE_CHARGING:
             strcpy(pResult, "charging\n");
             break;
 
-        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_DISCHARGING:
+        case ABC_POWER_CONTROLLER_STATE_DISCHARGING:
             strcpy(pResult, "discharging\n");
             break;
 
-        case FAKE_ABC_TERMINAL_CONTROLLER_STATE_FULLY_CHARGED:
+        case ABC_POWER_CONTROLLER_STATE_FULLY_CHARGED:
             strcpy(pResult, "fully-charged\n");
             break;
 
         default:
-            strcpy(pResult, "unknown");
             result = false;
             break;
     }
+
+    ABC_LOG("result = %d, resultStr = `%s`", result, result ? pResult : "not set");
 
     return result;
 }
