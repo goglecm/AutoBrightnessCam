@@ -25,7 +25,7 @@
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
 - allow the user to point the paths for any unavailable optional features
-- implement the power module to use #include <linux/baterry..stuff>
+- Add the different paths where the battery status lives
 
 # Features
 
