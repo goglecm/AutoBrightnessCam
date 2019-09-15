@@ -6,7 +6,6 @@ config.*
 configure
 depcomp
 install-sh
-m4
 ltmain.sh
 Makefile.in
 missing
@@ -15,3 +14,4 @@ tags
 build
 *~
 *.swp
+INSTALL
