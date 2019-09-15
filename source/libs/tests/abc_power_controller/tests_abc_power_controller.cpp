@@ -33,9 +33,10 @@ public:
     {
         // code here will execute just before the test ensues
 
-        const std::string
-            logName = std::string(SPECIFIC_LOG_NAME) +
-                      (ABC_HAS_UPOWER ? "_with_upower" : "_without_upower");
+        std::string logName(SPECIFIC_LOG_NAME);
+        const std::string tail(ABC_HAS_UPOWER ? "_with_upower" : "_without_upower");
+
+        logName.insert(logName.find(".log"), tail);
 
         ASSERT_TRUE(abc_loggingService_setLogName(logName.c_str()));
 
