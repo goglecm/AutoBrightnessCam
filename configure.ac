@@ -41,6 +41,14 @@ AM_CONDITIONAL([ABC_HAS_UPOWER], [test x$EXISTS_UPOWER == x1 &&
 #
 # AC_CHECK_HEADER([gtest/gtest.h], [], [AC_MSG_WARN([Missing gtest, cannot run tests])])
 
+if test ${EXISTS_UPOWER} == 1 ; then
+
+    AC_CHECK_HEADER([sys/stat.h],
+                    [],
+                    [AC_MSG_ERROR([Missing sys/stat.h, cannot check files])])
+
+fi
+
 LT_INIT
 
 AC_CONFIG_HEADERS([config.h])

@@ -9,6 +9,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <sys/stat.h>
+
+bool
+abc_ioService_exists(const char *const restrict pFileName)
+{
+    struct stat buffer;
+    return 0 == stat(pFileName, &buffer);
+}
 
 bool
 abc_ioService_write(const int value, const char *const restrict pFileName)

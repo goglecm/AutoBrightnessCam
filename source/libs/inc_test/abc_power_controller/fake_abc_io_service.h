@@ -18,6 +18,9 @@ fake_abc_ioService_wasStateRead(void);
 void
 fake_abc_ioService_resetStates(void);
 
+void
+fake_abc_ioService_setBatteryStatePath(const char *pFileName);
+
 #ifdef __cplusplus
 }
 #endif

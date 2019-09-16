@@ -134,3 +134,18 @@ TEST_F(abc_io_service, read_fails_when_file_has_alphanumeric_data)
 
     ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
 }
+
+TEST_F(abc_io_service, reports_true_when_file_exists)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    createFile(filename);
+
+    ASSERT_TRUE(abc_ioService_exists(filename.c_str()));
+}
+
+TEST_F(abc_io_service, reports_false_when_file_does_not_exist)
+{
+    ASSERT_FALSE(abc_ioService_exists("non-existant_file_name.1234"));
+}
+

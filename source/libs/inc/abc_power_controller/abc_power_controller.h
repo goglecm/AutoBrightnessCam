@@ -17,6 +17,9 @@ typedef enum abc_powerController_State_t
 
 } abc_powerController_State_t;
 
+void
+abc_powerController_resetBatteryStatePath(void);
+
 bool
 abc_powerController_isCharging(void);
 
