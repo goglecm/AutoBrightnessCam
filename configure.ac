@@ -52,7 +52,9 @@ fi
 LT_INIT
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile source/Makefile])
+AC_CONFIG_FILES([Makefile
+                 source/Makefile
+                 source/data/systemd/autobrightnesscam.service])
 
 AC_OUTPUT
 

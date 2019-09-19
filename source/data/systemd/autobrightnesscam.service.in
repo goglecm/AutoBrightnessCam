@@ -1,0 +1,9 @@
+[Unit]
+Description=Automatically adjusts the display brightness using the camera as an ambient light sensor
+
+[Service]
+Type=simple
+ExecStart=@prefix@/bin/aubrca
+
+[Install]
+WantedBy = multi-user.target

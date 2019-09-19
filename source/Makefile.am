@@ -142,6 +142,15 @@ aubrca_LDADD   = libabc_brightness_service.la
 aubrca_SOURCES = programs/src/main/main.c
 
 
+# sysconfdir=$prefix/etc/systemd/system
+#
+# Data
+#
+systemdunitsdir = $(sysconfdir)/systemd/system
+systemdunits_DATA = data/systemd/autobrightnesscam.service
+
+EXTRA_DIST = data/systemd/autobrightnesscam.service.in
+
 #
 # Test libraries
 #
@@ -307,7 +316,7 @@ TESTS = \
 
 
 #
-# Additional cleanning.
+# Additional cleaning.
 #
 clean-local: clean-local-check
 

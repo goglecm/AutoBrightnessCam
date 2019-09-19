@@ -6,15 +6,20 @@
 
 ### High priority
 
+- Add post installation systemd enable/start commands
+- This should only work if root is used during install, otherwise.... TODO
+
 - Fix/create readme
 - Learn about NEWS and ChangeLog and how to write a good readme
 - Write a development guide and make a note that gtest 1.7 or above is required
+- Try different versions of autotools
 
 ### Medium priority
 
 - start looking at rpm generation (deb as well)
 - try to develop code from a new repo checkout and see how it goes
 - try different compilers
+- install different VMs and try to do a distcheck on each
 
 ### Low priority
 
@@ -61,7 +66,7 @@ What:
 - the application issues an error and exits
 
 When:
-- the brightness could not be updated during 3*N seconds
+- the brightness could not be updated during 3\*N seconds
 
 #### Requirement
 
