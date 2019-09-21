@@ -4,13 +4,13 @@
 
 int main(void)
 {
-    abc_brightnessService_setPeriod(3);
+    abc_brightnessService_setPeriod(10);
 
     abc_brightnessService_start();
 
     do
     {
-        sleep(3);
+        sleep(10);
     }
     while (abc_brightnessService_wakeUp() == ABC_BRIGHTNESSSERVICE_SUCCESS);
 

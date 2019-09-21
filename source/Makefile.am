@@ -47,10 +47,12 @@ GENERAL_DEFINITIONS = -DABC_HAS_UPOWER=0
 
 endif
 
+GENERAL_DEFINITIONS += -DABC_PICTURE_DIR=\"$(localstatedir)\"
+
 #
 # Global build flags
 #
-AM_CFLAGS   = $(GENERAL_DEFINITIONS) -std=gnu99 $(C_WARNING_FLAGS) -I$(top_srcdir)/source/libs/inc
+AM_CFLAGS = $(GENERAL_DEFINITIONS) -std=gnu99 $(C_WARNING_FLAGS) -I$(top_srcdir)/source/libs/inc
 
 
 #
@@ -142,15 +144,6 @@ aubrca_LDADD   = libabc_brightness_service.la
 aubrca_SOURCES = programs/src/main/main.c
 
 
-# sysconfdir=$prefix/etc/systemd/system
-#
-# Data
-#
-systemdunitsdir = $(sysconfdir)/systemd/system
-systemdunits_DATA = data/systemd/autobrightnesscam.service
-
-EXTRA_DIST = data/systemd/autobrightnesscam.service.in
-
 #
 # Test libraries
 #
@@ -158,6 +151,7 @@ AM_CXXFLAGS = -std=c++11 -Wall -Wextra
 
 ABC_TEST_FLAGS = \
 	-DABC_LOGGING_ON=1 \
+	-DABC_PICTURE_DIR=\"\" \
 	-I$(top_srcdir)/source/libs/inc \
 	-I$(top_srcdir)/source/libs/inc_test \
 	-I$(top_srcdir)/source/libs/tests/test_lib/inc
@@ -314,13 +308,47 @@ TESTS = \
 	test_abc_brightness_service \
 	test_abc_brightness_service_fake_abc_time_service
 
+#
+# Prepare for systemd.
+#
+if ABC_HAS_SYSTEMD
+
+INSTALL_SYSTEMD_SERVICE_CMDS = \
+	systemctl enable autobrightnesscam.service; \
+	systemctl start autobrightnesscam.service;
+
+UNINSTALL_SYSTEMD_SERVICE_CMDS = \
+	systemctl stop autobrightnesscam.service;
+	systemctl disable autobrightnesscam.service;
+
+systemdunitsdir = $(libdir)/systemd/system
+systemdunits_DATA = data/systemd/autobrightnesscam.service
+
+EXTRA_DIST = data/systemd/autobrightnesscam.service.in
+
+else
+
+INSTALL_SYSTEMD_SERVICE_CMDS = echo "systemd not installed"
+UNINSTALL_SYSTEMD_SERVICE_CMDS = echo "systemd not installed"
+
+endif
+
 
 #
-# Additional cleaning.
+# Additional rules.
 #
 clean-local: clean-local-check
 
-.PHONY: clean-local-check
+.PHONY: clean-local-check install-data-local uninstall-local
 
 clean-local-check:
-	-rm -f ./*abc*.log ./*abc*.test /tmp/brightness.jpg
+	-rm -f ./*abc*.log ./*abc*.test
+
+install-data-hook:
+	-$(INSTALL_SYSTEMD_SERVICE_CMDS)
+	-mkdir -p $(localstatedir)/tmp
+
+uninstall-local:
+	-$(UNINSTALL_SYSTEMD_SERVICE_CMDS)
+	-rm -f $(localstatedir)/tmp/brightness.jpg
+

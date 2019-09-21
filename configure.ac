@@ -31,22 +31,19 @@ if test ${EXISTS_GREP} == 0 ; then
 fi
 
 AC_CHECK_PROG(EXISTS_UPOWER, upower, 1, 0)
+AC_CHECK_PROG(EXISTS_SYSTEMD, systemctl, 1, 0)
 
 AM_CONDITIONAL([ABC_HAS_UPOWER], [test x$EXISTS_UPOWER == x1 &&
                                   test x$EXISTS_SED    == x1 &&
                                   test x$EXISTS_GREP   == x1])
 
-#
-# FIXME : check for gtest headers.
-#
-# AC_CHECK_HEADER([gtest/gtest.h], [], [AC_MSG_WARN([Missing gtest, cannot run tests])])
+AM_CONDITIONAL([ABC_HAS_SYSTEMD], [test x$EXISTS_SYSTEMD == x1])
 
 if test ${EXISTS_UPOWER} == 1 ; then
 
     AC_CHECK_HEADER([sys/stat.h],
                     [],
                     [AC_MSG_ERROR([Missing sys/stat.h, cannot check files])])
-
 fi
 
 LT_INIT
