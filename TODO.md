@@ -6,10 +6,11 @@
 
 ### High priority
 
-- Fix/create readme
-- Learn about NEWS and ChangeLog and how to write a good readme
-- Write a development guide and make a note that gtest 1.7 or above is required
 - Try different versions of autotools
+- Need to create some automation to pass the code through some static analysers
+  or similar
+- Need to also automate some sort of coverage runs with gcov for the C code to
+  maintain an above 90% test coverage
 
 ### Medium priority
 
@@ -82,3 +83,4 @@ When:
 - fswebcam
 - convert
 - upower
+- systemd
