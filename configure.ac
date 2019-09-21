@@ -1,4 +1,4 @@
-AC_INIT([aubrca], [0.1], [yv3r3nd5yi1k@mail.ru])
+AC_INIT([AutoBrightnessCam], [1.0], [yv3r3nd5yi1k@mail.ru])
 
 AC_CONFIG_MACRO_DIR([m4])
 

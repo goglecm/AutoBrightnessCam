@@ -6,9 +6,6 @@
 
 ### High priority
 
-- Add post installation systemd enable/start commands
-- This should only work if root is used during install, otherwise.... TODO
-
 - Fix/create readme
 - Learn about NEWS and ChangeLog and how to write a good readme
 - Write a development guide and make a note that gtest 1.7 or above is required
@@ -17,7 +14,6 @@
 ### Medium priority
 
 - start looking at rpm generation (deb as well)
-- try to develop code from a new repo checkout and see how it goes
 - try different compilers
 - install different VMs and try to do a distcheck on each
 
@@ -30,7 +26,6 @@
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
 - allow the user to point the paths for any unavailable optional features
-- Add the different paths where the battery status lives
 
 # Features
 
