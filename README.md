@@ -29,6 +29,8 @@ Note: `make install-strip` also works. It will exclude debugging symbols.
 - **--enable-debug** - Enable assertions and allow the app to crash gracefully.
 - **--enable-skipsystemctlcalls** - Skip the systemd setup. The app won't start
   automatically.
+- **--disable-depscheck** - Do not check for runtime dependencies. Useful for VM
+  builds.
 
 ### Notable configure features
 

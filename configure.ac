@@ -7,6 +7,9 @@ AC_INIT([AutoBrightnessCam], [1.0], [yv3r3nd5yi1k@mail.ru])
 #
 # Configure arguments
 #
+AC_ARG_ENABLE([depscheck],
+              AS_HELP_STRING([--disable-depscheck],
+                             [Do not complain about missing dependencies]))
 AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug],
                              [Turn on assertions and debugging symbols]))
@@ -62,9 +65,9 @@ AC_CHECK_PROG(exists_systemd, systemctl, yes, no)
 #
 # Check the runtime dependencies
 #
-AS_IF([ test "x$exists_fswebcam" == "xno"       ],
+AS_IF([ test "x$exists_fswebcam" == "xno" && test "x$enable_depscheck" != "xno" ],
       [ AC_MSG_ERROR([Please install fswebcam.])],
-      [ test "x$exists_convert"  == "xno"       ],
+      [ test "x$exists_convert"  == "xno" && test "x$enable_depscheck" != "xno" ],
       [ AC_MSG_ERROR([Please install ImageMagick which provides convert.])])
 
 
@@ -85,7 +88,9 @@ AS_IF([ test "x$exists_upower" == "xyes" &&
 AS_IF([ test "x$with_upower" == "xyes" ],
       [ AS_IF([ test "x$upower_has_all_deps" == "xyes" ],
               [ use_upower="yes"                       ],
-              [ AC_MSG_ERROR([Trying to use upower when it is not installed])])],
+              [ test "x$enable_depscheck"    != "xno"  ],
+              [ AC_MSG_ERROR([Trying to use upower when it is not installed])],
+              [ use_upower="no"                        ])],
       [ test "x$with_upower" == "xno"     ],
       [ use_upower="no"                   ],
       [ use_upower="$upower_has_all_deps"])
@@ -100,12 +105,14 @@ AM_CONDITIONAL([ABC_USES_UPOWER], test "x$use_upower" == "xyes")
 # Systemd
 #
 AS_IF([ test "x$enable_skipsystemctlcalls" == "xno" ],
-      AS_IF([ test "x$exists_systemd" == "xyes" ],
-            [ allow_systemctl_calls="yes"       ],
-            [ AC_MSG_ERROR([Trying to call systemctl when it is not installed.])]),
+      AS_IF([ test "x$exists_systemd" == "xyes"     ],
+            [ allow_systemctl_calls="yes"           ],
+            [ test "x$enable_depscheck" != "xno"    ],
+            [ AC_MSG_ERROR([Trying to call systemctl when it is not installed.])],
+            [ allow_systemctl_calls="no"            ] ),
       [ test "x$enable_skipsystemctlcalls" == "xyes" ],
       [ allow_systemctl_calls="no"                   ],
-      [ allow_systemctl_calls="$exists_systemd"     ])
+      [ allow_systemctl_calls="$exists_systemd"      ])
 
 AM_CONDITIONAL([ABC_USES_SYSTEMD], test "x$allow_systemctl_calls" == "xyes")
 
