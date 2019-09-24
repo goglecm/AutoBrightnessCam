@@ -5,6 +5,6 @@ compiler:
     - gcc
 
 before_script:
-    sudo apt-get install libgtest-dev -y
+    sudo apt-get install libgtest-dev fswebcam -y
 
-script: ./autogen.sh && ./configure --disable-depscheck --enable-skipsystemctlcalls && sudo make -j2 distcheck
+script: ./autogen.sh && ./configure && sudo make -j2 distcheck
