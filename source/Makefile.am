@@ -34,10 +34,11 @@ C_WARNING_FLAGS = \
 	-Wunsuffixed-float-constants \
 	-Wunsafe-loop-optimizations
 
+
 #
 # Definitions
 #
-if ABC_HAS_UPOWER
+if ABC_USES_UPOWER
 
 GENERAL_DEFINITIONS = -DABC_HAS_UPOWER=1
 
@@ -45,14 +46,29 @@ else
 
 GENERAL_DEFINITIONS = -DABC_HAS_UPOWER=0
 
-endif
+endif # if ABC_USES_UPOWER
+
 
 GENERAL_DEFINITIONS += -DABC_PICTURE_DIR=\"$(localstatedir)\"
+
+
+if ABC_USES_DEBUG
+
+GENERAL_DEFINITIONS += -DDEBUG=1
+
+else
+
+GENERAL_DEFINITIONS += -DNDEBUG=1
+
+endif # if ABC_USES_DEBUG
 
 #
 # Global build flags
 #
-AM_CFLAGS = $(GENERAL_DEFINITIONS) -std=gnu99 $(C_WARNING_FLAGS) -I$(top_srcdir)/source/libs/inc
+AM_CFLAGS = \
+	$(GENERAL_DEFINITIONS) \
+	-std=gnu99 $(C_WARNING_FLAGS) \
+	-I$(top_srcdir)/source/libs/inc
 
 
 #
@@ -79,7 +95,7 @@ libabc_time_service_la_LIBADD        = libabc_logging_service.la
 libabc_power_controller_la_LIBADD    = libabc_logging_service.la
 
 
-if ABC_HAS_UPOWER
+if ABC_USES_UPOWER
 
 libabc_power_controller_la_LIBADD += libabc_terminal_controller.la
 
@@ -87,7 +103,7 @@ else
 
 libabc_power_controller_la_LIBADD += libabc_io_service.la
 
-endif # if ABC_HAS_UPOWER
+endif # if ABC_USES_UPOWER
 
 
 libabc_ambient_controller_la_LIBADD = \
@@ -151,10 +167,11 @@ AM_CXXFLAGS = -std=c++11 -Wall -Wextra
 
 ABC_TEST_FLAGS = \
 	-DABC_LOGGING_ON=1 \
-	-DABC_PICTURE_DIR=\"\" \
+	-DDEBUG=1 \
 	-I$(top_srcdir)/source/libs/inc \
 	-I$(top_srcdir)/source/libs/inc_test \
-	-I$(top_srcdir)/source/libs/tests/test_lib/inc
+	-I$(top_srcdir)/source/libs/tests/test_lib/inc \
+	-DABC_PICTURE_DIR=\"\"
 
 check_LTLIBRARIES = \
 	libabc_test.la \
@@ -308,30 +325,34 @@ TESTS = \
 	test_abc_brightness_service \
 	test_abc_brightness_service_fake_abc_time_service
 
+
 #
 # Prepare for systemd.
 #
-if ABC_HAS_SYSTEMD
-
-INSTALL_SYSTEMD_SERVICE_CMDS = \
-	systemctl enable autobrightnesscam.service; \
-	systemctl start autobrightnesscam.service;
-
-UNINSTALL_SYSTEMD_SERVICE_CMDS = \
-	systemctl stop autobrightnesscam.service;
-	systemctl disable autobrightnesscam.service;
-
 systemdunitsdir = $(libdir)/systemd/system
 systemdunits_DATA = data/systemd/autobrightnesscam.service
 
 EXTRA_DIST = data/systemd/autobrightnesscam.service.in
 
+if ABC_USES_SYSTEMD
+
+# On systems with SELinux on, enabling a service not in a default location makes
+# enforcing unhappy. So we need to do a heavy systemd reload.
+INSTALL_SYSTEMD_SERVICE_CMDS = \
+	systemctl daemon-reexec; \
+	systemctl enable $(systemdunitsdir)/autobrightnesscam.service; \
+	systemctl start autobrightnesscam.service;
+
+UNINSTALL_SYSTEMD_SERVICE_CMDS = \
+	systemctl stop autobrightnesscam.service; \
+	systemctl disable autobrightnesscam.service;
+
 else
 
-INSTALL_SYSTEMD_SERVICE_CMDS = echo "systemd not installed"
-UNINSTALL_SYSTEMD_SERVICE_CMDS = echo "systemd not installed"
+INSTALL_SYSTEMD_SERVICE_CMDS   = -echo "Not using systemd"
+UNINSTALL_SYSTEMD_SERVICE_CMDS = -echo "Not using systemd"
 
-endif
+endif # if ABC_USES_SYSTEMD
 
 
 #

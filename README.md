@@ -6,12 +6,11 @@ sensor (ALS).
 
 ## Installation
 
-### TL;DR:
+### TL;DR
 
 ```
 mkdir build
 cd build
-
 ../configure
 make
 sudo make install
@@ -23,6 +22,20 @@ To uninstall:
 sudo make uninstall
 ```
 
+Note: `make install-strip` also works. It will exclude debugging symbols.
+
+### Notable configure options
+
+- **--enable-debug** - Enable assertions and allow the app to crash gracefully.
+- **--enable-skipsystemctlcalls** - Skip the systemd setup. The app won't start
+  automatically.
+
+### Notable configure features
+
+- **--without-upower** - Do not use upower for the battery state.
+
+### Build
+
 It is recommended to do the building in a separate directory as to not interfere
 with the source files (though it shouldn't be a problem).
 
@@ -30,30 +43,32 @@ It is also recommended to install the app with root privileges as it will
 attempt to load the app as a systemd service.
 
 Installing the app in a local directory `../configure
---prefix=/home/john/my_local_dir` is supported, however systemd won't find the
-service file (which will be in
-/home/john/my\_local\_dir/lib/systemd/system/\*.service and so you need to copy
-it in the correct location where systemd expects it (i.e. /etc/systemd/system or
-/usr/local/lib/systemd/system).
-
-After that don't forget to enable and start the service with:
-```
-sudo systemctl enable autobrightnesscam.service
-sudo systemctl start autobrightnesscam.service
-```
+--prefix=/home/john/my_local_dir` is supported.
 
 ### Dependencies
 
 Required:
 
-- fswebcam - used to take pictures
-
-- convert - from ImageMagick, used to extract the brightness from the picture
+- **fswebcam** - used to take pictures
+- **convert** - from ImageMagick, used to extract the brightness from the
+  picture
 
 Optional:
 
-- upower - used to get the charging state of the laptop, though the app can also
-  manually look for the battery state
+- **upower** - used to get the charging state of the laptop, though the app can
+  also manually look for the battery state
+
+### RPM generation
+
+The SPECS directory contains the spec needed to generate an RPM package. Simply
+run:
+```
+cd ~
+rpmdev-setuptree
+rpmbuild -ba rpmbuild/SPECS/autobrightnesscam.spec
+```
+
+The rpm will be located in ~/rpmbuild/RPMS/\*.rpm
 
 ## Usage
 
