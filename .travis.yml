@@ -4,5 +4,7 @@ compiler:
     - clang
     - gcc
 
-script: ./clean.sh && ./autogen.sh && ./configure --disable-depscheck --enable-skipsystemctlcalls --without-upower && make -j2 && make distclean && ./configure --disable-depscheck --enable-skipsystemctlcalls --with-upower && make -j2
+before_script:
+    sudo apt-get install libgtest-dev libgtest -y
 
+script: ./autogen.sh && ./configure --disable-depscheck --enable-skipsystemctlcalls && sudo make -j2 distcheck
