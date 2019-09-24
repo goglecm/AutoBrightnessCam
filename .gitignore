@@ -1,17 +1,4 @@
-aclocal.m4
-ar-lib
-autom4te.cache
-compile
-config.*
-configure
-depcomp
-install-sh
-ltmain.sh
-Makefile.in
-missing
-test-driver
 tags
 build
 *~
 *.swp
-INSTALL
