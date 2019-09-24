@@ -5,6 +5,6 @@ compiler:
     - gcc
 
 before_script:
-    sudo apt-get install libgtest-dev libgtest -y
+    sudo apt-get install libgtest-dev -y
 
 script: ./autogen.sh && ./configure --disable-depscheck --enable-skipsystemctlcalls && sudo make -j2 distcheck
