@@ -769,6 +769,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_depscheck
 enable_debug
 enable_skipsystemctlcalls
 with_upower
@@ -1414,6 +1415,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --disable-depscheck     Do not complain about missing dependencies
   --enable-debug          Turn on assertions and debugging symbols
   --enable-skipsystemctlcalls 
                           Do not make calls to systemctl during install and
@@ -2362,6 +2364,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #
 # Configure arguments
 #
+@%:@ Check whether --enable-depscheck was given.
+if test "${enable_depscheck+set}" = set; then :
+  enableval=$enable_depscheck; 
+fi
+
 @%:@ Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug; 
@@ -16603,9 +16610,9 @@ fi
 #
 # Check the runtime dependencies
 #
-if  test "x$exists_fswebcam" == "xno"       ; then :
+if  test "x$exists_fswebcam" == "xno" && test "x$enable_depscheck" != "xno" ; then :
    as_fn_error $? "Please install fswebcam." "$LINENO" 5
-elif  test "x$exists_convert"  == "xno"       ; then :
+elif  test "x$exists_convert"  == "xno" && test "x$enable_depscheck" != "xno" ; then :
    as_fn_error $? "Please install ImageMagick which provides convert." "$LINENO" 5
 fi
 
@@ -16636,8 +16643,10 @@ fi
 if  test "x$with_upower" == "xyes" ; then :
    if  test "x$upower_has_all_deps" == "xyes" ; then :
    use_upower="yes"                       
-else
+elif  test "x$enable_depscheck"    != "xno"  ; then :
    as_fn_error $? "Trying to use upower when it is not installed" "$LINENO" 5
+else
+   use_upower="no"                        
 fi
 elif  test "x$with_upower" == "xno"     ; then :
    use_upower="no"                   
@@ -16670,15 +16679,17 @@ fi
 # Systemd
 #
 if  test "x$enable_skipsystemctlcalls" == "xno" ; then :
-  if  test "x$exists_systemd" == "xyes" ; then :
-   allow_systemctl_calls="yes"       
-else
+  if  test "x$exists_systemd" == "xyes"     ; then :
+   allow_systemctl_calls="yes"           
+elif  test "x$enable_depscheck" != "xno"    ; then :
    as_fn_error $? "Trying to call systemctl when it is not installed." "$LINENO" 5
+else
+   allow_systemctl_calls="no"             
 fi
 elif  test "x$enable_skipsystemctlcalls" == "xyes" ; then :
    allow_systemctl_calls="no"                   
 else
-   allow_systemctl_calls="$exists_systemd"     
+   allow_systemctl_calls="$exists_systemd"      
 fi
 
  if test "x$allow_systemctl_calls" == "xyes"; then
