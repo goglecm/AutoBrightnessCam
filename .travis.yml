@@ -1,2 +1,10 @@
 language: c
 
+install: gcc make
+
+compiler:
+    - clang
+    - gcc
+
+script: ./clean.sh && ./autogen.sh && ./configure --disable-depscheck --enable-skipsystemctlcalls --without-upower && make -j2 && make distclean && ./configure --disable-depscheck --enable-skipsystemctlcalls --with-upower && make -j2
+
