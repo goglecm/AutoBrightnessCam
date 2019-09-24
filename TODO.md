@@ -11,10 +11,12 @@
   or similar
 - Need to also automate some sort of coverage runs with gcov for the C code to
   maintain an above 90% test coverage
+- Need to sign tarball and RPM releases
+- Need to add documentation for the app
 
 ### Medium priority
 
-- start looking at rpm generation (deb as well)
+- start looking at deb generation
 - try different compilers
 - install different VMs and try to do a distcheck on each
 
@@ -84,3 +86,4 @@ When:
 - convert
 - upower
 - systemd
+rpmbuild -ba rpmbuild/SPECS/autobrightnesscam.spec
