@@ -19,8 +19,9 @@
 #endif // #if defined(ABC_HAS_UPOWER) && ABC_HAS_UPOWER == 1
 
 
-#define BUFF_SIZE 32U
+#define BUFF_SIZE 128U
 
+#define NUM_STATUS_PATHS 3U
 
 typedef abc_powerController_State_t BatteryState_t;
 
@@ -28,7 +29,7 @@ typedef abc_powerController_State_t BatteryState_t;
 #if ABC_HAS_UPOWER == 0
 
 static char
-s_batteryStatePath[32];
+s_batteryStatePath[BUFF_SIZE];
 
 static bool
 s_isBatteryStatePathSet = false;
@@ -36,14 +37,14 @@ s_isBatteryStatePathSet = false;
 static bool
 setBatteryStatePath(void)
 {
-    static const char *batteryStatusPaths[] =
+    static const char *batteryStatusPaths[NUM_STATUS_PATHS] =
     {
         "/sys/class/power_supply/BAT1/status",
         "/sys/class/power_supply/BAT0/status",
         "/proc/acpi/battery/BAT0/status",
     };
 
-    for (size_t strNo = 0; strNo < sizeof(batteryStatusPaths); ++strNo)
+    for (size_t strNo = 0; strNo < NUM_STATUS_PATHS; ++strNo)
     {
         if (abc_ioService_exists(batteryStatusPaths[strNo]))
         {
@@ -70,7 +71,7 @@ setBatteryStatePath(void)
 static BatteryState_t
 getStatus(void)
 {
-    static char batteryStateStr[BUFF_SIZE];
+    static char s_batteryStateStr[BUFF_SIZE];
 
 #if ABC_HAS_UPOWER == 1
 
@@ -85,7 +86,7 @@ getStatus(void)
                               "sed 's^ ^^g'";
 
     const bool isStateValid =
-        abc_terminalController_sendReturnStr(BUFF_SIZE, batteryStateStr, cmd);
+        abc_terminalController_sendReturnStr(BUFF_SIZE, s_batteryStateStr, cmd);
 
 #else
 
@@ -105,7 +106,7 @@ getStatus(void)
     if (s_isBatteryStatePathSet)
     {
         isStateValid =
-            abc_ioService_readStr(batteryStateStr, BUFF_SIZE - 1, s_batteryStatePath);
+            abc_ioService_readStr(s_batteryStateStr, BUFF_SIZE - 1, s_batteryStatePath);
     }
 
 #endif // #if ABC_HAS_UPOWER == 1
@@ -119,19 +120,19 @@ getStatus(void)
 
     // At this point the read str should be NULL terminated.
     // Remove the newline from the end of the string.
-    batteryStateStr[strnlen(batteryStateStr, BUFF_SIZE - 1) - 1] = '\0';
+    s_batteryStateStr[strnlen(s_batteryStateStr, BUFF_SIZE - 1) - 1] = '\0';
 
     // Determine state.
     BatteryState_t state;
-    if (0 == strcmp(dischargingStr, batteryStateStr))
+    if (0 == strcmp(dischargingStr, s_batteryStateStr))
     {
         state = ABC_POWER_CONTROLLER_STATE_DISCHARGING;
     }
-    else if (0 == strcmp(fullyChargedStr, batteryStateStr))
+    else if (0 == strcmp(fullyChargedStr, s_batteryStateStr))
     {
         state = ABC_POWER_CONTROLLER_STATE_FULLY_CHARGED;
     }
-    else if (0 == strcmp(chargingStr, batteryStateStr))
+    else if (0 == strcmp(chargingStr, s_batteryStateStr))
     {
         state = ABC_POWER_CONTROLLER_STATE_CHARGING;
     }
@@ -140,7 +141,7 @@ getStatus(void)
         state = ABC_POWER_CONTROLLER_STATE_UNKNOWN;
     }
 
-    ABC_LOG("battery state(%d) = `%s`", state, batteryStateStr);
+    ABC_LOG("battery state(%d) = `%s`", state, s_batteryStateStr);
 
     return state;
 }
