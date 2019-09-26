@@ -13,10 +13,6 @@ AC_ARG_ENABLE([depscheck],
 AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug],
                              [Turn on assertions and debugging symbols]))
-AC_ARG_ENABLE([skipsystemctlcalls],
-              AS_HELP_STRING([--enable-skipsystemctlcalls],
-                             [Do not make calls to systemctl during install and
-                              uninstall]))
 
 AC_ARG_WITH([upower],
             AS_HELP_STRING([--without-upower],
@@ -59,7 +55,6 @@ AC_CHECK_PROG(exists_convert,  convert,  yes, no)
 AC_CHECK_PROG(exists_sed,     sed,       yes, no)
 AC_CHECK_PROG(exists_grep,    grep,      yes, no)
 AC_CHECK_PROG(exists_upower,  upower,    yes, no)
-AC_CHECK_PROG(exists_systemd, systemctl, yes, no)
 
 
 #
@@ -100,21 +95,6 @@ AS_IF([ test "x$use_upower" == "xyes" ],
 
 AM_CONDITIONAL([ABC_USES_UPOWER], test "x$use_upower" == "xyes")
 
-
-#
-# Systemd
-#
-AS_IF([ test "x$enable_skipsystemctlcalls" == "xno" ],
-      AS_IF([ test "x$exists_systemd" == "xyes"     ],
-            [ allow_systemctl_calls="yes"           ],
-            [ test "x$enable_depscheck" != "xno"    ],
-            [ AC_MSG_ERROR([Trying to call systemctl when it is not installed.])],
-            [ allow_systemctl_calls="no"            ] ),
-      [ test "x$enable_skipsystemctlcalls" == "xyes" ],
-      [ allow_systemctl_calls="no"                   ],
-      [ allow_systemctl_calls="$exists_systemd"      ])
-
-AM_CONDITIONAL([ABC_USES_SYSTEMD], test "x$allow_systemctl_calls" == "xyes")
 
 #
 # Config files

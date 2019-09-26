@@ -19,7 +19,7 @@ webcam.
 
 
 %build
-%configure --with-upower --enable-skipsystemctlcalls --disable-debug
+%configure --with-upower --disable-debug
 make %{?_smp_mflags}
 
 
@@ -28,6 +28,7 @@ rm -rf $RPM_BUILD_ROOT
 %make_install
 
 %post
+systemctl daemon-reexec
 systemctl enable /usr/lib64/systemd/system/autobrightnesscam.service
 systemctl start autobrightnesscam.service
 

@@ -335,8 +335,6 @@ systemdunits_DATA = data/systemd/autobrightnesscam.service
 
 EXTRA_DIST = data/systemd/autobrightnesscam.service.in
 
-if ABC_USES_SYSTEMD
-
 # On systems with SELinux on, enabling a service not in a default location makes
 # enforcing unhappy. So we need to do a heavy systemd reload.
 INSTALL_SYSTEMD_SERVICE_CMDS = \
@@ -348,16 +346,9 @@ UNINSTALL_SYSTEMD_SERVICE_CMDS = \
 	systemctl stop autobrightnesscam.service; \
 	systemctl disable autobrightnesscam.service;
 
-else
-
-INSTALL_SYSTEMD_SERVICE_CMDS   = -echo "Not using systemd"
-UNINSTALL_SYSTEMD_SERVICE_CMDS = -echo "Not using systemd"
-
-endif # if ABC_USES_SYSTEMD
-
 
 #
-# Additional rules.
+# Cleaning rules.
 #
 clean-local: clean-local-check
 
@@ -366,11 +357,24 @@ clean-local: clean-local-check
 clean-local-check:
 	-rm -f ./*abc*.log ./*abc*.test
 
+#
+# Post data installation rule (use the 'local' suffix instead of hook for
+# pre-install).
+#
 install-data-hook:
-	-$(INSTALL_SYSTEMD_SERVICE_CMDS)
 	-mkdir -p $(localstatedir)/tmp
 
+#
+# Post uninstall rule.
+#
 uninstall-local:
-	-$(UNINSTALL_SYSTEMD_SERVICE_CMDS)
 	-rm -f $(localstatedir)/tmp/brightness.jpg
 
+#
+# Custom systemd rules.
+#
+install-systemd-service:
+	-$(INSTALL_SYSTEMD_SERVICE_CMDS)
+
+uninstall-systemd-service:
+	-$(UNINSTALL_SYSTEMD_SERVICE_CMDS)

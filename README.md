@@ -18,9 +18,18 @@ make
 sudo make install
 ```
 
+Optionally for the app `aubrca` to automatically at startup via systemd, run the
+following `make` targets:
+
+````
+sudo make install-systemd-service
+```
+
 To uninstall:
 
+
 ```
+sudo make uninstall-systemd-service
 sudo make uninstall
 ```
 
@@ -29,8 +38,6 @@ Note: `make install-strip` also works. It will exclude debugging symbols.
 ### Notable configure options
 
 - **--enable-debug** - Enable assertions and allow the app to crash gracefully.
-- **--enable-skipsystemctlcalls** - Skip the systemd setup. The app won't start
-  automatically.
 - **--disable-depscheck** - Do not check for runtime dependencies. Useful for VM
   builds.
 
