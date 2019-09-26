@@ -1,12 +1,18 @@
 ## [1.1] Unreleased (-)
 
+### Bugs
+
+- Fixed power controller buffer overflow
+
 ### Build
+
 - Added specs for RPM generation
 - Added enable-debug, disable-depscheck, with-upower and skipsystemctlcalls to
 the configure script
 - Tidy up of the configure.ac and Makefile.am files
 
 ### Added
+
 - Added argument parser for the main program (aubrca) to support version, usage
 and help options
 
