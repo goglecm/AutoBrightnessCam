@@ -10,6 +10,10 @@ AC_INIT([AutoBrightnessCam], [1.0], [yv3r3nd5yi1k@mail.ru])
 AC_ARG_ENABLE([depscheck],
               AS_HELP_STRING([--disable-depscheck],
                              [Do not complain about missing dependencies]))
+AC_ARG_ENABLE([systemdbanner],
+              AS_HELP_STRING([--disable-systemdbanner],
+                             [Do not display instructions on how to install a
+                              systemd service]))
 AC_ARG_ENABLE([debug],
               AS_HELP_STRING([--enable-debug],
                              [Turn on assertions and debugging symbols]))
@@ -94,6 +98,11 @@ AS_IF([ test "x$use_upower" == "xyes" ],
       [ AC_CHECK_HEADER([sys/stat.h], [], [AC_MSG_ERROR([Missing sys/stat.h])])])
 
 AM_CONDITIONAL([ABC_USES_UPOWER], test "x$use_upower" == "xyes")
+
+#
+# Systemd banner
+#
+AM_CONDITIONAL([ABC_PRINTS_SYSTEMD_BANNER], test "x$enable_systemdbanner" != "xno")
 
 
 #

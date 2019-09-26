@@ -19,17 +19,14 @@ sudo make install
 ```
 
 Optionally for the app `aubrca` to automatically at startup via systemd, run the
-following `make` targets:
+`systemctl` commands to `enable` and `start` the service. The name of the
+service is printed at the end of the log trail from the install target.
 
-````
-sudo make install-systemd-service
-```
 
 To uninstall:
 
 
 ```
-sudo make uninstall-systemd-service
 sudo make uninstall
 ```
 

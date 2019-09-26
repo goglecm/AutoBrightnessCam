@@ -7,8 +7,8 @@
 ### Build
 
 - Added specs for RPM generation
-- Added enable-debug, disable-depscheck, with-upower and skipsystemctlcalls to
-the configure script
+- Added enable-debug, disable-depscheck, with-upower and disable-systemdbanner
+flags to the configure script
 - Tidy up of the configure.ac and Makefile.am files
 
 ### Added

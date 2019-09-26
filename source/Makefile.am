@@ -335,16 +335,39 @@ systemdunits_DATA = data/systemd/autobrightnesscam.service
 
 EXTRA_DIST = data/systemd/autobrightnesscam.service.in
 
-# On systems with SELinux on, enabling a service not in a default location makes
-# enforcing unhappy. So we need to do a heavy systemd reload.
-INSTALL_SYSTEMD_SERVICE_CMDS = \
-	systemctl daemon-reexec; \
-	systemctl enable $(systemdunitsdir)/autobrightnesscam.service; \
-	systemctl start autobrightnesscam.service;
+if ABC_PRINTS_SYSTEMD_BANNER
 
-UNINSTALL_SYSTEMD_SERVICE_CMDS = \
-	systemctl stop autobrightnesscam.service; \
-	systemctl disable autobrightnesscam.service;
+echo_systemd_banner = \
+	@echo "" \
+	echo ""; \
+	echo "============================================================="; \
+	echo "                        README"; \
+	echo "============================================================="; \
+	echo "To enable automatic startup via systemd, run the following:"; \
+	echo ""; \
+	echo "On systems with SELinux on, enabling a service not in a default"; \
+	echo "location makes enforcing unhappy. So we need to do a heavy systemd"; \
+	echo "reload."; \
+	echo ""; \
+	echo ">>> sudo systemctl daemon-reexec"; \
+	echo ">>> sudo systemctl enable $(systemdunitsdir)/autobrightnesscam.service"; \
+	echo ">>> sudo systemctl start autobrightnesscam.service"; \
+	echo ""; \
+	echo ""; \
+	echo "Before uninstalling run:"; \
+	echo ""; \
+	echo ">>> sudo systemctl stop autobrightnesscam.service"; \
+	echo ">>> sudo systemctl disable autobrightnesscam.service"; \
+	echo ""; \
+	echo "============================================================="; \
+	echo "                        README"; \
+	echo "=============================================================";
+
+else
+
+echo_systemd_banner = @echo ""
+
+endif # if ABC_PRINTS_SYSTEMD_BANNER
 
 
 #
@@ -352,7 +375,12 @@ UNINSTALL_SYSTEMD_SERVICE_CMDS = \
 #
 clean-local: clean-local-check
 
-.PHONY: clean-local-check install-data-local uninstall-local
+.PHONY: \
+	clean-local-check \
+	install-data-local \
+	uninstall-local \
+	create-systemd-service \
+	remove-systemd-service
 
 clean-local-check:
 	-rm -f ./*abc*.log ./*abc*.test
@@ -363,6 +391,11 @@ clean-local-check:
 #
 install-data-hook:
 	-mkdir -p $(localstatedir)/tmp
+	-$(echo_systemd_banner)
+
+UNINSTALL_SYSTEMD_SERVICE_CMDS = \
+	systemctl stop autobrightnesscam.service; \
+	systemctl disable autobrightnesscam.service;
 
 #
 # Post uninstall rule.
@@ -370,11 +403,3 @@ install-data-hook:
 uninstall-local:
 	-rm -f $(localstatedir)/tmp/brightness.jpg
 
-#
-# Custom systemd rules.
-#
-install-systemd-service:
-	-$(INSTALL_SYSTEMD_SERVICE_CMDS)
-
-uninstall-systemd-service:
-	-$(UNINSTALL_SYSTEMD_SERVICE_CMDS)

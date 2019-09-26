@@ -19,7 +19,7 @@ webcam.
 
 
 %build
-%configure --with-upower --disable-debug
+%configure --with-upower --disable-debug --disable-systemdbanner
 make %{?_smp_mflags}
 
 
