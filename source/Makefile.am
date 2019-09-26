@@ -6,6 +6,7 @@ C_WARNING_FLAGS = \
 	-Wpedantic \
 	-Wextra \
 	-Wno-unknown-warning \
+	-Wno-unknown-warning-option \
 	-Wdouble-promotion \
 	-Wformat-y2k \
 	-Wmissing-include-dirs \
