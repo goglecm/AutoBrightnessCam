@@ -17,8 +17,6 @@
 ### Medium priority
 
 - start looking at deb generation
-- try different compilers
-- install different VMs and try to do a distcheck on each
 
 ### Low priority
 
