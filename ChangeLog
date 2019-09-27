@@ -3,6 +3,8 @@
 ### Bugs
 
 - Fixed power controller buffer overflow
+- The brightness is updated immediately once the app is started rather than
+after the sampling delay
 
 ### Build
 
@@ -15,7 +17,7 @@ flags to the configure script
 
 - Added argument parser for the main program (aubrca) to support version, usage
 and help options
-
+- The brightness is set to max only once when in charging state
 
 
 ## [1.0] Released (21 Sep 2019)

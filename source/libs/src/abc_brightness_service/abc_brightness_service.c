@@ -76,13 +76,13 @@ abc_brightnessService_start(void)
 {
     s_lastTimestamp = abc_timeService_get();
 
+    s_status = ABC_BRIGHTNESSSERVICE_STARTED;
+
     if (ABC_BRIGHTNESSSERVICE_SUCCESS != abc_brightnessService_wakeUp())
     {
         ABC_LOG_ERR("service started but it failed to wakeup properly, "
                     "further wakeups may or may not fail");
     }
-
-    s_status = ABC_BRIGHTNESSSERVICE_STARTED;
 }
 
 Result_t
@@ -95,13 +95,28 @@ abc_brightnessService_wakeUp(void)
         return ABC_BRIGHTNESSSERVICE_FAILURE;
     }
 
+    static bool
+    s_isSetToMax = false;
+
+    ABC_LOG("Waking up");
+
     // When charging, the brightness is at max.
     if (abc_powerController_isCharging())
     {
-        abc_backlightBrightnessController_set(g_abc_BacklightBrightnessController_MAX);
+        ABC_LOG("Battery is charging");
+
+        if (!s_isSetToMax)
+        {
+            ABC_LOG("Max brightness is not set");
+
+            abc_backlightBrightnessController_set(g_abc_BacklightBrightnessController_MAX);
+            s_isSetToMax = true;
+        }
 
         return ABC_BRIGHTNESSSERVICE_SUCCESS;
     }
+
+    s_isSetToMax = false;
 
     // Wait until one period has passed since the last timestamp.
     const time_t now = abc_timeService_get();
