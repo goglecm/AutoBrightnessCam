@@ -236,3 +236,39 @@ TEST_F(abc_brightness_service, backlight_is_set_to_maximum_when_charging)
     ASSERT_DOUBLE_EQ(g_abc_BacklightBrightnessController_MAX,
                      actualBrightness.value);
 }
+
+TEST_F(abc_brightness_service, backlight_is_set_to_maximum_once_per_charging_session)
+{
+    // Start the service in discharging state.
+    fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_DISCHARGING);
+
+    abc_brightnessService_start();
+
+    fake_abc_timeService_forward(s_TEST_DEFAULT_PERIOD_SEC);
+
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS, abc_brightnessService_wakeUp());
+
+    // Move the service into charging state.
+    fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_CHARGING);
+    fake_abc_backlightBrightnessController_resetNumSetCalls();
+
+    for (int wakeNo = 0; wakeNo < 5; ++wakeNo)
+    {
+        fake_abc_timeService_forward(s_TEST_DEFAULT_PERIOD_SEC);
+        ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS, abc_brightnessService_wakeUp());
+    }
+
+    ASSERT_EQ(1, fake_abc_backlightBrightnessController_numSetCalls());
+
+    // Move the service into discharging state.
+    fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_DISCHARGING);
+    fake_abc_backlightBrightnessController_resetNumSetCalls();
+
+    for (int wakeNo = 0; wakeNo < 5; ++wakeNo)
+    {
+        fake_abc_timeService_forward(s_TEST_DEFAULT_PERIOD_SEC);
+        ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS, abc_brightnessService_wakeUp());
+    }
+
+    ASSERT_EQ(5, fake_abc_backlightBrightnessController_numSetCalls());
+}
