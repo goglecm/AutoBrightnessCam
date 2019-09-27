@@ -1,7 +1,7 @@
 #
 # Initialise autoconf
 #
-AC_INIT([AutoBrightnessCam], [1.0], [yv3r3nd5yi1k@mail.ru])
+AC_INIT([AutoBrightnessCam], [1.1], [yv3r3nd5yi1k@mail.ru])
 
 
 #

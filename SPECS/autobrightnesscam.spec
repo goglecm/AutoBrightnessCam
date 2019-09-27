@@ -1,11 +1,11 @@
 Name:           autobrightnesscam
-Version:        1.0
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Adjusts the brightness based on the luminosity from the webcam.
 
 License:        GPLv3+
-URL:            https://github.com/goglecm/AutoBrightnessCam/releases/download/v1.0/autobrightnesscam-1.0.tar.gz
-Source0:        autobrightnesscam-1.0.tar.gz
+URL:            https://github.com/goglecm/AutoBrightnessCam/releases/download/v1.1/autobrightnesscam-1.1.tar.gz
+Source0:        autobrightnesscam-1.1.tar.gz
 
 BuildRequires:  gcc make
 Requires:       fswebcam ImageMagick systemd upower
