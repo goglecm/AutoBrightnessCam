@@ -8,6 +8,29 @@ Service to automatically adjust the display brightness using the webcam as an
 ambient luminosity sensor. Generally useful for laptops without an ambient light
 sensor (ALS).
 
+The command line app is called `aubrca`. You can start it manually or you can tell systemd to start it automatically (a service file is provided, see the tail of the `./configure` output log for the full path).
+
+Here are the relevant systemd commands:
+
+#### Install:
+```
+sudo systemctl daemon-reexec
+sudo systemctl enable /usr/lib64/systemd/system/autobrightnesscam.service # May be different on your system.
+sudo systemctl start autobrightnesscam.service
+```
+#### Uninstall:
+```
+sudo systemctl stop autobrightnesscam.service
+sudo systemctl disable autobrightnesscam.service
+```
+
+## Alternatives
+
+This app uses autotools and is easily installable on any \*nix like system. Some alternatives are:
+
+ - https://github.com/FedeDP/Clight
+ - http://calise.sourceforge.net/wordpress/
+
 ## Installation
 
 ### TL;DR
