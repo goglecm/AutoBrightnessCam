@@ -84,4 +84,4 @@ When:
 - convert
 - upower
 - systemd
-rpmbuild -ba rpmbuild/SPECS/autobrightnesscam.spec
+
