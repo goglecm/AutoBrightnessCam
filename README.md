@@ -1,6 +1,8 @@
 # AutoBrightnessCam
 
 [![Build Status](https://travis-ci.org/goglecm/AutoBrightnessCam.svg?branch=master)](https://travis-ci.org/goglecm/AutoBrightnessCam)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/goglecm/AutoBrightnessCam.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/goglecm/AutoBrightnessCam/context:cpp)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/goglecm/AutoBrightnessCam.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/goglecm/AutoBrightnessCam/alerts/)
 
 Service to automatically adjust the display brightness using the webcam as an
 ambient luminosity sensor. Generally useful for laptops without an ambient light
