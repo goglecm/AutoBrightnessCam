@@ -7,15 +7,15 @@
 ### High priority
 
 - Try different versions of autotools
-- Need to create some automation to pass the code through some static analysers
-  or similar
 - Need to also automate some sort of coverage runs with gcov for the C code to
   maintain an above 90% test coverage
 - Need to sign tarball and RPM releases
-- Need to add documentation for the app
+- Need to add some configuration files which the user can edit via the app such
+  as the sampling rate, paths to battery, display, min or max brightness
 
 ### Medium priority
 
+- test rpm builds as well during CI
 - start looking at deb generation
 
 ### Low priority
