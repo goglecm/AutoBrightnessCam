@@ -29,7 +29,8 @@ sudo systemctl disable autobrightnesscam.service
 This app uses autotools and is easily installable on any \*nix like system. Some alternatives are:
 
  - https://github.com/FedeDP/Clight
- - http://calise.sourceforge.net/wordpress/
+ - http://calise.sourceforge.net/wordpress
+ - https://launchpad.net/brightness
  - https://github.com/billyboar/autobrightness
 
 ## Installation
