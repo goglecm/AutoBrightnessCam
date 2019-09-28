@@ -30,6 +30,7 @@ This app uses autotools and is easily installable on any \*nix like system. Some
 
  - https://github.com/FedeDP/Clight
  - http://calise.sourceforge.net/wordpress/
+ - https://github.com/billyboar/autobrightness
 
 ## Installation
 
