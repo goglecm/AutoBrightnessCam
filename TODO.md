@@ -4,29 +4,36 @@
 
 - none
 
-### High priority
+### Features
+
+- The brightness should also depend on the battery charge level, i.e. when the battery is low, the brightness should go down   as well
+- Need to workout how exposure works and improve the brightness detection from the picture (perhaps this is the bias when looking at the histogram?)
+- Need to add some configuration files which the user can edit via the app such
+  as the sampling rate, paths to battery, display, min or max brightness
+- add timestamp for the logs
+- (later) add module name appended to the log name (i.e. register each module
+  with the logger)
+- remove the terminal module and rather than calling system/popen properly
+  implement what the command are supposed to do
+- allow the user to point the paths for any unavailable optional features
+
+### Build and releases
+
+#### High priority
 
 - Try different versions of autotools
 - Need to also automate some sort of coverage runs with gcov for the C code to
   maintain an above 90% test coverage
 - Need to sign tarball and RPM releases
-- Need to add some configuration files which the user can edit via the app such
-  as the sampling rate, paths to battery, display, min or max brightness
 
-### Medium priority
+#### Medium priority
 
 - test rpm builds as well during CI
 - start looking at deb generation
 
-### Low priority
+#### Low priority
 
-- add timestamp for the logs
-- (later) add module name appended to the log name (i.e. register each module
-  with the logger)
 - add support for gmock
-- remove the terminal module and rather than calling system/popen properly
-  implement what the command are supposed to do
-- allow the user to point the paths for any unavailable optional features
 
 # Features
 
