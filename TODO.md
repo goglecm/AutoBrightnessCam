@@ -6,8 +6,10 @@
 
 ### Features
 
-- The brightness should also depend on the battery charge level, i.e. when the battery is low, the brightness should go down   as well
-- Need to workout how exposure works and improve the brightness detection from the picture (perhaps this is the bias when looking at the histogram?)
+- The brightness should also depend on the battery charge level, i.e. when the
+  battery is low, the brightness should go down as well
+- Need to workout how exposure works and improve the brightness detection from
+  the picture (perhaps this is the bias when looking at the histogram?)
 - Need to add some configuration files which the user can edit via the app such
   as the sampling rate, paths to battery, display, min or max brightness
 - add timestamp for the logs
@@ -91,4 +93,3 @@ When:
 - convert
 - upower
 - systemd
-
