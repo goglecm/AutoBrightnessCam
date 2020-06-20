@@ -1,15 +1,14 @@
 #include "abc_io_service/abc_io_service.h"
 
 #include "abc_logging_service/abc_logging_service.h"
+#include "abc_utils/abc_utils.h"
 
-#include <stdio.h>
-#include <errno.h>
-#include <stddef.h>
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <sys/stat.h>
+#include <stddef.h>
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
 bool
 abc_ioService_exists(const char *const restrict pFileName)
@@ -73,50 +72,6 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     }
 
     return isReturnOK;
-}
-
-static inline bool
-strToInt(int *const restrict pResult, const char *const restrict pStr)
-{
-    assert(pResult && pStr);
-
-    errno = 0;
-
-    char *pEnd;
-    const long readNum = strtol(pStr, &pEnd, 10);
-    if (errno)
-    {
-        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
-
-        return false;
-    }
-
-    // Check if anything was read.
-    if (pEnd == pStr)
-    {
-        ABC_LOG_ERR("Failed to convert string to long as nothing was read");
-
-        return false;
-    }
-
-    // A full conversion occurs when pEnd is null or '\n'.
-    if (*pEnd && *pEnd != '\n')
-    {
-        ABC_LOG_ERR("Failed to convert the string fully to long");
-
-        return false;
-    }
-
-    if (readNum > INT_MAX || readNum < INT_MIN)
-    {
-        ABC_LOG_ERR("The read value (%lu) is too large", readNum);
-
-        return false;
-    }
-
-    *pResult = (int)readNum;
-
-    return true;
 }
 
 bool
@@ -242,7 +197,7 @@ abc_ioService_read(int *const restrict pValue,
     }
 
     readLine[9] = '\0';
-    if (!strToInt(pValue, readLine))
+    if (!abc_utils_strToInt(pValue, readLine))
     {
         return false;
     }

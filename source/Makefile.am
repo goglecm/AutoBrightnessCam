@@ -83,14 +83,15 @@ noinst_LTLIBRARIES = libabc_ambient_controller.la \
 					 libabc_logging_service.la \
 					 libabc_power_controller.la \
 					 libabc_terminal_controller.la \
-					 libabc_time_service.la
+					 libabc_time_service.la \
+					 libabc_utils.la
 
 
 #
 # Library dependencies
 #
 libabc_filter_la_LIBADD              = libabc_logging_service.la
-libabc_io_service_la_LIBADD          = libabc_logging_service.la
+libabc_utils_la_LIBADD               = libabc_logging_service.la
 libabc_terminal_controller_la_LIBADD = libabc_logging_service.la
 libabc_time_service_la_LIBADD        = libabc_logging_service.la
 libabc_power_controller_la_LIBADD    = libabc_logging_service.la
@@ -124,6 +125,10 @@ libabc_brightness_service_la_LIBADD = \
 	libabc_logging_service.la \
 	libabc_filter.la
 
+libabc_io_service_la_LIBADD = \
+	libabc_logging_service.la \
+	libabc_utils.la
+
 #
 # Library sources
 #
@@ -136,6 +141,7 @@ libabc_logging_service_la_SOURCES      = libs/src/abc_logging_service/abc_loggin
 libabc_power_controller_la_SOURCES     = libs/src/abc_power_controller/abc_power_controller.c
 libabc_terminal_controller_la_SOURCES  = libs/src/abc_terminal_controller/abc_terminal_controller.c
 libabc_time_service_la_SOURCES         = libs/src/abc_time_service/abc_time_service.c
+libabc_utils_la_SOURCES                = libs/src/abc_utils/abc_utils.c
 
 
 #
@@ -150,6 +156,7 @@ libabc_logging_service_la_SOURCES      += libs/inc/abc_logging_service/abc_loggi
 libabc_power_controller_la_SOURCES     += libs/inc/abc_power_controller/abc_power_controller.h
 libabc_terminal_controller_la_SOURCES  += libs/inc/abc_terminal_controller/abc_terminal_controller.h
 libabc_time_service_la_SOURCES         += libs/inc/abc_time_service/abc_time_service.h
+libabc_utils_la_SOURCES                += libs/inc/abc_utils/abc_utils.h
 
 
 #
@@ -214,6 +221,7 @@ check_PROGRAMS = \
 	test_abc_logging_service \
 	test_abc_filter \
 	test_abc_io_service \
+	test_abc_utils \
 	test_abc_power_controller \
 	test_abc_power_controller_upower \
 	test_abc_terminal_controller \
@@ -226,7 +234,8 @@ test_abc_logging_service_LDADD                          = libabc_test.la -lgtest
 test_abc_brightness_service_LDADD                       = $(ABC_TEST_LDLIBS)
 test_abc_brightness_service_fake_abc_time_service_LDADD = $(ABC_TEST_LDLIBS)
 test_abc_filter_LDADD                                   = $(ABC_TEST_LDLIBS)
-test_abc_io_service_LDADD                               = $(ABC_TEST_LDLIBS)
+test_abc_io_service_LDADD                               = libabc_utils.la $(ABC_TEST_LDLIBS) # No need to fake the abc_utils module.
+test_abc_utils_LDADD                                    = $(ABC_TEST_LDLIBS)
 test_abc_power_controller_LDADD                         = $(ABC_TEST_LDLIBS)
 test_abc_power_controller_upower_LDADD                  = $(ABC_TEST_LDLIBS)
 test_abc_terminal_controller_LDADD                      = $(ABC_TEST_LDLIBS)
@@ -238,6 +247,7 @@ test_abc_brightness_service_CPPFLAGS                       = $(ABC_TEST_FLAGS)
 test_abc_brightness_service_fake_abc_time_service_CPPFLAGS = $(ABC_TEST_FLAGS)
 test_abc_filter_CPPFLAGS                                   = $(ABC_TEST_FLAGS)
 test_abc_io_service_CPPFLAGS                               = $(ABC_TEST_FLAGS)
+test_abc_utils_CPPFLAGS                                    = $(ABC_TEST_FLAGS)
 test_abc_power_controller_CPPFLAGS                         = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CPPFLAGS                  = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_terminal_controller_CPPFLAGS                      = $(ABC_TEST_FLAGS)
@@ -249,6 +259,7 @@ test_abc_brightness_service_CFLAGS                       = $(ABC_TEST_FLAGS) $(C
 test_abc_brightness_service_fake_abc_time_service_CFLAGS = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_filter_CFLAGS                                   = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_io_service_CFLAGS                               = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
+test_abc_utils_CFLAGS                                    = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_power_controller_CFLAGS                         = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CFLAGS                  = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_terminal_controller_CFLAGS                      = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
@@ -297,6 +308,10 @@ test_abc_io_service_SOURCES = \
 	$(libabc_io_service_la_SOURCES) \
 	libs/tests/abc_io_service/tests_abc_io_service.cpp
 
+test_abc_utils_SOURCES = \
+	$(libabc_utils_la_SOURCES) \
+	libs/tests/abc_utils/tests_abc_utils.cpp
+
 test_abc_power_controller_SOURCES = \
 	$(libabc_power_controller_la_SOURCES) \
 	libs/tests/abc_power_controller/tests_abc_power_controller.cpp \
@@ -320,6 +335,7 @@ TESTS = \
 	test_abc_logging_service \
 	test_abc_filter \
 	test_abc_io_service \
+	test_abc_utils \
 	test_abc_power_controller_upower \
 	test_abc_power_controller \
 	test_abc_terminal_controller \

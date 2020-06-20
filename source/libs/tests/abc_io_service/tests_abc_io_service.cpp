@@ -124,17 +124,6 @@ TEST_F(abc_io_service, read_fails_when_file_is_empty)
     ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
 }
 
-TEST_F(abc_io_service, read_fails_when_file_has_alphanumeric_data)
-{
-    const std::string filename(DEFAULT_FILENAME);
-
-    setValue(filename, "abc10");
-
-    int ret;
-
-    ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
-}
-
 TEST_F(abc_io_service, reports_true_when_file_exists)
 {
     const std::string filename(DEFAULT_FILENAME);
