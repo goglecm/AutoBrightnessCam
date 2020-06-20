@@ -4,6 +4,9 @@ let g:ale_cpp_flawfinder_minlevel = 3
 let g:ale_lint_delay = 2000
 
 let g:ale_linters = {'c': ['gcc', 'clang']}
+let g:ale_linters = {'cpp': ['gcc', 'clang']}
+
+let g:ale_linters_explicit = 1
 
 let g:ale_c_clangtidy_options = '
             \ -Isource/libs/inc
