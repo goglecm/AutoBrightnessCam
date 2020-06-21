@@ -138,6 +138,228 @@ abc_ioService_readStr(char *const restrict pBuf,
     return true;
 }
 
+static inline bool
+readLineStartingWith(
+        const char *const restrict pStartStr,
+        char *const restrict pRetStr,
+        const int retStrBufMaxLen,
+        const char *const restrict pFileName)
+{
+    assert(pStartStr &&
+            pRetStr &&
+            pFileName &&
+            retStrBufMaxLen > (int)(strlen(pStartStr) + 1));
+
+
+    // # Open the file.
+
+    FILE *const restrict pFile = fopen(pFileName, "r");
+
+    if (NULL == pFile)
+    {
+        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
+
+        return false;
+    }
+
+
+    // Down cast as we've range checked the length of the starting string.
+    const int startStrLen = (int)strlen(pStartStr);
+
+    bool errorsEncountered = false;
+
+    ABC_LOG("Starting string is `%s`", pStartStr);
+
+    // # Search for the beginning of the start string and skip over it.
+    int charsMatched = 0;
+    int readChar;
+    int charsReadInCurrentLine = 0;
+    while (charsMatched != startStrLen || charsReadInCurrentLine != startStrLen)
+    {
+        // ## Read the next char.
+        errno = 0;
+        readChar = fgetc(pFile);
+
+        if (0 != errno)
+        {
+            ABC_LOG_ERR("Failed to read file due to: %s", strerror(errno));
+
+            break;
+        }
+
+        if (readChar == EOF)
+        {
+            break;
+        }
+
+
+        // ## Update char counters.
+        if (readChar == '\n')
+        {
+            charsReadInCurrentLine = 0;
+        }
+        else
+        {
+            charsReadInCurrentLine++;
+        }
+
+
+        // ## Check if the char matches the starting string.
+        if (charsMatched < startStrLen && pStartStr[charsMatched] == readChar)
+        {
+            charsMatched++;
+        }
+        else
+        {
+            charsMatched = 0;
+        }
+
+        ABC_LOG("Checking char `%c`(0x%x), charsMatched %d, "
+                "charsReadInCurrentLine %d, start len %d",
+                readChar,
+                readChar,
+                charsMatched,
+                charsReadInCurrentLine,
+                startStrLen);
+    }
+
+
+    // # Handle the case when reaching the end of file prematurely.
+    if (charsMatched != startStrLen)
+    {
+        ABC_LOG_ERR("Failed to find starting string");
+
+        errorsEncountered = true;
+    }
+
+
+    // # Found the line, now read the remainder of the it.
+    if (!errorsEncountered)
+    {
+        char lineRemStr[retStrBufMaxLen - startStrLen];
+
+        if (NULL == fgets(lineRemStr, (int)sizeof(lineRemStr), pFile))
+        {
+            ABC_LOG_ERR("Reached EOF too early: %s", strerror(errno));
+
+            errorsEncountered = true;
+        }
+        else if (errno)
+        {
+            ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+
+            errorsEncountered = true;
+        }
+        else
+        {
+            ABC_LOG("Read remainder `%s` from file %s", lineRemStr, pFileName);
+
+            memcpy(pRetStr, pStartStr, startStrLen);
+            memcpy(pRetStr + startStrLen, lineRemStr, strlen(lineRemStr) + 1);
+
+            ABC_LOG("Resultant line is `%s`", pRetStr);
+        }
+    }
+
+
+    // # Close the file.
+    errno = 0;
+    if (0 != fclose(pFile))
+    {
+        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+                    "File is left in an undefined state.",
+                    pFileName, strerror(errno));
+
+        errorsEncountered = true;
+    }
+
+    return ! errorsEncountered;
+}
+
+bool
+abc_ioService_readLineStartingWith(
+        const char *const restrict pStartStr,
+        char *const restrict pRetStr,
+        const int retStrBufMaxLen,
+        const char *const restrict pFileName)
+{
+    // # Pointer validation.
+
+    if (NULL == pStartStr)
+    {
+        ABC_LOG_ERR("Bad start string");
+
+        return false;
+    }
+
+    if (NULL == pRetStr)
+    {
+        ABC_LOG_ERR("Bad return string");
+
+        return false;
+    }
+
+    if (NULL == pFileName)
+    {
+        ABC_LOG_ERR("Bad filename");
+
+        return false;
+    }
+
+
+    // # Range checking.
+
+    // Excluding null terminator.
+    static const int s_MAX_STR_LEN = 128;
+
+    // Excluding null terminator.
+    static const int s_MAX_FILENAME_LENGTH = 512;
+
+    const size_t startStrLen = strlen(pStartStr);
+
+    if (startStrLen < 1 || startStrLen > (size_t)s_MAX_STR_LEN)
+    {
+        ABC_LOG_ERR("Bad start string length");
+
+        return false;
+    }
+
+    if (strlen(pFileName) < 1 || strlen(pFileName) > (size_t)s_MAX_FILENAME_LENGTH)
+    {
+        ABC_LOG_ERR("Bad filename length");
+
+        return false;
+    }
+
+    if (retStrBufMaxLen < 1 || retStrBufMaxLen > s_MAX_STR_LEN)
+    {
+        ABC_LOG_ERR("Bad return string max length %d", retStrBufMaxLen);
+
+        return false;
+    }
+
+
+    // # Handle the easy cases (not requiring file reads).
+
+    // Down casting as we've just range checked startStrLen.
+    if (retStrBufMaxLen <= (int)(startStrLen + 1))
+    {
+        memcpy(pRetStr, pStartStr, retStrBufMaxLen);
+
+        pRetStr[retStrBufMaxLen - 1] = '\0';
+
+        ABC_LOG("Returning the starting string (or a portion of it)  %s as the "
+                "max length is %d", pRetStr, retStrBufMaxLen);
+
+        return true;
+    }
+
+
+    // # Handle the general case (requiring file reads).
+
+    return readLineStartingWith(pStartStr, pRetStr, retStrBufMaxLen, pFileName);
+}
+
 bool
 abc_ioService_read(int *const restrict pValue,
                    const char *const restrict pFileName)

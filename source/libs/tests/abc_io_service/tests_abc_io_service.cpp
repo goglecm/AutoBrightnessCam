@@ -38,7 +38,7 @@ setValue(const std::string &fileName, const T value)
 
     std::ofstream outfile (fileName.c_str());
 
-    ABC_LOG("written %s to file %s", outValue.str().c_str(), fileName.c_str());
+    ABC_LOG("written `%s` to file %s", outValue.str().c_str(), fileName.c_str());
 
     outfile << outValue.str() << std::endl;
 
@@ -49,6 +49,57 @@ static void
 createFile(const std::string &fileName)
 {
     setValue<const char *>(fileName, "");
+}
+
+TEST_F(abc_io_service, fail_to_find_line_starting_with_a_string)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    const std::string firstLine("hello world");
+    const std::string secondLine("another line");
+    const std::string thirdLine("last line");
+
+    setValue<std::string>(
+            filename,
+            firstLine + "\n" +
+            secondLine + "\n" +
+            thirdLine + "\n");
+
+    const int fullLineLen = 32;
+    char fullLine[fullLineLen];
+    memset(fullLine, 99, fullLineLen);
+    ASSERT_FALSE(
+            abc_ioService_readLineStartingWith(
+                "bad line", fullLine, fullLineLen, filename.c_str()));
+
+    for (int i = 0; i < fullLineLen; ++i)
+    {
+        ASSERT_EQ(99, fullLine[i]);
+    }
+}
+
+TEST_F(abc_io_service, finds_line_starting_with_a_string)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    const std::string firstLine("hello world");
+    const std::string secondLine("another line");
+    const std::string thirdLine("last line");
+
+    setValue<std::string>(
+            filename,
+            firstLine + "\n" +
+            secondLine + "\n" +
+            thirdLine + "\n");
+
+    const int fullLineLen = secondLine.length() + 1;
+    char fullLine[fullLineLen];
+    memset(fullLine, 0, fullLineLen);
+    ASSERT_TRUE(
+            abc_ioService_readLineStartingWith(
+                "another", fullLine, fullLineLen, filename.c_str()));
+
+    ASSERT_EQ(secondLine, std::string(fullLine));
 }
 
 TEST_F(abc_io_service, write_to_non_existant_file_creates_the_file_and_writes_to_it)

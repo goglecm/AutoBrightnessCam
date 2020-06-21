@@ -25,6 +25,13 @@ abc_utils_strToInt(int *const restrict pResult, const char *const pStr)
         return false;
     }
 
+    if (strlen(pStr) == 0)
+    {
+        ABC_LOG_ERR("Bad string length");
+
+        return false;
+    }
+
     errno = 0;
 
     char *pEnd;
