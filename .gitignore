@@ -12,6 +12,7 @@ missing
 test-driver
 tags
 build
+install
 INSTALL
 *~
 *.swp
