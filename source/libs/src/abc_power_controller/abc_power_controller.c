@@ -6,17 +6,18 @@
 #include "abc_logging_service/abc_logging_service.h"
 
 
-// Define ABC_HAS_UPOWER if undefined.
-#if !defined(ABC_HAS_UPOWER)
-#   define ABC_HAS_UPOWER 0
-#endif // if !defined(ABC_HAS_UPOWER)
+#ifndef ABC_HAS_UPOWER
+
+#error "ABC_HAS_UPOWER is not defined"
+
+#endif // ABC_HAS_UPOWER
 
 
 #if ABC_HAS_UPOWER == 1
 #   include "abc_terminal_controller/abc_terminal_controller.h"
 #else
 #   include "abc_io_service/abc_io_service.h"
-#endif // #if defined(ABC_HAS_UPOWER) && ABC_HAS_UPOWER == 1
+#endif // ABC_HAS_UPOWER
 
 
 #define BUFF_SIZE 128U
