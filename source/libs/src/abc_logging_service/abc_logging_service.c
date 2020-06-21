@@ -14,16 +14,15 @@ FILE
 *g_pLogFile = NULL;
 
 
-// By default, store logs in the pwd.
-#ifndef ABC_LOGGING_PATH
+#ifndef ABC_LOGGING_DEFAULT_FILENAME
 
-#define ABC_LOGGING_PATH "."
+#error "ABC_LOGGING_DEFAULT_FILENAME is not defined"
 
 #endif
 
 
 char
-g_logFilename[512] = ABC_LOGGING_PATH "/log.log";
+g_logFilename[512] = ABC_LOGGING_DEFAULT_FILENAME;
 
 
 bool
@@ -36,7 +35,7 @@ abc_loggingService_setLogName(const char *const restrict pLogName)
         return false;
     }
 
-    if (strlen(ABC_LOGGING_PATH "/") + 1 + strnlen(pLogName, 512) > 512)
+    if (strnlen(pLogName, sizeof(g_logFilename)) == sizeof(g_logFilename))
     {
         ABC_LOG_STDOUT_ERR("failed to set log name path as it exceeds the required length");
 
@@ -49,9 +48,7 @@ abc_loggingService_setLogName(const char *const restrict pLogName)
 
     ABC_LOG_STDOUT("old path is %s\n", g_logFilename);
 
-    strncpy(g_logFilename, ABC_LOGGING_PATH "/", sizeof(g_logFilename) - 1);
-
-    strncpy(&g_logFilename[strlen(g_logFilename)], pLogName, sizeof(g_logFilename) - 1);
+    strncpy(g_logFilename, pLogName, sizeof(g_logFilename) - 1);
 
     ABC_LOG_STDOUT("new path is %s\n", g_logFilename);
 

@@ -58,13 +58,17 @@ GENERAL_DEFINITIONS += \
 
 if ABC_USES_DEBUG
 
-GENERAL_DEFINITIONS += -DDEBUG=1
+GENERAL_DEFINITIONS += \
+	-DDEBUG=1 \
+	-DABC_LOGGING_ON=1 \
+	-DABC_LOGGING_DEFAULT_FILENAME=\"$(localstatedir)/aubrca/debug.log\"
 
 else
 
-GENERAL_DEFINITIONS += -DNDEBUG=1
+GENERAL_DEFINITIONS += -DNDEBUG=1 -DABC_LOGGING_ON=0
 
 endif # if ABC_USES_DEBUG
+
 
 #
 # Global build flags
@@ -189,6 +193,7 @@ AM_CXXFLAGS = -std=c++11 -Wall -Wextra
 
 ABC_TEST_FLAGS = \
 	-DABC_LOGGING_ON=1 \
+	-DABC_LOGGING_DEFAULT_FILENAME=\"log.log\" \
 	-DDEBUG=1 \
 	-I$(top_srcdir)/source/libs/inc \
 	-I$(top_srcdir)/source/libs/inc_test \
@@ -471,7 +476,7 @@ clean-local-check:
 # pre-install).
 #
 install-data-hook:
-	-mkdir -p $(localstatedir)/tmp
+	-mkdir -p $(localstatedir)/aubrca
 	-$(echo_systemd_banner)
 
 UNINSTALL_SYSTEMD_SERVICE_CMDS = \
@@ -482,4 +487,5 @@ UNINSTALL_SYSTEMD_SERVICE_CMDS = \
 # Post uninstall rule.
 #
 uninstall-local:
-	-rm -f $(localstatedir)/tmp/brightness.jpg
+	-rm -rf $(localstatedir)/aubrca
+	-rm -rf $(datadir)/aubrca

@@ -8,19 +8,20 @@ extern "C" {
 #include <stdbool.h>
 #include <stdio.h>
 
-// File logging is disabled by default.
+
 #ifndef ABC_LOGGING_ON
 
-#define ABC_LOGGING_ON 0
+#error "ABC_LOGGING_ON is not defined"
 
-#endif // #ifndef ABC_LOGGING_ON
+#endif // ABC_LOGGING_ON
 
-// stdout logging is disabled by default.
-#ifndef ABC_STDOUT_LOGGING_ON
 
-#define ABC_STDOUT_LOGGING_ON 0
+#if ABC_LOGGING_ON != 0 && ABC_LOGGING_ON != 1
 
-#endif // #ifndef ABC_LOGGING_ON
+#error "Invalid value for ABC_LOGGING_ON"
+
+#endif // ABC_LOGGING_ON
+
 
 #if ABC_LOGGING_ON == 1
 
