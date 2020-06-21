@@ -50,7 +50,10 @@ GENERAL_DEFINITIONS = -DABC_HAS_UPOWER=0
 endif # if ABC_USES_UPOWER
 
 
-GENERAL_DEFINITIONS += -DABC_PICTURE_DIR=\"$(localstatedir)\"
+GENERAL_DEFINITIONS += \
+	-DABC_PICTURE_DIR=\"$(localstatedir)\" \
+	-DABC_CONFIG_FILENAME=\"$(sysconfdir)/aubrca.conf\" \
+	-DABC_CONFIG_DEFAULTS_FILENAME=\"$(datadir)/aubrca/defaults.conf\"
 
 
 if ABC_USES_DEBUG
@@ -73,7 +76,7 @@ AM_CFLAGS = \
 
 
 #
-# Libraries
+# Libraries (not to be installed)
 #
 noinst_LTLIBRARIES = libabc_ambient_controller.la \
 					 libabc_backlight_controller.la \
@@ -84,18 +87,18 @@ noinst_LTLIBRARIES = libabc_ambient_controller.la \
 					 libabc_power_controller.la \
 					 libabc_terminal_controller.la \
 					 libabc_time_service.la \
+					 libabc_config_service.la \
 					 libabc_utils.la
 
 
 #
-# Library dependencies
+# Library dependencies (no recursive dependencies allowed)
 #
 libabc_filter_la_LIBADD              = libabc_logging_service.la
 libabc_utils_la_LIBADD               = libabc_logging_service.la
 libabc_terminal_controller_la_LIBADD = libabc_logging_service.la
 libabc_time_service_la_LIBADD        = libabc_logging_service.la
 libabc_power_controller_la_LIBADD    = libabc_logging_service.la
-
 
 if ABC_USES_UPOWER
 
@@ -106,7 +109,6 @@ else
 libabc_power_controller_la_LIBADD += libabc_io_service.la
 
 endif # if ABC_USES_UPOWER
-
 
 libabc_ambient_controller_la_LIBADD = \
 	libabc_terminal_controller.la \
@@ -125,6 +127,11 @@ libabc_brightness_service_la_LIBADD = \
 	libabc_logging_service.la \
 	libabc_filter.la
 
+libabc_config_service_la_LIBADD = \
+	libabc_logging_service.la \
+	libabc_io_service.la \
+	libabc_utils.la
+
 libabc_io_service_la_LIBADD = \
 	libabc_logging_service.la \
 	libabc_utils.la
@@ -141,6 +148,7 @@ libabc_logging_service_la_SOURCES      = libs/src/abc_logging_service/abc_loggin
 libabc_power_controller_la_SOURCES     = libs/src/abc_power_controller/abc_power_controller.c
 libabc_terminal_controller_la_SOURCES  = libs/src/abc_terminal_controller/abc_terminal_controller.c
 libabc_time_service_la_SOURCES         = libs/src/abc_time_service/abc_time_service.c
+libabc_config_service_la_SOURCES       = libs/src/abc_config_service/abc_config_service.c
 libabc_utils_la_SOURCES                = libs/src/abc_utils/abc_utils.c
 
 
@@ -156,6 +164,7 @@ libabc_logging_service_la_SOURCES      += libs/inc/abc_logging_service/abc_loggi
 libabc_power_controller_la_SOURCES     += libs/inc/abc_power_controller/abc_power_controller.h
 libabc_terminal_controller_la_SOURCES  += libs/inc/abc_terminal_controller/abc_terminal_controller.h
 libabc_time_service_la_SOURCES         += libs/inc/abc_time_service/abc_time_service.h
+libabc_config_service_la_SOURCES       += libs/inc/abc_config_service/abc_config_service.h
 libabc_utils_la_SOURCES                += libs/inc/abc_utils/abc_utils.h
 
 
@@ -164,7 +173,12 @@ libabc_utils_la_SOURCES                += libs/inc/abc_utils/abc_utils.h
 #
 bin_PROGRAMS = aubrca
 
-aubrca_LDADD   = libabc_brightness_service.la
+aubrca_LDADD = \
+	libabc_brightness_service.la \
+	libabc_backlight_controller.la \
+	libabc_config_service.la \
+	libabc_logging_service.la
+
 aubrca_SOURCES = programs/src/main/main.c
 
 
@@ -179,6 +193,8 @@ ABC_TEST_FLAGS = \
 	-I$(top_srcdir)/source/libs/inc \
 	-I$(top_srcdir)/source/libs/inc_test \
 	-I$(top_srcdir)/source/libs/tests/test_lib/inc \
+	-DABC_CONFIG_FILENAME=\"aubrca.conf\" \
+	-DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\" \
 	-DABC_PICTURE_DIR=\"\"
 
 check_LTLIBRARIES = \
@@ -195,7 +211,7 @@ libabc_test_la_SOURCES  = \
 
 libabc_test_la_CPPFLAGS = $(ABC_TEST_FLAGS)
 
-libabc_test_la_LIBADD   = libabc_logging_service_active.la
+libabc_test_la_LIBADD = libabc_logging_service_active.la
 
 #
 # Testing logging library
@@ -222,6 +238,7 @@ check_PROGRAMS = \
 	test_abc_filter \
 	test_abc_io_service \
 	test_abc_utils \
+	test_abc_config_service \
 	test_abc_power_controller \
 	test_abc_power_controller_upower \
 	test_abc_terminal_controller \
@@ -236,6 +253,7 @@ test_abc_brightness_service_fake_abc_time_service_LDADD = $(ABC_TEST_LDLIBS)
 test_abc_filter_LDADD                                   = $(ABC_TEST_LDLIBS)
 test_abc_io_service_LDADD                               = libabc_utils.la $(ABC_TEST_LDLIBS) # No need to fake the abc_utils module.
 test_abc_utils_LDADD                                    = $(ABC_TEST_LDLIBS)
+test_abc_config_service_LDADD                           = libabc_utils.la $(ABC_TEST_LDLIBS) # No need to fake the abc_utils module.
 test_abc_power_controller_LDADD                         = $(ABC_TEST_LDLIBS)
 test_abc_power_controller_upower_LDADD                  = $(ABC_TEST_LDLIBS)
 test_abc_terminal_controller_LDADD                      = $(ABC_TEST_LDLIBS)
@@ -248,6 +266,7 @@ test_abc_brightness_service_fake_abc_time_service_CPPFLAGS = $(ABC_TEST_FLAGS)
 test_abc_filter_CPPFLAGS                                   = $(ABC_TEST_FLAGS)
 test_abc_io_service_CPPFLAGS                               = $(ABC_TEST_FLAGS)
 test_abc_utils_CPPFLAGS                                    = $(ABC_TEST_FLAGS)
+test_abc_config_service_CPPFLAGS                           = $(ABC_TEST_FLAGS)
 test_abc_power_controller_CPPFLAGS                         = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CPPFLAGS                  = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_terminal_controller_CPPFLAGS                      = $(ABC_TEST_FLAGS)
@@ -260,6 +279,7 @@ test_abc_brightness_service_fake_abc_time_service_CFLAGS = $(ABC_TEST_FLAGS) $(C
 test_abc_filter_CFLAGS                                   = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_io_service_CFLAGS                               = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_utils_CFLAGS                                    = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
+test_abc_config_service_CFLAGS                           = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
 test_abc_power_controller_CFLAGS                         = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CFLAGS                  = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_terminal_controller_CFLAGS                      = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
@@ -312,6 +332,12 @@ test_abc_utils_SOURCES = \
 	$(libabc_utils_la_SOURCES) \
 	libs/tests/abc_utils/tests_abc_utils.cpp
 
+test_abc_config_service_SOURCES = \
+	$(libabc_config_service_la_SOURCES) \
+	libs/tests/abc_config_service/tests_abc_config_service.cpp \
+	libs/inc_test/abc_config_service/fake_abc_io_service.h \
+	libs/src_test/abc_config_service/fake_abc_io_service.c
+
 test_abc_power_controller_SOURCES = \
 	$(libabc_power_controller_la_SOURCES) \
 	libs/tests/abc_power_controller/tests_abc_power_controller.cpp \
@@ -336,6 +362,7 @@ TESTS = \
 	test_abc_filter \
 	test_abc_io_service \
 	test_abc_utils \
+	test_abc_config_service \
 	test_abc_power_controller_upower \
 	test_abc_power_controller \
 	test_abc_terminal_controller \
@@ -344,12 +371,50 @@ TESTS = \
 
 
 #
+# Config files
+#
+
+# The name "defaultconfigfiles" followed by "dir" allows to extend the
+# data-path where the files are installed. In this case we want to install them
+# under the "aubrca" directory in "$datadir" rather than in the "$datadir"
+# directly.
+# The DATA primary enumerates the files we are going to install. The path is in
+# the source tree, relative to this Makefile.am.
+
+# The default configuration (not to be changed).
+defaultconfigfilesdir = $(datadir)/aubrca
+defaultconfigfiles_DATA = data/config/aubrca/defaults.conf
+
+# To create the host configuration, simply replicate the defaults.conf.
+data/config/aubrca.conf: data/config/aubrca/defaults.conf
+	mkdir -p data/config
+	cp -p $< $@
+
+# Let "make clean" remove it.
+CLEANFILES = data/config/aubrca.conf
+
+# The host configuration (should be used by the host to configure the program).
+sysconf_DATA = data/config/aubrca.conf
+
+
+#
 # Prepare for systemd.
 #
 systemdunitsdir = $(libdir)/systemd/system
 systemdunits_DATA = data/systemd/autobrightnesscam.service
 
-EXTRA_DIST = data/systemd/autobrightnesscam.service.in
+
+#
+# Congregate the data files
+#
+EXTRA_DIST = data/config/aubrca/defaults.conf \
+			 data/systemd/autobrightnesscam.service.in
+
+
+
+#
+# Systemd banner
+#
 
 if ABC_PRINTS_SYSTEMD_BANNER
 
@@ -418,4 +483,3 @@ UNINSTALL_SYSTEMD_SERVICE_CMDS = \
 #
 uninstall-local:
 	-rm -f $(localstatedir)/tmp/brightness.jpg
-

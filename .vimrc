@@ -13,6 +13,8 @@ let g:ale_c_clangtidy_options = '
             \ -Ibuild
             \ -Isource/libs/inc_test
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -DABC_LOGGING_ON=1'
 
@@ -22,6 +24,8 @@ let g:ale_cpp_clangtidy_options = '
             \ -Isource/libs/tests/test_lib/inc
             \ -Ibuild
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -DABC_LOGGING_ON=1'
 
@@ -31,6 +35,8 @@ let g:ale_cpp_clangtidy_options = '
 
 let g:ale_cpp_cppcheck_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ --std=c++11
             \ --enable=warning,style,performance,portability,information
@@ -43,6 +49,8 @@ let g:ale_cpp_cppcheck_options = '
 
 let g:ale_c_cppcheck_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ --std=c99
             \ --enable=warning,style,performance,portability,information
@@ -59,6 +67,8 @@ let g:ale_c_cppcheck_options = '
 
 let g:ale_c_clang_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -std=gnu99
             \ -DHAVE_CONFIG_H
@@ -101,6 +111,8 @@ let g:ale_c_clang_options = '
 
 let g:ale_cpp_clang_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -Ibuild
             \ -Ibuild/source
@@ -119,6 +131,8 @@ let g:ale_cpp_clang_options = '
 
 let g:ale_c_gcc_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -std=gnu99
             \ -DHAVE_CONFIG_H
@@ -160,6 +174,8 @@ let g:ale_c_gcc_options = '
 
 let g:ale_cpp_gcc_options = '
             \ -DABC_PICTURE_DIR=""
+            \ -DABC_CONFIG_FILENAME="aubrca.conf"
+            \ -DABC_CONFIG_DEFAULTS_FILENAME="defaults.conf"
             \ -DABC_HAS_UPOWER=0
             \ -Ibuild
             \ -Ibuild/source
