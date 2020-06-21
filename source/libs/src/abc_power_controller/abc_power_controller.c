@@ -13,6 +13,13 @@
 #endif // ABC_HAS_UPOWER
 
 
+#if ABC_HAS_UPOWER != 0 && ABC_HAS_UPOWER != 1
+
+#error "Bad value for ABC_HAS_UPOWER"
+
+#endif // ABC_HAS_UPOWER
+
+
 #if ABC_HAS_UPOWER == 1
 #   include "abc_terminal_controller/abc_terminal_controller.h"
 #else
