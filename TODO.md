@@ -7,21 +7,29 @@
 ### Features
 
 - The brightness should also depend on the battery charge level, i.e. when the
-  battery is low, the brightness should go down as well
+  battery is low, the brightness should go down as well.
 - Need to workout how exposure works and improve the brightness detection from
   the picture (perhaps this is the bias when looking at the histogram?)
-- Need to add some configuration files which the user can edit via the app such
-  as the sampling rate, paths to battery, display, min or max brightness
-- add timestamp for the logs
-- (later) add module name appended to the log name (i.e. register each module
-  with the logger)
-- remove the terminal module and rather than calling system/popen properly
-  implement what the command are supposed to do
-- allow the user to point the paths for any unavailable optional features
+- Add timestamps to the logs.
+- Add module name appended to the log name (i.e. register each module
+  with the logger).
+- Allow the user to point the paths for any unavailable optional features (via
+  config files).
 - Add some logs files used for statistics.
 - Use time stamps to minimise the number of times files are set/read.
 - Throw compile errors if #defines are not set.
 - Use grep to find a line in a file.
+- The display brightness may contribute to the overall brightness of the image,
+  so take it into account.
+- Maybe allow users to change the path where the pic is stored (or other paths).
+- Add more options to the config file (max, min brightness, battery paths,
+  speed, etc.)
+- Notify the user that only one application can control the camera at once, so
+  that the sampling period is not too low.
+- Once most of the configuration is available in a file, create a gtk3 app to
+  allow easy control over that file, allow starting/stopping the app. Also,
+  make sure the program accepts sufficient flags for the gui to use.
+- Handle the case when multiple programs are started at once.
 
 ### Build and releases
 
@@ -97,3 +105,6 @@ When:
 - convert
 - upower
 - systemd
+
+- Need to add a list of runtime vs dev time dependencies
+- Need to add a guide on how to add modules (to describe the infrastructure)
