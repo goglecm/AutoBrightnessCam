@@ -18,6 +18,10 @@
 - remove the terminal module and rather than calling system/popen properly
   implement what the command are supposed to do
 - allow the user to point the paths for any unavailable optional features
+- Add some logs files used for statistics.
+- Use time stamps to minimise the number of times files are set/read.
+- Throw compile errors if #defines are not set.
+- Use grep to find a line in a file.
 
 ### Build and releases
 
