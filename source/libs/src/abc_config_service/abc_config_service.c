@@ -27,12 +27,13 @@
 
 typedef abc_configService_Key_t abc_Key_t;
 
+// Expecting pEntryStr to be a valid string.
 static bool
 parseConfigEntry(
         const char *const pEntryStr,
         int *const restrict pRetVal)
 {
-    assert(pEntryStr && pRetVal);
+    assert(pEntryStr && pRetVal && strlen(pEntryStr) > 0);
 
     // # Check if the entry has a value in the key-value pair.
     const char *const pValueSubStr = strchr(pEntryStr, '=');
@@ -73,9 +74,17 @@ parseConfigEntry(
     value[valueLength] = '\0';
 
     // # Strip trailing whitespace.
-    while (value[strlen(value) - 1] == ' ')
+    while (value[strlen(value) - 1] == ' '  ||
+           value[strlen(value) - 1] == '\n' ||
+           value[strlen(value) - 1] == '\t')
     {
         value[strlen(value) - 1] = '\0';
+
+        // Avoid underflows.
+        if (strlen(value) == 0)
+        {
+            break;
+        }
     }
 
     // # Convert the value to int.
