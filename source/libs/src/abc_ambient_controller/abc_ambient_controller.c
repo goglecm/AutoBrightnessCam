@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define MAX_BUFF_SIZE 128
+#define MAX_BUFF_SIZE 4096
 
 bool
 abc_ambientBrightnessController_get(double *const restrict pResult)
@@ -19,8 +19,6 @@ abc_ambientBrightnessController_get(double *const restrict pResult)
 
     static char fullCmd[MAX_BUFF_SIZE];
 
-    fullCmd[MAX_BUFF_SIZE - 1] = '\0';
-
     static const char cameraCmd[] = "fswebcam --no-banner -r 160x120 --jpeg 50";
 
     static const char picPath[] = ABC_PICTURE_DIR "/tmp/brightness.jpg";
@@ -31,6 +29,8 @@ abc_ambientBrightnessController_get(double *const restrict pResult)
 
         return false;
     }
+
+    fullCmd[MAX_BUFF_SIZE - 1] = '\0';
 
     if (!abc_terminalController_send(fullCmd))
     {
