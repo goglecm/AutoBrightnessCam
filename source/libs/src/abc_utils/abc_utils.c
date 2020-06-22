@@ -25,7 +25,10 @@ abc_utils_strToInt(int *const restrict pResult, const char *const pStr)
         return false;
     }
 
-    if (strlen(pStr) == 0)
+    // Limiting to 16 chars.
+    static const int s_MAX_LEN = 16;
+    const int strLen = (int)strnlen(pStr, s_MAX_LEN + 1);
+    if (strLen <= 0 || strLen > s_MAX_LEN)
     {
         ABC_LOG_ERR("Bad string length");
 
