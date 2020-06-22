@@ -21,7 +21,7 @@ s_defaultConfigEntry[512];
 void
 fake_abc_ioService_setConfigEntry(const char *const restrict pEntryStr)
 {
-    assert(pEntryStr);
+    assert(pEntryStr && strnlen(pEntryStr, 512) < 512);
 
     strcpy(s_configEntry, pEntryStr);
 
@@ -33,7 +33,7 @@ fake_abc_ioService_setConfigEntry(const char *const restrict pEntryStr)
 void
 fake_abc_ioService_setDefaultConfigEntry(const char *const restrict pEntryStr)
 {
-    assert(pEntryStr);
+    assert(pEntryStr && strnlen(pEntryStr, 512) < 512);
 
     strcpy(s_defaultConfigEntry, pEntryStr);
 
@@ -49,7 +49,11 @@ abc_ioService_readLineStartingWith(
         const int retStrBufMaxLen,
         const char *const restrict pFileName)
 {
-    assert(pStartStr && pRetStr && pFileName);
+    assert(pStartStr &&
+           pRetStr &&
+           pFileName &&
+           strnlen(pFileName, 512) < 512 &&
+           strnlen(pStartStr, 512) < 512);
 
     if (0 == strcmp(pFileName, ABC_CONFIG_FILENAME))
     {

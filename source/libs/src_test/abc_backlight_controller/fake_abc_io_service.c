@@ -58,7 +58,11 @@ abc_ioService_read(int *const restrict pValue,
         return false;
     }
 
-    assert(pValue && pFileName);
+    static const int s_MAX_FILENAME_LEN = 32;
+
+    assert(pValue &&
+           pFileName &&
+           strnlen(pFileName, s_MAX_FILENAME_LEN) < s_MAX_FILENAME_LEN);
 
     if (0 == strcmp(pFileName, "max_brightness"))
     {
