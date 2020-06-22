@@ -19,16 +19,6 @@ public:
     }
 };
 
-TEST_F(abc_utils, int_string_with_preceeding_spaces_is_converted_to_int)
-{
-    int result = -1;
-    std::string strToConvert("  123");
-
-    ASSERT_TRUE(abc_utils_strToInt(&result, strToConvert.c_str()));
-
-    ASSERT_EQ(123, result);
-}
-
 TEST_F(abc_utils, negative_int_string_is_converted_to_int)
 {
     int result = -1;
@@ -60,3 +50,13 @@ TEST_F(abc_utils, alphanumeric_string_cannot_be_converted_to_int)
     ASSERT_EQ(-1, result);
 }
 
+TEST_F(abc_utils, string_too_large_and_cannot_be_converted_to_int)
+{
+    int result = -1;
+    std::string strToConvert("9999999999");
+
+    ASSERT_FALSE(abc_utils_strToInt(&result, strToConvert.c_str()));
+
+    // Also check to make sure the resultant integer hasn't changed.
+    ASSERT_EQ(-1, result);
+}

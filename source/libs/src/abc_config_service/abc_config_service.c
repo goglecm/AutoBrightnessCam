@@ -87,9 +87,16 @@ parseConfigEntry(
         }
     }
 
+    // # Strip preceding whitespace.
+    char *pCleanValue = &value[0];
+    while (*pCleanValue == ' ' || *pCleanValue == '\n' || *pCleanValue == '\t')
+    {
+        pCleanValue++;
+    }
+
     // # Convert the value to int.
-    ABC_LOG("String to convert is `%s`", value);
-    if (!abc_utils_strToInt(pRetVal, value))
+    ABC_LOG("String to convert is `%s`", pCleanValue);
+    if (!abc_utils_strToInt(pRetVal, pCleanValue))
     {
         ABC_LOG_ERR("Failed to convert string value `%s` to int",
                 pValueSubStr + 1);

@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdbool.h>
 
+// Preceding/trailing whitespace may not always be tolerated.
 bool
 abc_utils_strToInt(int *pResult, const char *pStr);
 
