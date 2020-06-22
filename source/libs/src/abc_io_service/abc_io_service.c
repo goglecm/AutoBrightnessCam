@@ -10,6 +10,14 @@
 #include <string.h>
 #include <assert.h>
 
+
+// Excluding null terminator.
+#define MAX_STR_LEN 128
+
+// Excluding null terminator.
+#define MAX_FILENAME_LENGTH 512
+
+
 bool
 abc_ioService_exists(const char *const restrict pFileName)
 {
@@ -145,10 +153,14 @@ readLineStartingWith(
         const int retStrBufMaxLen,
         const char *const restrict pFileName)
 {
+    // Down cast and using strlen (instead of strnlen) as we've range checked
+    // the length of the starting string.
+    const int startStrLen = (int)strlen(pStartStr);
+
     assert(pStartStr &&
             pRetStr &&
             pFileName &&
-            retStrBufMaxLen > (int)(strlen(pStartStr) + 1));
+            retStrBufMaxLen > startStrLen + 1);
 
 
     // # Open the file.
@@ -162,9 +174,6 @@ readLineStartingWith(
         return false;
     }
 
-
-    // Down cast as we've range checked the length of the starting string.
-    const int startStrLen = (int)strlen(pStartStr);
 
     bool errorsEncountered = false;
 
@@ -236,9 +245,10 @@ readLineStartingWith(
     // # Found the line, now read the remainder of the it.
     if (!errorsEncountered)
     {
-        char lineRemStr[retStrBufMaxLen - startStrLen];
+        const int lineRemBufSize = retStrBufMaxLen - startStrLen;
+        char lineRemStr[lineRemBufSize];
 
-        if (NULL == fgets(lineRemStr, (int)sizeof(lineRemStr), pFile))
+        if (NULL == fgets(lineRemStr, lineRemBufSize, pFile))
         {
             ABC_LOG_ERR("Reached EOF too early: %s", strerror(errno));
 
@@ -254,6 +264,8 @@ readLineStartingWith(
         {
             ABC_LOG("Read remainder `%s` from file %s", lineRemStr, pFileName);
 
+            // Using strlen (instead of strnlen) as it has already been bounded
+            // by fgets.
             memcpy(pRetStr, pStartStr, startStrLen);
             memcpy(pRetStr + startStrLen, lineRemStr, strlen(lineRemStr) + 1);
 
@@ -309,29 +321,23 @@ abc_ioService_readLineStartingWith(
 
     // # Range checking.
 
-    // Excluding null terminator.
-    static const int s_MAX_STR_LEN = 128;
-
-    // Excluding null terminator.
-    static const int s_MAX_FILENAME_LENGTH = 512;
-
-    const size_t startStrLen = strlen(pStartStr);
-
-    if (startStrLen < 1 || startStrLen > (size_t)s_MAX_STR_LEN)
+    const size_t startStrLen = strnlen(pStartStr, MAX_STR_LEN + 1);
+    if (startStrLen < 1 || startStrLen >= MAX_STR_LEN)
     {
         ABC_LOG_ERR("Bad start string length");
 
         return false;
     }
 
-    if (strlen(pFileName) < 1 || strlen(pFileName) > (size_t)s_MAX_FILENAME_LENGTH)
+    const size_t filenameLen = strnlen(pFileName, MAX_FILENAME_LENGTH + 1);
+    if (filenameLen < 1 || filenameLen >= MAX_FILENAME_LENGTH)
     {
         ABC_LOG_ERR("Bad filename length");
 
         return false;
     }
 
-    if (retStrBufMaxLen < 1 || retStrBufMaxLen > s_MAX_STR_LEN)
+    if (retStrBufMaxLen < 1 || retStrBufMaxLen > MAX_STR_LEN)
     {
         ABC_LOG_ERR("Bad return string max length %d", retStrBufMaxLen);
 
