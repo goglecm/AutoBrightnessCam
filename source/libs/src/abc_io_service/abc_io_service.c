@@ -425,6 +425,12 @@ abc_ioService_read(int *const restrict pValue,
     // Force a bound on the read line.
     readLine[sizeof(readLine) - 1] = '\0';
 
+    // Kill the new line.
+    if (readLine[strlen(readLine) - 1] == '\n')
+    {
+        readLine[strlen(readLine) - 1] = '\0';
+    }
+
     if (!abc_utils_strToInt(pValue, readLine))
     {
         return false;
