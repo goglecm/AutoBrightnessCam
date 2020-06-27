@@ -38,7 +38,7 @@ setValue(const std::string &fileName, const T value)
 
     std::ofstream outfile (fileName.c_str());
 
-    ABC_LOG("written `%s` to file %s", outValue.str().c_str(), fileName.c_str());
+    ABC_LOG("written `%s` to file `%s`", outValue.str().c_str(), fileName.c_str());
 
     outfile << outValue.str() << std::endl;
 

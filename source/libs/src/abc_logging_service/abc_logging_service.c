@@ -42,15 +42,15 @@ abc_loggingService_setLogName(const char *const restrict pLogName)
         return false;
     }
 
-    ABC_LOG_STDOUT("logfile name is %s\n", pLogName);
+    ABC_LOG_STDOUT("logfile name is `%s`\n", pLogName);
 
     g_isFirstLog = true;
 
-    ABC_LOG_STDOUT("old path is %s\n", g_logFilename);
+    ABC_LOG_STDOUT("old path is `%s`\n", g_logFilename);
 
     strncpy(g_logFilename, pLogName, sizeof(g_logFilename) - 1);
 
-    ABC_LOG_STDOUT("new path is %s\n", g_logFilename);
+    ABC_LOG_STDOUT("new path is `%s`\n", g_logFilename);
 
     return true;
 }

@@ -39,7 +39,7 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     FILE *const restrict pFile = fopen(pFileName, "w");
     if (NULL == pFile)
     {
-        ABC_LOG_ERR("Failed to open the file `%s` due to: %s",
+        ABC_LOG_ERR("Failed to open the file `%s` due to: `%s`",
                     pFileName, strerror(errno));
 
         return false;
@@ -50,14 +50,14 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
     const int numWrittenBytes = fprintf(pFile, "%d", value);
     if (numWrittenBytes < 0)
     {
-        ABC_LOG_ERR("Failed to write to file `%s` due to: %s",
+        ABC_LOG_ERR("Failed to write to file `%s` due to: `%s`",
                     pFileName, strerror(errno));
 
         isReturnOK = false;
     }
     else if (numWrittenBytes == 0)
     {
-        ABC_LOG_ERR("Nothing written to the file `%s` due to: %s",
+        ABC_LOG_ERR("Nothing written to the file `%s` due to: `%s`",
                     pFileName, strerror(errno));
 
         isReturnOK = false;
@@ -71,7 +71,7 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
 
     if (0 != fclose(pFile))
     {
-        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+        ABC_LOG_ERR("Failed to close file `%s` due to: `%s`. "
                     "File is left in an undefined state.",
                     pFileName, strerror(errno));
 
@@ -98,7 +98,7 @@ abc_ioService_readStr(char *const restrict pBuf,
 
     if (NULL == pFile)
     {
-        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to open the file due to: `%s`", strerror(errno));
 
         return false;
     }
@@ -115,20 +115,20 @@ abc_ioService_readStr(char *const restrict pBuf,
     }
     else if (errno)
     {
-        ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to read the file due to: `%s`", strerror(errno));
 
         isReturnOK = false;
     }
     else
     {
-        ABC_LOG("Read `%s` from file %s", readLine, pFileName);
+        ABC_LOG("Read `%s` from file `%s`", readLine, pFileName);
     }
 
     errno = 0;
 
     if (0 != fclose(pFile))
     {
-        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+        ABC_LOG_ERR("Failed to close file `%s` due to: `%s`. "
                     "File is left in an undefined state.",
                     pFileName, strerror(errno));
 
@@ -166,7 +166,7 @@ readLineStartingWith(
 
     if (NULL == pFile)
     {
-        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to open the file due to: `%s`", strerror(errno));
 
         return false;
     }
@@ -188,7 +188,7 @@ readLineStartingWith(
 
         if (0 != errno)
         {
-            ABC_LOG_ERR("Failed to read file due to: %s", strerror(errno));
+            ABC_LOG_ERR("Failed to read file due to: `%s`", strerror(errno));
 
             break;
         }
@@ -247,19 +247,19 @@ readLineStartingWith(
 
         if (NULL == fgets(lineRemStr, (int)lineRemBufSize, pFile))
         {
-            ABC_LOG_ERR("Reached EOF too early: %s", strerror(errno));
+            ABC_LOG_ERR("Reached EOF too early: `%s`", strerror(errno));
 
             errorsEncountered = true;
         }
         else if (errno)
         {
-            ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+            ABC_LOG_ERR("Failed to read the file due to: `%s`", strerror(errno));
 
             errorsEncountered = true;
         }
         else
         {
-            ABC_LOG("Read remainder `%s` from file %s", lineRemStr, pFileName);
+            ABC_LOG("Read remainder `%s` from file `%s`", lineRemStr, pFileName);
 
             // Using strlen (instead of strnlen) as it has already been bounded
             // by fgets.
@@ -275,7 +275,7 @@ readLineStartingWith(
     errno = 0;
     if (0 != fclose(pFile))
     {
-        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+        ABC_LOG_ERR("Failed to close file `%s` due to: `%s`. "
                     "File is left in an undefined state.",
                     pFileName, strerror(errno));
 
@@ -351,7 +351,7 @@ abc_ioService_readLineStartingWith(
 
         pRetStr[retStrBufMaxLen - 1] = '\0';
 
-        ABC_LOG("Returning the starting string (or a portion of it) %s as the "
+        ABC_LOG("Returning the starting string (or a portion of it) `%s` as the "
                 "max length is %zu", pRetStr, retStrBufMaxLen);
 
         return true;
@@ -379,7 +379,7 @@ abc_ioService_read(int *const restrict pValue,
 
     if (NULL == pFile)
     {
-        ABC_LOG_ERR("Failed to open the file due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to open the file due to: `%s`", strerror(errno));
 
         return false;
     }
@@ -397,20 +397,20 @@ abc_ioService_read(int *const restrict pValue,
     }
     else if (errno)
     {
-        ABC_LOG_ERR("Failed to read the file due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to read the file due to: `%s`", strerror(errno));
 
         isReturnOK = false;
     }
     else
     {
-        ABC_LOG("Read `%s` from file %s", readLine, pFileName);
+        ABC_LOG("Read `%s` from file `%s`", readLine, pFileName);
     }
 
     errno = 0;
 
     if (0 != fclose(pFile))
     {
-        ABC_LOG_ERR("Failed to close file `%s` due to: %s. "
+        ABC_LOG_ERR("Failed to close file `%s` due to: `%s`. "
                     "File is left in an undefined state.",
                     pFileName, strerror(errno));
 

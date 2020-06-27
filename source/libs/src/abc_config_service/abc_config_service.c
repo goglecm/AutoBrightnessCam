@@ -310,7 +310,7 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
         }
     }
 
-    ABC_LOG("Setting key `%s` to %d read from %s file",
+    ABC_LOG("Setting key `%s` to %d read from `%s` file",
             keyToStr(key), *pValue, isHostValueRead ? "host" : "defaults");
 
     return true;

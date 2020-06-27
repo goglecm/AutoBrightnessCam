@@ -45,7 +45,7 @@ abc_utils_strToInt(int *const restrict pResult, const char *const pStr)
 
     if (errno)
     {
-        ABC_LOG_ERR("Failed to convert string to long due to: %s", strerror(errno));
+        ABC_LOG_ERR("Failed to convert string to long due to: `%s`", strerror(errno));
 
         return false;
     }

@@ -36,7 +36,7 @@ abc_ioService_write(const int value, const char *const restrict pFileName)
         return false;
     }
 
-    ABC_LOG("writing %d to %s", value, pFileName);
+    ABC_LOG("writing %d to `%s`", value, pFileName);
 
     ++s_numWriteCalls;
 
