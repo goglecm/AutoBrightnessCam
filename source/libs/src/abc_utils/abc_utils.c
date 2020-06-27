@@ -60,7 +60,7 @@ abc_utils_strToInt(int *const restrict pResult, const char *const pStr)
 
     // A full conversion occurs when pEnd points to the char past the
     // string (i.e. NULL).
-    if (*pEnd != NULL)
+    if (*pEnd != '\0')
     {
         ABC_LOG_ERR("Failed to convert the string fully to long");
 
