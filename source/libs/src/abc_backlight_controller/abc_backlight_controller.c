@@ -17,6 +17,8 @@
 
 #define MAX_BUFF_SIZE 128U
 
+#define MAX_NUM_INCREMENTS 20U
+
 const double
 g_abc_BacklightBrightnessController_MAX = 100;
 
@@ -34,7 +36,7 @@ s_PATH_CURRENT_BRIGHTNESS[MAX_BUFF_SIZE];
 
 
 static int
-s_numIncrements = 20;
+s_numIncrements = MAX_NUM_INCREMENTS;
 
 static unsigned
 s_incrementPeriod_ms = 60;
@@ -197,9 +199,9 @@ abc_backlightBrightnessController_setNumIncrements(const unsigned num)
         return false;
     }
 
-    if (num > INT_MAX)
+    if (num > MAX_NUM_INCREMENTS)
     {
-        ABC_LOG_ERR("numIncrements is too large");
+        ABC_LOG_ERR("numIncrements is too large %u", num);
 
         return false;
     }

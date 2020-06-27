@@ -21,7 +21,7 @@ abc_ambientBrightnessController_get(double *const restrict pResult)
 
     static const char cameraCmd[] = "fswebcam --no-banner -r 160x120 --jpeg 50";
 
-    static const char picPath[] = ABC_PICTURE_DIR "/tmp/brightness.jpg";
+    static const char picPath[] = ABC_PICTURE_DIR "/brightness.jpg";
 
     if (0 >= snprintf(fullCmd, sizeof(fullCmd), "%s %s", cameraCmd, picPath))
     {
