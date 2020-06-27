@@ -25,86 +25,184 @@
 #endif // ABC_CONFIG_FILENAME
 
 
+#define ABC_CONFIG_ENTRY_MAX_LEN 128
+
+
 typedef abc_configService_Key_t abc_Key_t;
 
-// Expecting pEntryStr to be a valid string.
-static bool
-parseConfigEntry(
-        const char *const pEntryStr,
-        int *const restrict pRetVal)
+
+// Updating length and pointer to point to the value without whitespace around.
+static void
+stripPrefixSuffixWhitespace(const char **const ppValue, size_t *const pLength)
 {
-    assert(pEntryStr && pRetVal && strlen(pEntryStr) > 0);
+    assert(ppValue && *ppValue && pLength);
 
-    // # Check if the entry has a value in the key-value pair.
-    const char *const pValueSubStr = strchr(pEntryStr, '=');
-    if (NULL == pValueSubStr)
+    ABC_LOG("starting length %zu", *pLength);
+
+    if (*pLength == 0)
     {
-        ABC_LOG_ERR("Failed to find the value in the key-value pair");
-
-        return false;
+        return;
     }
 
-    // # Check for comments in the entry.
-    const char *const pCommentSubStr = strchr(pEntryStr, '#');
-    int commentLength;
-    if (NULL == pCommentSubStr)
+    // Skip prefixed whitespace from the value.
+    while (**ppValue == ' '  ||
+           **ppValue == '\n' ||
+           **ppValue == '\t')
     {
-        commentLength = 0;
-    }
-    else
-    {
-        commentLength = (int)strlen(pCommentSubStr);
+        ABC_LOG("Removing prefix space (0x%x) `%c`", **ppValue, **ppValue);
 
-        ABC_LOG("Comment length = %d, str is `%s`",
-                commentLength, pCommentSubStr);
-    }
+        (*ppValue)++;
+        (*pLength)--;
 
-    // # Check the value length.
-    const int valueLength = (int)strlen(pValueSubStr + 1) - commentLength;
-    if (valueLength <= 0)
-    {
-        ABC_LOG_ERR("The value is a comment");
-
-        return false;
-    }
-
-    // # Copy the value (without the comment).
-    char value[valueLength + 1];
-    memcpy(value, pValueSubStr + 1, valueLength);
-    value[valueLength] = '\0';
-
-    // # Strip trailing whitespace.
-    while (value[strlen(value) - 1] == ' '  ||
-           value[strlen(value) - 1] == '\n' ||
-           value[strlen(value) - 1] == '\t')
-    {
-        value[strlen(value) - 1] = '\0';
-
-        // Avoid underflows.
-        if (strlen(value) == 0)
+        // Prevent underflows.
+        if (*pLength == 0)
         {
-            break;
+            return;
         }
     }
 
-    // # Strip preceding whitespace.
-    char *pCleanValue = &value[0];
-    while (*pCleanValue == ' ' || *pCleanValue == '\n' || *pCleanValue == '\t')
+    ABC_LOG("Length after prefix strip: %zu", *pLength);
+
+    ABC_LOG("About to check char %zu: (0x%x) `%c`",
+            *pLength - 1, (*ppValue)[*pLength - 1], (*ppValue)[*pLength - 1]);
+
+    // Ignore trailing whitespace.
+    while ((*ppValue)[*pLength - 1] == ' '  ||
+           (*ppValue)[*pLength - 1] == '\n' ||
+           (*ppValue)[*pLength - 1] == '\t')
     {
-        pCleanValue++;
+        ABC_LOG("Removing trailing char %zu: (0x%x) `%c`",
+                *pLength - 1, (*ppValue)[*pLength - 1], (*ppValue)[*pLength - 1]);
+
+        (*pLength)--;
+
+        // Prevent underflows.
+        if (*pLength == 0)
+        {
+            return;
+        }
     }
 
-    // # Convert the value to int.
-    ABC_LOG("String to convert is `%s`", pCleanValue);
-    if (!abc_utils_strToInt(pRetVal, pCleanValue))
+    ABC_LOG("Length after suffix strip: %zu", *pLength);
+
+    for (size_t i = 0; i < *pLength; ++i)
     {
-        ABC_LOG_ERR("Failed to convert string value `%s` to int",
-                pValueSubStr + 1);
+        ABC_LOG("Final string char %zu: `%c`", i, (*ppValue)[i]);
+    }
+}
+
+static bool
+extractKeyValue(
+        const char *const pEntryStr,
+        const char **const ppKeyStr,
+        size_t *const restrict pKeyLen,
+        int *const restrict pKeyVal)
+{
+    assert(pEntryStr && pKeyLen && pKeyVal);
+    assert(strnlen(pEntryStr, ABC_CONFIG_ENTRY_MAX_LEN) < ABC_CONFIG_ENTRY_MAX_LEN);
+
+    ABC_LOG("entry `%s`", pEntryStr);
+
+    // Entry may look like this:
+    // `sampling_period = 5 # Comment`
+
+    // Detect the 3 components of an entry: key, value, comment.
+    const char *pKeySubStr = pEntryStr;
+    const char *pCommentSubStr = strchr(pEntryStr, '#');
+    const char *pValueSubStr = strchr(pEntryStr, '=');
+
+    // Validate the components.
+    if (NULL == pValueSubStr)
+    {
+        ABC_LOG_ERR("No value present");
 
         return false;
     }
 
+    if (pCommentSubStr)
+    {
+        if (pValueSubStr > pCommentSubStr)
+        {
+            ABC_LOG_ERR("Value inside comment");
+
+            return false;
+        }
+    }
+
+    // Calculate the lengths of each component.
+    const size_t entryLen = strlen(pEntryStr);
+    const size_t commentLen = pCommentSubStr ? strlen(pCommentSubStr) : 0;
+    size_t keyLen = entryLen - strlen(pValueSubStr);
+    size_t valueLen = entryLen - commentLen - keyLen - 1; // `-1` to exclude `=`.
+
+    pValueSubStr++; // Skip `=`.
+
+    ABC_LOG("Component lengths are %zu, %zu, %zu", keyLen, valueLen, commentLen);
+
+    // Clean up the components.
+    stripPrefixSuffixWhitespace(&pKeySubStr, &keyLen);
+    stripPrefixSuffixWhitespace(&pValueSubStr, &valueLen);
+
+    if (keyLen <= 0 || valueLen <= 0)
+    {
+        ABC_LOG_ERR("Bad key or value lengths (%zu and %zu)", keyLen, valueLen);
+
+        return false;
+    }
+
+    ABC_LOG("Clean component lengths are %zu, %zu, %zu",
+            keyLen, valueLen, commentLen);
+
+    // Convert the value to int.
+    char valueStr[valueLen + 1];
+    int value;
+    memcpy(valueStr, pValueSubStr, valueLen);
+    valueStr[valueLen] = '\0';
+
+    if (!abc_utils_strToInt(&value, valueStr))
+    {
+        ABC_LOG_ERR("Failed to convert value `%s` to int", valueStr);
+
+        return false;
+    }
+
+    // Set output.
+    *pKeyVal = value;
+    *pKeyLen = keyLen;
+
+    if (ppKeyStr)
+    {
+        *ppKeyStr = pKeySubStr;
+    }
+
+    ABC_LOG("Key value `%s` is %d", valueStr, value);
+
     return true;
+}
+
+static inline bool
+isKeyValid(const abc_Key_t key)
+{
+    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+}
+
+static inline const char *
+keyToStr(const abc_Key_t key)
+{
+    assert(isKeyValid(key));
+
+    switch (key)
+    {
+        case ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD:
+        {
+            static const char keyStr[] = "sampling_period";
+            return keyStr;
+        }
+
+        default:
+            assert(false && "Bad key");
+            return NULL;
+    }
 }
 
 static bool
@@ -113,37 +211,63 @@ readKeyValue(
         int *const restrict pValue,
         const char *const restrict pFileName)
 {
-    if (key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD)
-    {
-        const char keyStr[] = "sampling_period";
+    assert(isKeyValid(key) && pValue && pFileName);
 
-        char entryStr[128];
-        const bool isResultOK =
+    ABC_LOG("Key `%s`, filename `%s`", keyToStr(key), pFileName);
+
+    char entryStr[ABC_CONFIG_ENTRY_MAX_LEN + 1];
+
+    const char *pOrigKeyStr = keyToStr(key);
+    const size_t origKeyLen = strlen(pOrigKeyStr);
+
+    // Read corresponding entry from the file. Try a couple of terminators for
+    // the key string.
+    char keyStr[origKeyLen + 2];
+    memcpy(keyStr, pOrigKeyStr, origKeyLen + 1);
+    keyStr[origKeyLen + 1] = '\0';
+
+    const char keyTerminatorChars[] = {' ', '=', '\0'};
+    bool isEntryRead;
+    for (size_t i = 0; i < sizeof(keyTerminatorChars); ++i)
+    {
+        keyStr[origKeyLen] = keyTerminatorChars[i];
+
+        ABC_LOG("Attempt to read with starting str `%s`", keyStr);
+
+        isEntryRead =
             abc_ioService_readLineStartingWith(
                     keyStr,
                     entryStr,
                     sizeof(entryStr),
                     pFileName);
 
-        if (isResultOK)
+        if (isEntryRead)
         {
-            if (!parseConfigEntry(entryStr, pValue))
-            {
-                ABC_LOG_ERR("Failed to parse config entry");
-
-                return false;
-            }
+            break;
         }
-        else
+    }
+
+    // Extract the value from the entry.
+    if (isEntryRead)
+    {
+        size_t actualKeyLen;
+        if (!extractKeyValue(entryStr, NULL, &actualKeyLen, pValue))
         {
-            ABC_LOG("Failed to read config entry");
+            ABC_LOG_ERR("Failed to parse config entry");
+
+            return false;
+        }
+
+        if (actualKeyLen != strlen(keyToStr(key)))
+        {
+            ABC_LOG_ERR("Key not present in file");
 
             return false;
         }
     }
     else
     {
-        ABC_LOG_ERR("Bad key %d", key);
+        ABC_LOG("Failed to read config entry");
 
         return false;
     }
@@ -163,15 +287,22 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
         return false;
     }
 
-    // # Try to read from the host file.
-    bool isResultOK = readKeyValue(key, pValue, ABC_CONFIG_FILENAME);
-
-    // # If can't read from host file, try reading from the defaults file.
-    if (!isResultOK)
+    if (!isKeyValid(key))
     {
-        isResultOK = readKeyValue(key, pValue, ABC_CONFIG_DEFAULTS_FILENAME);
+        ABC_LOG_ERR("Bad key %d", key);
 
-        if (!isResultOK)
+        return false;
+    }
+
+    ABC_LOG("reading key `%s`", keyToStr(key));
+
+    // Try to read from the host file.
+    const bool isHostValueRead = readKeyValue(key, pValue, ABC_CONFIG_FILENAME);
+
+    // If reading from host file fails, try reading from the defaults file.
+    if (!isHostValueRead)
+    {
+        if (!readKeyValue(key, pValue, ABC_CONFIG_DEFAULTS_FILENAME))
         {
             ABC_LOG_ERR("Can't read key %d", key);
 
@@ -179,7 +310,8 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
         }
     }
 
-    ABC_LOG("Setting key %d to %d", key, *pValue);
+    ABC_LOG("Setting key `%s` to %d read from %s file",
+            keyToStr(key), *pValue, isHostValueRead ? "host" : "defaults");
 
     return true;
 }

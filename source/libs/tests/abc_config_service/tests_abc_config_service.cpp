@@ -22,7 +22,39 @@ public:
     }
 };
 
-TEST_F(abc_config_service, read_int_value_from_existing_key_pair)
+TEST_F(abc_config_service, read_int_value_from_key_pair_with_many_spaces)
+{
+    const int expectedValue = 5;
+    const std::string configEntry(
+            "sampling_period  \t  =  \t   " +
+            testlib_parsing_toStr(expectedValue) + "  \t  \n");
+
+    fake_abc_ioService_setConfigEntry(configEntry.c_str());
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_TRUE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(expectedValue, actualValue);
+}
+
+TEST_F(abc_config_service, read_int_value_from_key_pair_without_spaces)
+{
+    const int expectedValue = 5;
+    const std::string configEntry(
+            "sampling_period=" +
+            testlib_parsing_toStr(expectedValue));
+
+    fake_abc_ioService_setConfigEntry(configEntry.c_str());
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_TRUE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(expectedValue, actualValue);
+}
+
+TEST_F(abc_config_service, read_int_value_from_key_pair)
 {
     const int expectedValue = 5;
     const std::string configEntry(
@@ -38,7 +70,7 @@ TEST_F(abc_config_service, read_int_value_from_existing_key_pair)
     ASSERT_EQ(expectedValue, actualValue);
 }
 
-TEST_F(abc_config_service, read_int_value_from_existing_key_pair_with_comment)
+TEST_F(abc_config_service, read_int_value_from_key_pair_with_comment)
 {
     const int expectedValue = 5;
     const std::string configEntry(
@@ -55,7 +87,7 @@ TEST_F(abc_config_service, read_int_value_from_existing_key_pair_with_comment)
     ASSERT_EQ(expectedValue, actualValue);
 }
 
-TEST_F(abc_config_service, read_negative_int_value_from_existing_key_pair)
+TEST_F(abc_config_service, read_negative_int_value_from_key_pair)
 {
     const int expectedValue = -5;
     const std::string configEntry(
@@ -71,7 +103,7 @@ TEST_F(abc_config_service, read_negative_int_value_from_existing_key_pair)
     ASSERT_EQ(expectedValue, actualValue);
 }
 
-TEST_F(abc_config_service, fail_to_read_bad_value_from_existing_key_pair_but_pick_up_default)
+TEST_F(abc_config_service, fail_to_read_bad_value_from_key_pair_but_pick_up_default)
 {
     const std::string configEntry("sampling_period = abc");
     const std::string defaultConfigEntry("sampling_period = 123");
@@ -86,7 +118,7 @@ TEST_F(abc_config_service, fail_to_read_bad_value_from_existing_key_pair_but_pic
     ASSERT_EQ(123, actualValue);
 }
 
-TEST_F(abc_config_service, fail_to_read_bad_value_from_existing_key_pair_and_bad_default)
+TEST_F(abc_config_service, fail_to_read_bad_value_from_key_pair_and_bad_default)
 {
     const std::string configEntry("sampling_period = abc");
     const std::string defaultConfigEntry("sampling_period = xyz");
@@ -132,7 +164,7 @@ TEST_F(abc_config_service, fail_to_read_bad_key)
     ASSERT_EQ(123, actualValue);
 }
 
-TEST_F(abc_config_service, fail_to_read_missing_value_from_existing_key_pair)
+TEST_F(abc_config_service, fail_to_read_missing_int_value_from_key_pair)
 {
     const std::string configEntry("sampling_period = ");
     const std::string defaultConfigEntry("sampling_period = 123");
@@ -147,7 +179,7 @@ TEST_F(abc_config_service, fail_to_read_missing_value_from_existing_key_pair)
     ASSERT_EQ(123, actualValue);
 }
 
-TEST_F(abc_config_service, fail_to_read_missing_value_from_existing_key_pair_comment)
+TEST_F(abc_config_service, fail_to_read_missing_int_value_from_key_pair_with_comment)
 {
     const std::string configEntry("sampling_period = # Comment");
     const std::string defaultConfigEntry("sampling_period = 123");
@@ -160,4 +192,60 @@ TEST_F(abc_config_service, fail_to_read_missing_value_from_existing_key_pair_com
     ASSERT_TRUE(abc_configService_get(key, &actualValue));
 
     ASSERT_EQ(123, actualValue);
+}
+
+TEST_F(abc_config_service, fail_to_read_int_value_in_comment_from_key_pair_before_equal)
+{
+    const std::string configEntry("sampling_period # = 123");
+    const std::string defaultConfigEntry("sampling_period = 123");
+
+    fake_abc_ioService_setConfigEntry(configEntry.c_str());
+    fake_abc_ioService_setDefaultConfigEntry(defaultConfigEntry.c_str());
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_TRUE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(123, actualValue);
+}
+
+TEST_F(abc_config_service, fail_to_read_int_value_in_comment_from_key_pair_after_equal)
+{
+    const std::string configEntry("sampling_period = # 5");
+    const std::string defaultConfigEntry("sampling_period = 123");
+
+    fake_abc_ioService_setConfigEntry(configEntry.c_str());
+    fake_abc_ioService_setDefaultConfigEntry(defaultConfigEntry.c_str());
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_TRUE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(123, actualValue);
+}
+
+TEST_F(abc_config_service, fail_to_read_int_value_from_similar_but_different_key)
+{
+    const std::string configEntry("sampling_period_bad = 5");
+    const std::string defaultConfigEntry("sampling_period = 123");
+
+    fake_abc_ioService_setConfigEntry(configEntry.c_str());
+    fake_abc_ioService_setDefaultConfigEntry(defaultConfigEntry.c_str());
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_TRUE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(123, actualValue);
+}
+
+TEST_F(abc_config_service, fail_to_read_int_value_when_entry_is_missing)
+{
+    fake_abc_ioService_failToFindLine();
+
+    int actualValue = -1;
+    const abc_configService_Key_t key = ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    ASSERT_FALSE(abc_configService_get(key, &actualValue));
+
+    ASSERT_EQ(-1, actualValue);
 }

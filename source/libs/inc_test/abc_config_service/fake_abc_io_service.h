@@ -11,6 +11,9 @@ fake_abc_ioService_setConfigEntry(const char *pEntryStr);
 void
 fake_abc_ioService_setDefaultConfigEntry(const char *pEntryStr);
 
+void
+fake_abc_ioService_failToFindLine(void);
+
 #ifdef __cplusplus
 }
 #endif

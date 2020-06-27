@@ -18,6 +18,9 @@ s_defaultConfigEntrySet = false;
 static char
 s_defaultConfigEntry[512];
 
+static bool
+s_isForceFalseReturn = false;
+
 void
 fake_abc_ioService_setConfigEntry(const char *const restrict pEntryStr)
 {
@@ -27,7 +30,15 @@ fake_abc_ioService_setConfigEntry(const char *const restrict pEntryStr)
 
     s_configEntrySet = true;
 
-    ABC_LOG("Set config entry to %s", s_configEntry);
+    ABC_LOG("Set config entry to `%s`", s_configEntry);
+}
+
+void
+fake_abc_ioService_failToFindLine(void)
+{
+    ABC_LOG("will force false return");
+
+    s_isForceFalseReturn = true;
 }
 
 void
@@ -39,7 +50,7 @@ fake_abc_ioService_setDefaultConfigEntry(const char *const restrict pEntryStr)
 
     s_defaultConfigEntrySet = true;
 
-    ABC_LOG("Set default config entry to %s", s_defaultConfigEntry);
+    ABC_LOG("Set default config entry to `%s`", s_defaultConfigEntry);
 }
 
 bool
@@ -55,6 +66,13 @@ abc_ioService_readLineStartingWith(
            strnlen(pFileName, 512) < 512 &&
            strnlen(pStartStr, 512) < 512);
 
+    if (s_isForceFalseReturn)
+    {
+        ABC_LOG("forcing false return");
+
+        return false;
+    }
+
     if (0 == strcmp(pFileName, ABC_CONFIG_FILENAME))
     {
         assert(s_configEntrySet);
@@ -63,7 +81,7 @@ abc_ioService_readLineStartingWith(
 
         strcpy(pRetStr, s_configEntry);
 
-        ABC_LOG("Returned config entry (set %d): %s",
+        ABC_LOG("Returned config entry (set %d): `%s`",
                 s_configEntrySet, s_configEntry);
     }
     else if (0 == strcmp(pFileName, ABC_CONFIG_DEFAULTS_FILENAME))
@@ -74,7 +92,7 @@ abc_ioService_readLineStartingWith(
 
         strcpy(pRetStr, s_defaultConfigEntry);
 
-        ABC_LOG("Returned default config entry (set %d): %s",
+        ABC_LOG("Returned default config entry (set %d): `%s`",
                 s_defaultConfigEntrySet, s_defaultConfigEntry);
     }
     else
