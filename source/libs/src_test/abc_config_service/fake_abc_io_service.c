@@ -57,7 +57,7 @@ bool
 abc_ioService_readLineStartingWith(
         const char *const restrict pStartStr,
         char *const restrict pRetStr,
-        const int retStrBufMaxLen,
+        const size_t retStrBufMaxLen,
         const char *const restrict pFileName)
 {
     assert(pStartStr &&
@@ -76,7 +76,7 @@ abc_ioService_readLineStartingWith(
     if (0 == strcmp(pFileName, ABC_CONFIG_FILENAME))
     {
         assert(s_configEntrySet);
-        assert(retStrBufMaxLen > (int)strlen(s_configEntry));
+        assert(retStrBufMaxLen > strlen(s_configEntry));
         assert(strlen(pStartStr) <= strlen(s_configEntry));
 
         strcpy(pRetStr, s_configEntry);
@@ -87,7 +87,7 @@ abc_ioService_readLineStartingWith(
     else if (0 == strcmp(pFileName, ABC_CONFIG_DEFAULTS_FILENAME))
     {
         assert(s_defaultConfigEntrySet);
-        assert(retStrBufMaxLen > (int)strlen(s_defaultConfigEntry));
+        assert(retStrBufMaxLen > strlen(s_defaultConfigEntry));
         assert(strlen(pStartStr) <= strlen(s_defaultConfigEntry));
 
         strcpy(pRetStr, s_defaultConfigEntry);

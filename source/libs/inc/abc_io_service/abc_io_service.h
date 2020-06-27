@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
+#include <stddef.h>
 
 bool
 abc_ioService_write(int value, const char *pFileName);
@@ -24,7 +25,7 @@ bool
 abc_ioService_readLineStartingWith(
         const char *pStartStr,
         char *pRetStr,
-        int retStrBufMaxLen,
+        size_t retStrBufMaxLen,
         const char *pFileName);
 
 bool

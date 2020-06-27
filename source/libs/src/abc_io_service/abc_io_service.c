@@ -4,7 +4,6 @@
 #include "abc_utils/abc_utils.h"
 
 #include <sys/stat.h>
-#include <stddef.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -150,12 +149,10 @@ static inline bool
 readLineStartingWith(
         const char *const restrict pStartStr,
         char *const restrict pRetStr,
-        const int retStrBufMaxLen,
+        const size_t retStrBufMaxLen,
         const char *const restrict pFileName)
 {
-    // Down cast and using strlen (instead of strnlen) as we've range checked
-    // the length of the starting string.
-    const int startStrLen = (int)strlen(pStartStr);
+    const size_t startStrLen = strlen(pStartStr);
 
     assert(pStartStr &&
             pRetStr &&
@@ -180,9 +177,9 @@ readLineStartingWith(
     ABC_LOG("Starting string is `%s`", pStartStr);
 
     // # Search for the beginning of the start string and skip over it.
-    int charsMatched = 0;
+    size_t charsMatched = 0;
     int readChar;
-    int charsReadInCurrentLine = 0;
+    size_t charsReadInCurrentLine = 0;
     while (charsMatched != startStrLen || charsReadInCurrentLine != startStrLen)
     {
         // ## Read the next char.
@@ -223,8 +220,8 @@ readLineStartingWith(
             charsMatched = 0;
         }
 
-        ABC_LOG("Checking char `%c`(0x%x), charsMatched %d, "
-                "charsReadInCurrentLine %d, start len %d",
+        ABC_LOG("Checking char `%c`(0x%x), charsMatched %zu, "
+                "charsReadInCurrentLine %zu, start len %zu",
                 readChar,
                 readChar,
                 charsMatched,
@@ -245,10 +242,10 @@ readLineStartingWith(
     // # Found the line, now read the remainder of the it.
     if (!errorsEncountered)
     {
-        const int lineRemBufSize = retStrBufMaxLen - startStrLen;
+        const size_t lineRemBufSize = retStrBufMaxLen - startStrLen;
         char lineRemStr[lineRemBufSize];
 
-        if (NULL == fgets(lineRemStr, lineRemBufSize, pFile))
+        if (NULL == fgets(lineRemStr, (int)lineRemBufSize, pFile))
         {
             ABC_LOG_ERR("Reached EOF too early: %s", strerror(errno));
 
@@ -292,7 +289,7 @@ bool
 abc_ioService_readLineStartingWith(
         const char *const restrict pStartStr,
         char *const restrict pRetStr,
-        const int retStrBufMaxLen,
+        const size_t retStrBufMaxLen,
         const char *const restrict pFileName)
 {
     // # Pointer validation.
@@ -339,7 +336,7 @@ abc_ioService_readLineStartingWith(
 
     if (retStrBufMaxLen < 1 || retStrBufMaxLen > MAX_STR_LEN)
     {
-        ABC_LOG_ERR("Bad return string max length %d", retStrBufMaxLen);
+        ABC_LOG_ERR("Bad return string max length %zu", retStrBufMaxLen);
 
         return false;
     }
@@ -348,14 +345,14 @@ abc_ioService_readLineStartingWith(
     // # Handle the easy cases (not requiring file reads).
 
     // Down casting as we've just range checked startStrLen.
-    if (retStrBufMaxLen <= (int)(startStrLen + 1))
+    if (retStrBufMaxLen <= startStrLen + 1)
     {
         memcpy(pRetStr, pStartStr, retStrBufMaxLen);
 
         pRetStr[retStrBufMaxLen - 1] = '\0';
 
-        ABC_LOG("Returning the starting string (or a portion of it)  %s as the "
-                "max length is %d", pRetStr, retStrBufMaxLen);
+        ABC_LOG("Returning the starting string (or a portion of it) %s as the "
+                "max length is %zu", pRetStr, retStrBufMaxLen);
 
         return true;
     }
