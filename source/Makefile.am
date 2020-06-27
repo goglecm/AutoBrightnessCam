@@ -51,7 +51,7 @@ endif # if ABC_USES_UPOWER
 
 
 GENERAL_DEFINITIONS += \
-	-DABC_PICTURE_DIR=\"$(localstatedir)\" \
+	-DABC_PICTURE_DIR=\"$(localstatedir)/aubrca\" \
 	-DABC_CONFIG_FILENAME=\"$(sysconfdir)/aubrca.conf\" \
 	-DABC_CONFIG_DEFAULTS_FILENAME=\"$(datadir)/aubrca/defaults.conf\"
 
