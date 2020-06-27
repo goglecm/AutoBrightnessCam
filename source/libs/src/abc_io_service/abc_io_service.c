@@ -11,7 +11,7 @@
 
 
 // Excluding null terminator.
-#define MAX_STR_LEN 128
+#define MAX_STR_LEN 256
 
 // Excluding null terminator.
 #define MAX_FILENAME_LENGTH 512
@@ -334,7 +334,7 @@ abc_ioService_readLineStartingWith(
         return false;
     }
 
-    if (retStrBufMaxLen < 1 || retStrBufMaxLen > MAX_STR_LEN)
+    if (retStrBufMaxLen < 1)
     {
         ABC_LOG_ERR("Bad return string max length %zu", retStrBufMaxLen);
 

@@ -28,7 +28,7 @@ static void configure(void)
 {
     // Set the sampling period.
     int samplingPeriod;
-    const bool isResultOK =
+    bool isResultOK =
         abc_configService_get(
                 ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD,
                 &samplingPeriod);
@@ -42,6 +42,23 @@ static void configure(void)
         ABC_LOG_ERR("Couldn't read sampling period");
         exit(-1);
     }
+
+    int transitionSmoothness;
+    isResultOK =
+        abc_configService_get(
+                ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS,
+                &transitionSmoothness);
+
+    if (isResultOK)
+    {
+        abc_backlightBrightnessController_setNumIncrements(transitionSmoothness * 4);
+    }
+    else
+    {
+        ABC_LOG_ERR("Couldn't read transition smoothness");
+        exit(-1);
+    }
+
 
     // Set the brightness change speed.
     abc_backlightBrightnessController_setIncrementsPeriod_ms(50);

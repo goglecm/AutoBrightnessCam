@@ -25,7 +25,7 @@
 #endif // ABC_CONFIG_FILENAME
 
 
-#define ABC_CONFIG_ENTRY_MAX_LEN 128
+#define ABC_CONFIG_ENTRY_MAX_LEN 256
 
 
 typedef abc_configService_Key_t abc_Key_t;
@@ -183,7 +183,8 @@ extractKeyValue(
 static inline bool
 isKeyValid(const abc_Key_t key)
 {
-    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD;
+    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD ||
+           key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS;
 }
 
 static inline const char *
@@ -196,6 +197,12 @@ keyToStr(const abc_Key_t key)
         case ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD:
         {
             static const char keyStr[] = "sampling_period";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS:
+        {
+            static const char keyStr[] = "transition_smoothness";
             return keyStr;
         }
 
