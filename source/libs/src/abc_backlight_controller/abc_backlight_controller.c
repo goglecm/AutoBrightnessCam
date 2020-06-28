@@ -17,7 +17,7 @@
 
 #define MAX_BUFF_SIZE 128U
 
-#define MAX_NUM_INCREMENTS 20U
+#define MAX_NUM_INCREMENTS 200U
 
 const double
 g_abc_BacklightBrightnessController_MAX = 100;

@@ -34,8 +34,9 @@ typedef abc_configService_Key_t abc_Key_t;
 static inline bool
 isKeyValid(const abc_Key_t key)
 {
-    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD ||
-           key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS;
+    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD
+        || key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS
+        || key == ABC_CONFIG_SERVICE_KEY_TRANSITION_PERIOD;
 }
 
 static inline const char *
@@ -54,6 +55,12 @@ keyToStr(const abc_Key_t key)
         case ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS:
         {
             static const char keyStr[] = "transition_smoothness";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_TRANSITION_PERIOD:
+        {
+            static const char keyStr[] = "transition_period";
             return keyStr;
         }
 

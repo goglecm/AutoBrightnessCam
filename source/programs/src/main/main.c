@@ -43,25 +43,71 @@ static void configure(void)
         exit(-1);
     }
 
+    // Set the transition smoothness and speed.
     int transitionSmoothness;
     isResultOK =
         abc_configService_get(
                 ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS,
                 &transitionSmoothness);
 
-    if (isResultOK)
-    {
-        abc_backlightBrightnessController_setNumIncrements(transitionSmoothness * 4);
-    }
-    else
+    if (!isResultOK)
     {
         ABC_LOG_ERR("Couldn't read transition smoothness");
         exit(-1);
     }
 
+    const int minSmoothnessLevel = 1;
+    const int maxSmoothnessLevel = 10;
+    if (transitionSmoothness < minSmoothnessLevel ||
+        transitionSmoothness > maxSmoothnessLevel)
+    {
+        ABC_LOG_ERR("Out of range transition smoothness");
+        exit(-1);
+    }
 
-    // Set the brightness change speed.
-    abc_backlightBrightnessController_setIncrementsPeriod_ms(50);
+    int transitionPeriod;
+    isResultOK =
+        abc_configService_get(
+                ABC_CONFIG_SERVICE_KEY_TRANSITION_PERIOD,
+                &transitionPeriod);
+
+    if (!isResultOK)
+    {
+        ABC_LOG_ERR("Couldn't read transition period %d", transitionSmoothness);
+        exit(-1);
+    }
+
+    if (transitionPeriod < 10 || transitionPeriod > 2000)
+    {
+        ABC_LOG_ERR("Out of range transition period %d", transitionPeriod);
+        exit(-1);
+    }
+
+    if (transitionPeriod > samplingPeriod * 1000)
+    {
+        ABC_LOG_ERR("Transition period %d ms cannot exceed sampling period %d ms",
+                transitionPeriod, samplingPeriod * 1000);
+    }
+
+    // A smooth transition occurs at 1 brightness change per 10 ms.
+    // A rough transition occurs at 1 brightness change per 500 ms.
+    static const int minTransPeriod = 10;
+    static const int maxTransPeriod = 500;
+    static const int numSmoothnessLevels = maxSmoothnessLevel - minSmoothnessLevel;
+    static const int incrementPeriodPerLevel =
+        (maxTransPeriod - minTransPeriod) / numSmoothnessLevels;
+
+    const int effectiveIncrementPeriod =
+        minTransPeriod +
+        incrementPeriodPerLevel * (maxSmoothnessLevel - transitionSmoothness);
+
+    const int numIncrements = transitionPeriod / effectiveIncrementPeriod;
+
+    ABC_LOG("Increment period set to %d ms, num increments %d over %d ms",
+            effectiveIncrementPeriod, numIncrements, transitionPeriod);
+
+    abc_backlightBrightnessController_setIncrementsPeriod_ms(effectiveIncrementPeriod);
+    abc_backlightBrightnessController_setNumIncrements(numIncrements);
 }
 
 int main(int argc, char **argv)
