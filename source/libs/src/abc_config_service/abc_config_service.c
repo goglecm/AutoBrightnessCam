@@ -25,7 +25,7 @@
 #endif // ABC_CONFIG_FILENAME
 
 
-#define ABC_CONFIG_ENTRY_MAX_LEN 256
+#define ENTRY_MAX_LEN 256
 
 
 typedef abc_configService_Key_t abc_Key_t;
@@ -99,7 +99,7 @@ extractKeyValue(
         int *const restrict pKeyVal)
 {
     assert(pEntryStr && pKeyLen && pKeyVal);
-    assert(strnlen(pEntryStr, ABC_CONFIG_ENTRY_MAX_LEN) < ABC_CONFIG_ENTRY_MAX_LEN);
+    assert(strnlen(pEntryStr, ENTRY_MAX_LEN) < ENTRY_MAX_LEN);
 
     ABC_LOG("entry `%s`", pEntryStr);
 
@@ -222,7 +222,7 @@ readKeyValue(
 
     ABC_LOG("Key `%s`, filename `%s`", keyToStr(key), pFileName);
 
-    char entryStr[ABC_CONFIG_ENTRY_MAX_LEN + 1];
+    char entryStr[ENTRY_MAX_LEN + 1];
 
     const char *pOrigKeyStr = keyToStr(key);
     const size_t origKeyLen = strlen(pOrigKeyStr);
