@@ -31,6 +31,38 @@
 typedef abc_configService_Key_t abc_Key_t;
 
 
+static inline bool
+isKeyValid(const abc_Key_t key)
+{
+    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD ||
+           key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS;
+}
+
+static inline const char *
+keyToStr(const abc_Key_t key)
+{
+    assert(isKeyValid(key));
+
+    switch (key)
+    {
+        case ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD:
+        {
+            static const char keyStr[] = "sampling_period";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS:
+        {
+            static const char keyStr[] = "transition_smoothness";
+            return keyStr;
+        }
+
+        default:
+            assert(false && "Bad key");
+            return NULL;
+    }
+}
+
 // Updating length and pointer to point to the value without whitespace around.
 static void
 stripPrefixSuffixWhitespace(const char **const ppValue, size_t *const pLength)
@@ -178,38 +210,6 @@ extractKeyValue(
     ABC_LOG("Key value `%s` is %d", valueStr, value);
 
     return true;
-}
-
-static inline bool
-isKeyValid(const abc_Key_t key)
-{
-    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD ||
-           key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS;
-}
-
-static inline const char *
-keyToStr(const abc_Key_t key)
-{
-    assert(isKeyValid(key));
-
-    switch (key)
-    {
-        case ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD:
-        {
-            static const char keyStr[] = "sampling_period";
-            return keyStr;
-        }
-
-        case ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS:
-        {
-            static const char keyStr[] = "transition_smoothness";
-            return keyStr;
-        }
-
-        default:
-            assert(false && "Bad key");
-            return NULL;
-    }
 }
 
 static bool
