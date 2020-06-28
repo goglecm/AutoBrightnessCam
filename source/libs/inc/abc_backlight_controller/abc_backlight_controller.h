@@ -9,14 +9,14 @@ extern "C" {
 
 #include <stdbool.h>
 
-extern const double
-g_abc_BacklightBrightnessController_MAX;
-
-extern const double
-g_abc_BacklightBrightnessController_MIN;
-
 void
 abc_backlightBrightnessController_set(double value);
+
+double
+abc_backlightBrightnessController_getMax(void);
+
+double
+abc_backlightBrightnessController_getMin(void);
 
 // Function to set the path where the max brightness can be read.
 void

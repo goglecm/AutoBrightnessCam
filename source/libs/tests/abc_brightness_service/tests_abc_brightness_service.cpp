@@ -233,7 +233,7 @@ TEST_F(abc_brightness_service, backlight_is_set_to_maximum_when_charging)
 
     ASSERT_EQ(FAKE_ABC_BACKLIGHT_BRIGHTNESS_SET, actualBrightness.set);
 
-    ASSERT_DOUBLE_EQ(g_abc_BacklightBrightnessController_MAX,
+    ASSERT_DOUBLE_EQ(abc_backlightBrightnessController_getMax(),
                      actualBrightness.value);
 }
 

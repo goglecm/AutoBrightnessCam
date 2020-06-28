@@ -109,7 +109,7 @@ abc_brightnessService_wakeUp(void)
         {
             ABC_LOG("Max brightness is not set");
 
-            abc_backlightBrightnessController_set(g_abc_BacklightBrightnessController_MAX);
+            abc_backlightBrightnessController_set(abc_backlightBrightnessController_getMax());
             s_isSetToMax = true;
         }
 

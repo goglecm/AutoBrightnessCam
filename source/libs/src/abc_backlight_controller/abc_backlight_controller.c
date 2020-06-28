@@ -19,11 +19,11 @@
 
 #define MAX_NUM_INCREMENTS 200U
 
-const double
-g_abc_BacklightBrightnessController_MAX = 100;
+static double
+s_brightnessMax = 100;
 
-const double
-g_abc_BacklightBrightnessController_MIN = 5;
+static double
+s_brightnessMin = 5;
 
 static bool
 s_isMaxSet = false;
@@ -48,6 +48,18 @@ writeBrightness(const int value)
     {
         ABC_LOG_ERR("failed to set the brightness to %u", value);
     }
+}
+
+double
+abc_backlightBrightnessController_getMax(void)
+{
+    return s_brightnessMax;
+}
+
+double
+abc_backlightBrightnessController_getMin(void)
+{
+    return s_brightnessMin;
 }
 
 void
@@ -95,8 +107,8 @@ abc_backlightBrightnessController_set(const double value)
 
     // Make sure the value is within the min/max limits.
     const double validValue =
-        value > g_abc_BacklightBrightnessController_MAX ? g_abc_BacklightBrightnessController_MAX :
-        value < g_abc_BacklightBrightnessController_MIN ? g_abc_BacklightBrightnessController_MIN :
+        value > s_brightnessMax ? s_brightnessMax :
+        value < s_brightnessMin ? s_brightnessMin :
         value;
 
     const int targetBrightness = (int)(s_maxBrightness * (validValue / 100));

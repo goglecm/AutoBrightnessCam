@@ -22,9 +22,9 @@ static const char s_MAX_BRIGHTNESS_PATH[] = "max_brightness";
 static double
 getMidBrightness(void)
 {
-    return (g_abc_BacklightBrightnessController_MAX -
-            g_abc_BacklightBrightnessController_MIN) / 2 +
-           g_abc_BacklightBrightnessController_MIN;
+    return (abc_backlightBrightnessController_getMax() -
+            abc_backlightBrightnessController_getMin()) / 2 +
+           abc_backlightBrightnessController_getMin();
 }
 
 static uint16_t
@@ -81,9 +81,9 @@ TEST_F(abc_backlight_controller, backlight_is_updated_gradually)
 
     // Mid point between min and max
     const double currentBrightness = (fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX;
-    const double targetBrightness = g_abc_BacklightBrightnessController_MAX -
+    const double targetBrightness = abc_backlightBrightnessController_getMax() -
                                     currentBrightness +
-                                    g_abc_BacklightBrightnessController_MIN;
+                                    abc_backlightBrightnessController_getMin();
 
     abc_backlightBrightnessController_set(targetBrightness);
 
@@ -106,21 +106,21 @@ TEST_F(abc_backlight_controller, only_unique_intermediate_brightness_updates_are
 
 TEST_F(abc_backlight_controller, backlight_does_not_exceed_maximum_brightness)
 {
-    const double target = g_abc_BacklightBrightnessController_MAX * 1.5;
+    const double target = abc_backlightBrightnessController_getMax() * 1.5;
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MAX),
+    ASSERT_EQ(toRawBrightness(abc_backlightBrightnessController_getMax()),
               fake_abc_ioService_getCurrentBrightness());
 }
 
 TEST_F(abc_backlight_controller, backlight_does_not_recede_minimum_brightness)
 {
-    const double target = g_abc_BacklightBrightnessController_MIN / 2;
+    const double target = abc_backlightBrightnessController_getMin() / 2;
 
     abc_backlightBrightnessController_set(target);
 
-    ASSERT_EQ(toRawBrightness(g_abc_BacklightBrightnessController_MIN),
+    ASSERT_EQ(toRawBrightness(abc_backlightBrightnessController_getMin()),
               fake_abc_ioService_getCurrentBrightness());
 }
 
