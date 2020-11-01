@@ -1,6 +1,6 @@
 # AutoBrightnessCam
 
-[![Build Status](https://travis-ci.org/goglecm/AutoBrightnessCam.svg?branch=master)](https://travis-ci.org/goglecm/AutoBrightnessCam)
+[![Build Status](https://travis-ci.com/goglecm/AutoBrightnessCam.svg?branch=master)](https://travis-ci.com/goglecm/AutoBrightnessCam)
 [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/goglecm/AutoBrightnessCam.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/goglecm/AutoBrightnessCam/context:cpp)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/goglecm/AutoBrightnessCam.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/goglecm/AutoBrightnessCam/alerts/)
 
