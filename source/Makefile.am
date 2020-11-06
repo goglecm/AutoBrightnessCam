@@ -133,7 +133,7 @@ libabc_brightness_service_la_LIBADD = \
 
 libabc_config_service_la_LIBADD = \
 	libabc_logging_service.la \
-	libabc_io_service.la \
+	libabc_terminal_controller.la \
 	libabc_utils.la
 
 libabc_io_service_la_LIBADD = \
@@ -340,8 +340,8 @@ test_abc_utils_SOURCES = \
 test_abc_config_service_SOURCES = \
 	$(libabc_config_service_la_SOURCES) \
 	libs/tests/abc_config_service/tests_abc_config_service.cpp \
-	libs/inc_test/abc_config_service/fake_abc_io_service.h \
-	libs/src_test/abc_config_service/fake_abc_io_service.c
+	libs/inc_test/abc_config_service/fake_abc_terminal_controller.h \
+	libs/src_test/abc_config_service/fake_abc_terminal_controller.c
 
 test_abc_power_controller_SOURCES = \
 	$(libabc_power_controller_la_SOURCES) \

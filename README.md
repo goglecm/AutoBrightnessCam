@@ -107,6 +107,8 @@ The rpm will be located in ~/rpmbuild/RPMS/\*.rpm
 
 ## Usage
 
+See the GitHub Wiki for tons of notes.
+
 If the installation succeeds and systemd is happy, it should all work.
 
 The app will kick in and take pictures and adjust the brightness when the
@@ -114,6 +116,8 @@ battery is discharging. When charging, the app sets the brightness to 100% after
 which the user may change the brightness as per their needs.
 
 ## Contributing
+
+See the GitHub Wiki for tons of notes.
 
 Pull requests are welcome. For major changes, please open an issue first to
 discuss what you would like to change.

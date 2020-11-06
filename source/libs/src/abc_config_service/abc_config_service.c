@@ -1,8 +1,8 @@
 #include "abc_config_service/abc_config_service.h"
 
 #include "abc_logging_service/abc_logging_service.h"
-#include "abc_io_service/abc_io_service.h"
 #include "abc_utils/abc_utils.h"
+#include "abc_terminal_controller/abc_terminal_controller.h"
 
 #include <assert.h>
 #include <string.h>
@@ -219,6 +219,113 @@ extractKeyValue(
     return true;
 }
 
+static bool extractEntry(
+        char *const restrict pEntry,
+        const unsigned maxEntryBufLen,
+        const abc_Key_t key,
+        const char *const restrict pFileName)
+{
+    // Prepare grep commands.
+    char grepCommand[1024 + 1];
+    grepCommand[0] = '\0';
+    strncat(grepCommand, "egrep \"^", sizeof(grepCommand) - 1);
+    strncat(grepCommand, keyToStr(key), sizeof(grepCommand) - 1);
+    strncat(grepCommand, "[ =\\t]\" ", sizeof(grepCommand) - 1);
+    strncat(grepCommand, pFileName, sizeof(grepCommand) - 1);
+
+    if (strlen(grepCommand) == sizeof(grepCommand) - 1)
+    {
+        ABC_LOG_ERR("Grep command too long");
+
+        return false;
+    }
+
+    const bool cmdOK =
+        abc_terminalController_sendReturnStr(
+                maxEntryBufLen,
+                pEntry,
+                grepCommand);
+
+    if (!cmdOK)
+    {
+        ABC_LOG_ERR("Failed to read entry");
+
+        return false;
+    }
+
+
+    return true;
+}
+
+static bool
+countEntries(
+        int *const restrict pEntryCount,
+        const abc_Key_t key,
+        const char *const restrict pFileName)
+{
+    // Prepare sub-commands.
+    char grepCommand[1024 + 1];
+    grepCommand[0] = '\0';
+    strncat(grepCommand, "egrep \"^", sizeof(grepCommand) - 1);
+    strncat(grepCommand, keyToStr(key), sizeof(grepCommand) - 1);
+    strncat(grepCommand, "[ =\\t]\" ", sizeof(grepCommand) - 1);
+    strncat(grepCommand, pFileName, sizeof(grepCommand) - 1);
+
+    if (strlen(grepCommand) == sizeof(grepCommand) - 1)
+    {
+        ABC_LOG_ERR("Grep command too long");
+        return false;
+    }
+
+    const char wcCommand[] = "wc -l";
+    const char pipe[] = " | ";
+
+    // Build final command.
+    char finalCommand[1024 + 1];
+    finalCommand[0] = '\0';
+    strncat(finalCommand, grepCommand, sizeof(finalCommand) - 1);
+    strncat(finalCommand, pipe, sizeof(finalCommand) - 1);
+    strncat(finalCommand, wcCommand, sizeof(finalCommand) - 1);
+
+    if (strlen(finalCommand) == sizeof(finalCommand) - 1)
+    {
+        ABC_LOG_ERR("Final command too long");
+        return false;
+    }
+
+    // Execute the command to count the number of entries in the file.
+    char entryCountStr[11] = {'\0'};
+
+    const bool cmdOK =
+        abc_terminalController_sendReturnStr(
+                sizeof(entryCountStr),
+                entryCountStr,
+                finalCommand);
+
+    if (!cmdOK)
+    {
+        ABC_LOG_ERR("Failed to count entries");
+
+        return false;
+    }
+
+    if (entryCountStr[strlen(entryCountStr) - 1] == '\n')
+    {
+        entryCountStr[strlen(entryCountStr) - 1] = '\0';
+    }
+
+    if (!abc_utils_strToInt(pEntryCount, entryCountStr))
+    {
+        ABC_LOG_ERR("Failed to convert value `%s` to int", entryCountStr);
+
+        return false;
+    }
+
+    ABC_LOG("Entry count for `%s` is %d", keyToStr(key), *pEntryCount);
+
+    return true;
+}
+
 static bool
 readKeyValue(
         const abc_Key_t key,
@@ -229,59 +336,52 @@ readKeyValue(
 
     ABC_LOG("Key `%s`, filename `%s`", keyToStr(key), pFileName);
 
+    // Count entries.
+    int keyCount;
+    if (!countEntries(&keyCount, key, pFileName))
+    {
+        ABC_LOG_ERR("Failed to count entries from `%s`", pFileName);
+
+        return false;
+    }
+
+    if (0 == keyCount)
+    {
+        ABC_LOG_ERR("No key entries found");
+
+        return false;
+    }
+
+    if (keyCount != 1)
+    {
+        ABC_LOG_ERR("Found duplicate key entries");
+
+        return false;
+    }
+
+    // Read entry.
     char entryStr[ENTRY_MAX_LEN + 1];
-
-    const char *pOrigKeyStr = keyToStr(key);
-    const size_t origKeyLen = strlen(pOrigKeyStr);
-
-    // Read corresponding entry from the file. Try a couple of terminators for
-    // the key string.
-    char keyStr[origKeyLen + 2];
-    memcpy(keyStr, pOrigKeyStr, origKeyLen + 1);
-    keyStr[origKeyLen + 1] = '\0';
-
-    const char keyTerminatorChars[] = {' ', '=', '\0'};
-    bool isEntryRead;
-    for (size_t i = 0; i < sizeof(keyTerminatorChars); ++i)
+    if (!extractEntry(entryStr, sizeof(entryStr), key, pFileName))
     {
-        keyStr[origKeyLen] = keyTerminatorChars[i];
+        ABC_LOG_ERR("Failed to extract entry");
 
-        ABC_LOG("Attempt to read with starting str `%s`", keyStr);
-
-        isEntryRead =
-            abc_ioService_readLineStartingWith(
-                    keyStr,
-                    entryStr,
-                    sizeof(entryStr),
-                    pFileName);
-
-        if (isEntryRead)
-        {
-            break;
-        }
+        return false;
     }
 
-    // Extract the value from the entry.
-    if (isEntryRead)
+    // Parse entry.
+    size_t actualKeyLen;
+    if (!extractKeyValue(entryStr, NULL, &actualKeyLen, pValue))
     {
-        size_t actualKeyLen;
-        if (!extractKeyValue(entryStr, NULL, &actualKeyLen, pValue))
-        {
-            ABC_LOG_ERR("Failed to parse config entry");
+        ABC_LOG_ERR("Failed to parse config entry");
 
-            return false;
-        }
-
-        if (actualKeyLen != strlen(keyToStr(key)))
-        {
-            ABC_LOG_ERR("Key not present in file");
-
-            return false;
-        }
+        return false;
     }
-    else
+
+    if (actualKeyLen != strlen(keyToStr(key)))
     {
-        ABC_LOG("Failed to read config entry");
+        ABC_LOG_ERR("Something went wrong during parsing, the actual "
+                "key length %zu is different from %zu",
+                actualKeyLen, strlen(keyToStr(key)));
 
         return false;
     }
