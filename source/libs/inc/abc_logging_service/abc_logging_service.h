@@ -23,6 +23,18 @@ extern "C" {
 #endif // ABC_LOGGING_ON
 
 
+#define ABC_LOG_STDERR(...) do { \
+    fprintf(stderr, "\nERROR: %s: ", __func__); \
+    fprintf(stderr, __VA_ARGS__); \
+    fflush(stderr); \
+} while (0)
+
+#define ABC_LOG_STDOUT(...) do { \
+    printf("\n%s: ", __func__); \
+    printf(__VA_ARGS__); \
+} while (0)
+
+
 #if ABC_LOGGING_ON == 1
 
 extern bool g_isFirstLog;
@@ -40,17 +52,6 @@ abc_loggingService_setLogName(const char *pLogName);
         fprintf(g_pLogFile, __VA_ARGS__) ; \
         fclose(g_pLogFile); \
     } \
-} while (0)
-
-#define ABC_LOG_STDOUT_ERR(...) do { \
-    printf("\nERROR: %s: ", __func__); \
-    printf(__VA_ARGS__); \
-    fflush(stdout); \
-} while (0)
-
-#define ABC_LOG_STDOUT(...) do { \
-    printf("\n%s: ", __func__); \
-    printf(__VA_ARGS__); \
 } while (0)
 
 #define ABC_LOG_WRN(...) do { \
@@ -85,8 +86,6 @@ abc_loggingService_setLogName(const char *pLogName);
 #else
 
 #define ABC_LOG_ERR(...) ;
-#define ABC_LOG_STDOUT_ERR(...) ;
-#define ABC_LOG_STDOUT(...) ;
 #define ABC_LOG_WRN(...) ;
 #define ABC_LOG(...) ;
 

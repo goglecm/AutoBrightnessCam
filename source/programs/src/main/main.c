@@ -14,6 +14,12 @@
 
 #endif // #ifndef CONFIG_H_INCLUDED
 
+#define FATAL_ERROR(...)  do {   \
+    ABC_LOG_ERR(__VA_ARGS__);    \
+    ABC_LOG_STDERR(__VA_ARGS__); \
+    exit(-1);                    \
+} while (0)
+
 
 const char *argp_program_version     = PACKAGE_STRING;
 const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
@@ -39,8 +45,7 @@ static void configure(void)
     }
     else
     {
-        ABC_LOG_ERR("Couldn't read sampling period");
-        exit(-1);
+        FATAL_ERROR("Couldn't read sampling period");
     }
 
     // Set the transition smoothness and speed.
@@ -52,8 +57,7 @@ static void configure(void)
 
     if (!isResultOK)
     {
-        ABC_LOG_ERR("Couldn't read transition smoothness");
-        exit(-1);
+        FATAL_ERROR("Couldn't read transition smoothness");
     }
 
     const int minSmoothnessLevel = 1;
@@ -61,8 +65,7 @@ static void configure(void)
     if (transitionSmoothness < minSmoothnessLevel ||
         transitionSmoothness > maxSmoothnessLevel)
     {
-        ABC_LOG_ERR("Out of range transition smoothness");
-        exit(-1);
+        FATAL_ERROR("Out of range transition smoothness");
     }
 
     int transitionPeriod;
@@ -73,19 +76,18 @@ static void configure(void)
 
     if (!isResultOK)
     {
-        ABC_LOG_ERR("Couldn't read transition period %d", transitionSmoothness);
-        exit(-1);
+        FATAL_ERROR("Couldn't read transition period");
     }
 
     if (transitionPeriod < 10 || transitionPeriod > 2000)
     {
-        ABC_LOG_ERR("Out of range transition period %d", transitionPeriod);
-        exit(-1);
+        FATAL_ERROR("Out of range transition period %d. Allowed range: 10..2000.",
+                transitionPeriod);
     }
 
     if (transitionPeriod > samplingPeriod * 1000)
     {
-        ABC_LOG_ERR("Transition period %d ms cannot exceed sampling period %d ms",
+        FATAL_ERROR("Transition period %d ms cannot exceed sampling period %d ms",
                 transitionPeriod, samplingPeriod * 1000);
     }
 
@@ -134,5 +136,5 @@ int main(int argc, char **argv)
     }
     while (abc_brightnessService_wakeUp() == ABC_BRIGHTNESSSERVICE_SUCCESS);
 
-    return -1;
+    FATAL_ERROR("The wake up function failed");
 }

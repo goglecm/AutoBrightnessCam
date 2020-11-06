@@ -30,14 +30,14 @@ abc_loggingService_setLogName(const char *const restrict pLogName)
 {
     if (NULL == pLogName)
     {
-        ABC_LOG_STDOUT_ERR("failed to set log name path due to invalid log name");
+        ABC_LOG_STDERR("failed to set log name path due to invalid log name");
 
         return false;
     }
 
     if (strnlen(pLogName, sizeof(g_logFilename)) == sizeof(g_logFilename))
     {
-        ABC_LOG_STDOUT_ERR("failed to set log name path as it exceeds the required length");
+        ABC_LOG_STDERR("failed to set log name path as it exceeds the required length");
 
         return false;
     }
