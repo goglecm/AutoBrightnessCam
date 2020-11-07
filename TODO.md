@@ -17,8 +17,7 @@
   config files).
 - Add some logs files used for statistics.
 - Use time stamps to minimise the number of times files are set/read.
-- Throw compile errors if #defines are not set.
-- Use grep to find a line in a file.
+- (almost done) Throw compile errors if #defines are not set.
 - The display brightness may contribute to the overall brightness of the image,
   so take it into account.
 - Maybe allow users to change the path where the pic is stored (or other paths).
