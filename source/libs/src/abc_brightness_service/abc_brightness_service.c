@@ -81,7 +81,7 @@ abc_brightnessService_start(void)
     if (ABC_BRIGHTNESSSERVICE_SUCCESS != abc_brightnessService_wakeUp())
     {
         ABC_LOG_ERR("service started but it failed to wakeup properly, "
-                    "further wakeups may or may not fail");
+                    "further wake ups may or may not fail");
     }
 }
 
@@ -118,7 +118,7 @@ abc_brightnessService_wakeUp(void)
 
     s_isSetToMax = false;
 
-    // Wait until one period has passed since the last timestamp.
+    // Wait until one period has passed since the last time stamp.
     const time_t now = abc_timeService_get();
     const bool isAtNextPeriod = (s_lastTimestamp + s_period) <= now;
     if (!isAtNextPeriod)
@@ -126,7 +126,7 @@ abc_brightnessService_wakeUp(void)
         return ABC_BRIGHTNESSSERVICE_SUCCESS;
     }
 
-    // Update the timestamp to work out the next period.
+    // Update the time stamp to work out the next period.
     s_lastTimestamp = now;
 
     double ambientBrightness = 0;
