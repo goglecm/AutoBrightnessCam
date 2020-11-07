@@ -19,11 +19,14 @@
 
 #define MAX_NUM_INCREMENTS 200U
 
+
+// Some default brightness ranges.
 static double
-s_brightnessMax = 100;
+s_brightnessMax = 100; // %
 
 static double
-s_brightnessMin = 5;
+s_brightnessMin = 5; // %
+
 
 static bool
 s_isMaxSet = false;
@@ -48,6 +51,41 @@ writeBrightness(const int value)
     {
         ABC_LOG_ERR("failed to set the brightness to %u", value);
     }
+}
+
+bool
+abc_backlightBrightnessController_setMinMax(
+        const int minBrightness,
+        const int maxBrightness)
+{
+    if (maxBrightness > 100)
+    {
+        ABC_LOG_ERR("max brightness out of range [0..100] -> %d", maxBrightness);
+
+        return false;
+    }
+
+    if (minBrightness < 0)
+    {
+        ABC_LOG_ERR("min brightness out of range [0..100] -> %d", minBrightness);
+
+        return false;
+    }
+
+    if (minBrightness > maxBrightness)
+    {
+        ABC_LOG_ERR("min brightness %d greater than max brightness %d",
+                minBrightness, maxBrightness);
+
+        return false;
+    }
+
+    ABC_LOG("set brightness min %d max %d", minBrightness, maxBrightness);
+
+    s_brightnessMin = minBrightness;
+    s_brightnessMax = maxBrightness;
+
+    return true;
 }
 
 double

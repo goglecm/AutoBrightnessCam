@@ -13,7 +13,7 @@
 #include <fstream>
 
 static const uint16_t
-s_DEFAULT_MAX = 6900;
+s_DEFAULT_RAW_MAX = 6900;
 
 static const char s_CURRENT_BRIGHTNESS_PATH[] = "current_brightness";
 
@@ -30,7 +30,7 @@ getMidBrightness(void)
 static uint16_t
 toRawBrightness(const double target)
 {
-    return target / 100.0 * s_DEFAULT_MAX;
+    return target / 100.0 * s_DEFAULT_RAW_MAX;
 }
 
 class abc_backlight_controller: public ::testing::Test
@@ -51,7 +51,7 @@ public:
 
         fake_abc_ioService_resetNumWriteCalls();
 
-        fake_abc_ioService_setMaxBrightness(s_DEFAULT_MAX);
+        fake_abc_ioService_setMaxBrightness(s_DEFAULT_RAW_MAX);
 
         fake_abc_ioService_failReads(false);
 
@@ -59,7 +59,9 @@ public:
 
         abc_backlightBrightnessController_setIncrementsPeriod_ms(50);
 
-        fake_abc_ioService_setCurrentBrightness((getMidBrightness() / 100) * (double)s_DEFAULT_MAX - 1);
+        fake_abc_ioService_setCurrentBrightness((getMidBrightness() / 100) * (double)s_DEFAULT_RAW_MAX - 1);
+
+        ASSERT_TRUE(abc_backlightBrightnessController_setMinMax(5, 95));
     }
 };
 
@@ -74,19 +76,36 @@ TEST_F(abc_backlight_controller, backlight_is_set_to_new_value)
               fake_abc_ioService_getCurrentBrightness());
 }
 
+TEST_F(abc_backlight_controller, fail_to_set_max_brightness_over_min_brightness)
+{
+    ASSERT_FALSE(abc_backlightBrightnessController_setMinMax(50, 40));
+}
+
+TEST_F(abc_backlight_controller, set_valid_min_max_brightness)
+{
+    ASSERT_TRUE(abc_backlightBrightnessController_setMinMax(10, 40));
+}
+
+TEST_F(abc_backlight_controller, fail_to_set_out_of_range_min_max_brightness)
+{
+    ASSERT_FALSE(abc_backlightBrightnessController_setMinMax(-1, 40));
+    ASSERT_FALSE(abc_backlightBrightnessController_setMinMax(0, 140));
+}
+
 TEST_F(abc_backlight_controller, backlight_is_updated_gradually)
 {
     abc_backlightBrightnessController_setNumIncrements(3);
     abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
 
-    // Mid point between min and max
-    const double currentBrightness = (fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX;
-    const double targetBrightness = abc_backlightBrightnessController_getMax() -
-                                    currentBrightness +
-                                    abc_backlightBrightnessController_getMin();
+    const double currentBrightness = (fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_RAW_MAX;
+
+    // Setting the target to be the mid-point between the current and max.
+    const double targetBrightness =
+        (abc_backlightBrightnessController_getMax() + currentBrightness) / 2;
 
     abc_backlightBrightnessController_set(targetBrightness);
 
+    // Expecting 3 increments as we've set the number of increments to 3.
     ASSERT_EQ(3, fake_abc_ioService_getNumWrites());
 }
 
@@ -95,7 +114,7 @@ TEST_F(abc_backlight_controller, only_unique_intermediate_brightness_updates_are
     abc_backlightBrightnessController_setNumIncrements(3);
     abc_backlightBrightnessController_setIncrementsPeriod_ms(300);
 
-    const double targetBrightness = ((fake_abc_ioService_getCurrentBrightness() + 1) * 100.0) / s_DEFAULT_MAX;
+    const double targetBrightness = ((fake_abc_ioService_getCurrentBrightness() + 1) * 100.0) / s_DEFAULT_RAW_MAX;
 
     abc_backlightBrightnessController_set(targetBrightness);
 
@@ -150,7 +169,7 @@ TEST_F(abc_backlight_controller, brightness_is_not_set_when_maximum_brightness_c
 
 TEST_F(abc_backlight_controller, brightness_is_not_set_when_the_new_value_is_the_same_as_the_old_value)
 {
-    abc_backlightBrightnessController_set((fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_MAX);
+    abc_backlightBrightnessController_set((fake_abc_ioService_getCurrentBrightness() * 100.0) / s_DEFAULT_RAW_MAX);
 
     ASSERT_EQ(0, fake_abc_ioService_getNumWrites());
 }
@@ -164,7 +183,7 @@ TEST_F(abc_backlight_controller, setting_the_brightness_increment_period_to_0_ca
 {
     abc_backlightBrightnessController_setIncrementsPeriod_ms(0);
 
-    abc_backlightBrightnessController_set((getMidBrightness() / 100.0) * (double)s_DEFAULT_MAX);
+    abc_backlightBrightnessController_set((getMidBrightness() / 100.0) * (double)s_DEFAULT_RAW_MAX);
 
     ASSERT_EQ(1, fake_abc_ioService_getNumWrites());
 }

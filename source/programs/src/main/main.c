@@ -110,6 +110,37 @@ static void configure(void)
 
     abc_backlightBrightnessController_setIncrementsPeriod_ms(effectiveIncrementPeriod);
     abc_backlightBrightnessController_setNumIncrements(numIncrements);
+
+    // Set the min/max brightness.
+    int minBrightness;
+    isResultOK =
+        abc_configService_get(
+                ABC_CONFIG_SERVICE_KEY_MIN_BRIGHTNESS,
+                &minBrightness);
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Couldn't read min brightness");
+    }
+
+    int maxBrightness;
+    isResultOK =
+        abc_configService_get(
+                ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS,
+                &maxBrightness);
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Couldn't read max brightness");
+    }
+
+    isResultOK =
+        abc_backlightBrightnessController_setMinMax(minBrightness, maxBrightness);
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Bad min/max brightness [%d..%d]", minBrightness, maxBrightness);
+    }
 }
 
 int main(int argc, char **argv)

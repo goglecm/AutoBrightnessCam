@@ -12,11 +12,17 @@ extern "C" {
 void
 abc_backlightBrightnessController_set(double value);
 
+
+// Set and get min/max brightness (in %).
+bool
+abc_backlightBrightnessController_setMinMax(int minBrightness, int maxBrightness);
+
 double
 abc_backlightBrightnessController_getMax(void);
 
 double
 abc_backlightBrightnessController_getMin(void);
+
 
 // Function to set the path where the max brightness can be read.
 void

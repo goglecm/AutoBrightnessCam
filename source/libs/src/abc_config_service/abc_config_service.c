@@ -34,9 +34,8 @@ typedef abc_configService_Key_t abc_Key_t;
 static inline bool
 isKeyValid(const abc_Key_t key)
 {
-    return key == ABC_CONFIG_SERVICE_KEY_SAMPLING_PERIOD
-        || key == ABC_CONFIG_SERVICE_KEY_TRANSITION_SMOOTHNESS
-        || key == ABC_CONFIG_SERVICE_KEY_TRANSITION_PERIOD;
+    return key >= ABC_CONFIG_SERVICE_KEY__FIRST &&
+           key <= ABC_CONFIG_SERVICE_KEY__LAST;
 }
 
 static inline const char *
@@ -64,13 +63,25 @@ keyToStr(const abc_Key_t key)
             return keyStr;
         }
 
+        case ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS:
+        {
+            static const char keyStr[] = "max_brightness";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_MIN_BRIGHTNESS:
+        {
+            static const char keyStr[] = "min_brightness";
+            return keyStr;
+        }
+
         default:
             assert(false && "Bad key");
             return NULL;
     }
 }
 
-// Updating length and pointer to point to the value without whitespace around.
+// Updating length and pointer to point to the value without white space around.
 static void
 stripPrefixSuffixWhitespace(const char **const ppValue, size_t *const pLength)
 {
@@ -83,7 +94,7 @@ stripPrefixSuffixWhitespace(const char **const ppValue, size_t *const pLength)
         return;
     }
 
-    // Skip prefixed whitespace from the value.
+    // Skip prefixed white space from the value.
     while (**ppValue == ' '  ||
            **ppValue == '\n' ||
            **ppValue == '\t')
@@ -105,7 +116,7 @@ stripPrefixSuffixWhitespace(const char **const ppValue, size_t *const pLength)
     ABC_LOG("About to check char %zu: (0x%x) `%c`",
             *pLength - 1, (*ppValue)[*pLength - 1], (*ppValue)[*pLength - 1]);
 
-    // Ignore trailing whitespace.
+    // Ignore trailing white space.
     while ((*ppValue)[*pLength - 1] == ' '  ||
            (*ppValue)[*pLength - 1] == '\n' ||
            (*ppValue)[*pLength - 1] == '\t')
