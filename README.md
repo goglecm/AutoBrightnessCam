@@ -8,21 +8,7 @@ Service to automatically adjust the display brightness using the webcam as an
 ambient luminosity sensor. Generally useful for laptops without an ambient light
 sensor (ALS).
 
-The command line app is called `aubrca`. You can start it manually or you can tell systemd to start it automatically (a service file is provided, see the tail of the `./configure` output log for the full path).
-
-Here are the relevant systemd commands:
-
-#### Install:
-```
-sudo systemctl daemon-reexec
-sudo systemctl enable /usr/lib64/systemd/system/autobrightnesscam.service # May be different on your system.
-sudo systemctl start autobrightnesscam.service
-```
-#### Uninstall:
-```
-sudo systemctl stop autobrightnesscam.service
-sudo systemctl disable autobrightnesscam.service
-```
+The command line app is called `aubrca`. You can start it manually or you can tell systemd to start it automatically (a service file is provided, see the tail of the `./configure` output log for the full path or after `make install`).
 
 ## Alternatives
 
@@ -59,6 +45,21 @@ sudo make uninstall
 
 Note: `make install-strip` also works. It will exclude debugging symbols.
 
+Here are the relevant `systemd` commands:
+
+#### Serivce install:
+```
+sudo systemctl daemon-reexec
+sudo systemctl enable /usr/lib64/systemd/system/autobrightnesscam.service # May be different on your system.
+sudo systemctl start autobrightnesscam.service
+```
+#### Service uninstall:
+```
+sudo systemctl stop autobrightnesscam.service
+sudo systemctl disable autobrightnesscam.service
+```
+
+
 ### Notable configure options
 
 - **--enable-debug** - Enable assertions and allow the app to crash gracefully.
@@ -67,18 +68,16 @@ Note: `make install-strip` also works. It will exclude debugging symbols.
 
 ### Notable configure features
 
-- **--without-upower** - Do not use upower for the battery state.
+- **--without-upower** - Do not use `upower` for the battery state.
 
 ### Build
 
 It is recommended to do the building in a separate directory as to not interfere
 with the source files (though it shouldn't be a problem).
 
-It is also recommended to install the app with root privileges as it will
-attempt to load the app as a systemd service.
-
 Installing the app in a local directory `../configure
---prefix=/home/john/my_local_dir` is supported.
+--prefix=/home/john/my_local_dir` is supported as well as the other `configure`
+flags. See `../configure -h`.
 
 ### Dependencies
 
@@ -109,11 +108,12 @@ The rpm will be located in ~/rpmbuild/RPMS/\*.rpm
 
 See the GitHub Wiki for tons of notes.
 
-If the installation succeeds and systemd is happy, it should all work.
+If the installation succeeds and `systemd` is happy, it should all work. Make
+sure to start the `systemd` service or manually launch it.
 
-The app will kick in and take pictures and adjust the brightness when the
-battery is discharging. When charging, the app sets the brightness to 100% after
-which the user may change the brightness as per their needs.
+The app will kick in, take pictures and adjust the brightness when the
+battery is discharging. When charging, the app sets the brightness to 100% and
+then stops adjusting the brightness until the next discharge cycle.
 
 ## Contributing
 
@@ -122,4 +122,4 @@ See the GitHub Wiki for tons of notes.
 Pull requests are welcome. For major changes, please open an issue first to
 discuss what you would like to change.
 
-Please make sure to update tests as appropriate.
+Please make sure to update/add the tests as appropriate.
