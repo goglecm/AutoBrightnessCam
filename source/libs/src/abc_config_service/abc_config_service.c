@@ -75,6 +75,12 @@ keyToStr(const abc_Key_t key)
             return keyStr;
         }
 
+        case ABC_CONFIG_SERVICE_KEY_DEPEND_ON_BATTERY:
+        {
+            static const char keyStr[] = "depend_on_battery";
+            return keyStr;
+        }
+
         default:
             assert(false && "Bad key");
             return NULL;

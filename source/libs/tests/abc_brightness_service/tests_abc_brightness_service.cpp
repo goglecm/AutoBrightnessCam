@@ -45,6 +45,8 @@ public:
 
         abc_brightnessService_setPeriod(s_TEST_DEFAULT_PERIOD_SEC);
 
+        abc_brightnessService_ignoreBattery(false);
+
         fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_DISCHARGING);
 
         abc_backlightBrightnessController_set(s_TEST_DEFAULT_BACKLIGHT_BRIGHTNESS);
@@ -235,6 +237,26 @@ TEST_F(abc_brightness_service, backlight_is_set_to_maximum_when_charging)
 
     ASSERT_DOUBLE_EQ(abc_backlightBrightnessController_getMax(),
                      actualBrightness.value);
+}
+
+TEST_F(abc_brightness_service, backlight_is_not_set_to_maximum_when_charging_and_dont_depend_on_battery)
+{
+    fake_abc_powerController_setState(FAKE_ABC_POWERSTATE_CHARGING);
+
+    abc_brightnessService_ignoreBattery(true);
+
+    abc_brightnessService_start();
+
+    fake_abc_timeService_forward(2 * s_TEST_DEFAULT_PERIOD_SEC);
+
+    ASSERT_EQ(ABC_BRIGHTNESSSERVICE_SUCCESS, abc_brightnessService_wakeUp());
+
+    const fake_abc_BacklightBrightnessValue_t
+        actualBrightness = fake_abc_backlightBrightnessController_get();
+
+    ASSERT_EQ(FAKE_ABC_BACKLIGHT_BRIGHTNESS_SET, actualBrightness.set);
+
+    ASSERT_GT(abc_backlightBrightnessController_getMax(), actualBrightness.value);
 }
 
 TEST_F(abc_brightness_service, backlight_is_set_to_maximum_once_per_charging_session)

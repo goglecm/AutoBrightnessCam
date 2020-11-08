@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 typedef unsigned abc_brightnessService_PeriodSec_t; // Seconds
 
 typedef enum abc_brightnessService_Status_t
@@ -29,6 +31,10 @@ g_abc_brightnessService_MIN_PERIOD;
 
 extern const abc_brightnessService_PeriodSec_t
 g_abc_brightnessService_MAX_PERIOD;
+
+
+void
+abc_brightnessService_ignoreBattery(bool ignoreBattery);
 
 
 // Service control

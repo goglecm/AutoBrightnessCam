@@ -7,8 +7,6 @@
 #include "abc_logging_service/abc_logging_service.h"
 #include "abc_filter/abc_filter.h"
 
-#include <stdbool.h>
-
 #define ABC_DEFAULT_PERIOD (5U)
 
 #define ABC_FILTER_SIZE (8U)
@@ -26,6 +24,9 @@ s_period = ABC_DEFAULT_PERIOD;
 static time_t
 s_lastTimestamp;
 
+static bool
+s_ignoreBattery = false;
+
 const PeriodSec_t
 g_abc_brightnessService_DEFAULT_PERIOD = ABC_DEFAULT_PERIOD;
 
@@ -39,6 +40,14 @@ static bool
 isStopped(void)
 {
     return ABC_BRIGHTNESSSERVICE_STOPPED == s_status;
+}
+
+void
+abc_brightnessService_ignoreBattery(const bool ignoreBattery)
+{
+    ABC_LOG("Ignore battery %d", ignoreBattery);
+
+    s_ignoreBattery = ignoreBattery;
 }
 
 PeriodSec_t
@@ -101,7 +110,7 @@ abc_brightnessService_wakeUp(void)
     ABC_LOG("Waking up");
 
     // When charging, the brightness is at max.
-    if (abc_powerController_isCharging())
+    if (!s_ignoreBattery && abc_powerController_isCharging())
     {
         ABC_LOG("Battery is charging");
 

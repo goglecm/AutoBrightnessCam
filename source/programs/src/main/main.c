@@ -141,6 +141,25 @@ static void configure(void)
     {
         FATAL_ERROR("Bad min/max brightness [%d..%d]", minBrightness, maxBrightness);
     }
+
+    // Check if we want to depend of battery or not.
+    int dependOnBattery;
+    isResultOK =
+        abc_configService_get(
+                ABC_CONFIG_SERVICE_KEY_DEPEND_ON_BATTERY,
+                &dependOnBattery);
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Couldn't check if we depend on battery");
+    }
+
+    if (dependOnBattery != 0 && dependOnBattery != 1)
+    {
+        FATAL_ERROR("Out of range dependOnBattery [0..1], got %d", dependOnBattery);
+    }
+
+    abc_brightnessService_ignoreBattery(!dependOnBattery);
 }
 
 int main(int argc, char **argv)
