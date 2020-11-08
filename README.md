@@ -92,7 +92,57 @@ Optional:
 - **upower** - used to get the charging state of the laptop, though the app can
   also manually look for the battery state
 
-### RPM generation
+
+## Configuration
+
+There is a config file under `/etc/aubrca.conf` or `/usr/local/etc/aubrca.conf`,
+depending on the `--prefix` you chose during `./configure`. There you can control
+the behaviour of the application.
+
+Options include setting the brightness adjustment smoothness, min, max, whether
+to depend on battery, etc.
+
+Note that once the config has changed, don't forget to restart the application,
+either via `systemd` using `sudo systemd restart autobrightnesscam.service` or
+just manually killing the app and starting it again.
+
+Some rules on the config formatting:
+- Use `#` for comments. They can be before/after the config options, or inline
+  with a config option
+- Use the `key = value` formatting to specify an option.
+- The value may only be numerical (negative values allowed).
+- No spaces before an option are allowed, but they are allowed around the `=`.
+
+
+## Troubleshooting
+
+- The brightness won't change.
+
+If you've started the app manually, make sure to give it root permissions
+(via `sudo`) as it needs root permissions to change the brightness.
+
+Also, due to the internal filtering used, one won't notice the brightness change
+immediately. You can decrease the sampling rate from the config file to take
+more pics and adjust the brightness faster.
+
+- The app crashes startup.
+
+Check the last reported message from stderr (see `sudo systemd status
+autobrightnesscam.service`). Most of the time it's a config issue.
+
+- My config isn't being picked up.
+
+If you have some bad config values, the app will attempt to read that option
+from the default config file instead, which lives in `/share/aubrca/defaults.conf`
+or `/usr/local/share/aubrca/defaults.conf` (depending on the `--prefix`).
+
+- The app crashes sometime after startup.
+
+Please create an issue in GitHub, this may be a bug. If you could append the
+error message, or upload a core dump, that would be great.
+
+
+## RPM generation
 
 The SPECS directory contains the spec needed to generate an RPM package. Simply
 run:
@@ -113,7 +163,8 @@ sure to start the `systemd` service or manually launch it.
 
 The app will kick in, take pictures and adjust the brightness when the
 battery is discharging. When charging, the app sets the brightness to 100% and
-then stops adjusting the brightness until the next discharge cycle.
+then stops adjusting the brightness until the next discharge cycle, unless told
+otherwise via the config file.
 
 ## Contributing
 
