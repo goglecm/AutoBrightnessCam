@@ -58,7 +58,7 @@ abc_ioService_read(int *const restrict pValue,
         return false;
     }
 
-    static const int s_MAX_FILENAME_LEN = 32;
+    static const size_t s_MAX_FILENAME_LEN = 32;
 
     assert(pValue &&
            pFileName &&

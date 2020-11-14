@@ -90,7 +90,7 @@ TEST_F(abc_logging_service, message_is_logged_in_a_file_with_newline_and_functio
 
     std::string targetMessage("Hello world!");
 
-    ABC_LOG(targetMessage.c_str());
+    ABC_LOG("%s", targetMessage.c_str());
 
     checkLogFormat(targetMessage, "", __func__);
 }
@@ -101,7 +101,7 @@ TEST_F(abc_logging_service, warning_is_logged_in_a_file_with_newline_and_warning
 
     std::string targetMessage("something unexpected happened");
 
-    ABC_LOG_WRN(targetMessage.c_str());
+    ABC_LOG_WRN("%s", targetMessage.c_str());
 
     checkLogFormat(targetMessage, "WARNING", __func__);
 }
@@ -112,7 +112,7 @@ TEST_F(abc_logging_service, error_is_logged_in_a_file_with_newline_and_error_and
 
     std::string targetMessage("something bad happened");
 
-    ABC_LOG_ERR(targetMessage.c_str());
+    ABC_LOG_ERR("%s", targetMessage.c_str());
 
     checkLogFormat(targetMessage, "ERROR", __func__);
 }
