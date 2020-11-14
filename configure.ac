@@ -22,6 +22,9 @@ AC_ARG_WITH([upower],
             AS_HELP_STRING([--without-upower],
                            [Detect the battery charging status manually]))
 
+AC_ARG_WITH([libconfigparser],
+            AS_HELP_STRING([--with-libconfigparser],
+                           [Use libconfig parser rather than a custom parser]))
 
 #
 # Initialise automake
@@ -37,6 +40,7 @@ AM_PROG_AR
 AC_PROG_CC
 AC_PROG_CC_STDC
 AC_PROG_CXX
+AC_PROG_MKDIR_P
 AM_PROG_CC_C_O
 
 
@@ -60,6 +64,14 @@ AC_CHECK_PROG(exists_sed,     sed,       yes, no)
 AC_CHECK_PROG(exists_grep,    grep,      yes, no)
 AC_CHECK_PROG(exists_upower,  upower,    yes, no)
 
+#
+# Optional build dependencies
+#
+
+PKG_CHECK_MODULES([LIBCONFIGXX], [libconfig++ >= 1.4],
+                  [ libconfig_exists="yes" ],
+                  [ libconfig_exists="no" ])
+
 
 #
 # Check the runtime dependencies
@@ -74,6 +86,7 @@ AS_IF([ test "x$exists_fswebcam" == "xno" && test "x$enable_depscheck" != "xno" 
 # Debug
 #
 AM_CONDITIONAL([ABC_USES_DEBUG], test "x$enable_debug" == "xyes")
+
 
 #
 # Upower
@@ -106,6 +119,17 @@ AM_CONDITIONAL([ABC_PRINTS_SYSTEMD_BANNER], test "x$enable_systemdbanner" != "xn
 
 
 #
+# Parser
+#
+
+AS_IF([ test "x$use_libconfigparser" == "xyes" ],
+      AS_IF([ test "x$libconfig_exists"  == "xyes" ],
+            [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$use_libconfigparser" == "xyes") ],
+            [ AC_MSG_ERROR([ libconfig++ 1.4 or newer not found ]) ]),
+      [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$libconfig_exists" == "xyes") ])
+
+
+#
 # Config files
 #
 AC_CONFIG_HEADERS([config.h])
@@ -114,4 +138,3 @@ AC_CONFIG_FILES([Makefile
                  source/data/systemd/autobrightnesscam.service])
 
 AC_OUTPUT
-

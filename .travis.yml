@@ -5,7 +5,7 @@ compiler:
     - gcc
 
 before_script:
-    - sudo apt-get install gcc g++ make wget grep sed fswebcam automake autoconf cmake libtool imagemagick -y
+    - sudo apt-get install gcc g++ make wget grep sed fswebcam automake autoconf cmake libtool imagemagick libconfig-dev -y
     - mkdir gtest
     - cd gtest
     - wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
