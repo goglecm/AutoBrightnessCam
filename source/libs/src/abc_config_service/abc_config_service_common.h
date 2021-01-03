@@ -22,12 +22,21 @@ typedef abc_configService_Key_t abc_Key_t;
 bool
 readKeyValue(abc_Key_t key, int *pValue, const char *pFileName);
 
+bool
+readKeyValueStr(abc_Key_t key, char *pValue, unsigned maxBufLen, const char *pFileName);
 
 static inline bool
 isKeyValid(const abc_Key_t key)
 {
     return key >= ABC_CONFIG_SERVICE_KEY__FIRST &&
            key <= ABC_CONFIG_SERVICE_KEY__LAST;
+}
+
+static inline bool
+isKeyStr(const abc_Key_t key)
+{
+    return key == ABC_CONFIG_SERVICE_KEY_BRIGHTNESS_FILE ||
+           key == ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE;
 }
 
 static inline const char *
@@ -70,6 +79,18 @@ keyToStr(const abc_Key_t key)
         case ABC_CONFIG_SERVICE_KEY_DEPEND_ON_BATTERY:
         {
             static const char keyStr[] = "depend_on_battery";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_BRIGHTNESS_FILE:
+        {
+            static const char keyStr[] = "current_brightness_file";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE:
+        {
+            static const char keyStr[] = "max_brightness_file";
             return keyStr;
         }
 

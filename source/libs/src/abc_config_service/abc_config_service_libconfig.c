@@ -4,6 +4,7 @@
 
 #include <libconfig.h>
 #include <assert.h>
+#include <string.h>
 
 
 #if ABC_HAS_LIBCONFIG == 0
@@ -21,18 +22,18 @@ readKeyValue(
         int *const restrict pValue,
         const char *const restrict pFileName)
 {
-    assert(isKeyValid(key) && pValue && pFileName);
+    assert(isKeyValid(key) && !isKeyStr(key) && pValue && pFileName);
 
     config_t c;
 
-	config_init(&c);
+    config_init(&c);
 
     int value;
-	int status = config_read_file(&c, pFileName);
-	if (status != CONFIG_TRUE)
-	{
+    int status = config_read_file(&c, pFileName);
+    if (status != CONFIG_TRUE)
+    {
         goto done_fail;
-	}
+    }
 
     status = config_lookup_int(&c, keyToStr(key), &value);
     if (status != CONFIG_TRUE)
@@ -54,7 +55,57 @@ done_fail:
 
 done_ok:
 
-	config_destroy ( &c );
+    config_destroy ( &c );
+
+    return status == CONFIG_TRUE;
+}
+
+bool
+readKeyValueStr(
+        const abc_Key_t key,
+        char *const restrict pValue,
+        const unsigned maxBufLen,
+        const char *const restrict pFileName)
+{
+    assert(isKeyValid(key) && isKeyStr(key) && pValue && pFileName);
+
+    config_t c;
+
+    config_init(&c);
+
+    const char *pConfigVal;
+    int status = config_read_file(&c, pFileName);
+    if (status != CONFIG_TRUE)
+    {
+        goto done_fail;
+    }
+
+    status = config_lookup_string(&c, keyToStr(key), &pConfigVal);
+    if (status != CONFIG_TRUE)
+    {
+        goto done_fail;
+    }
+
+    if (strlen(pConfigVal) >= maxBufLen)
+    {
+        goto done_fail;
+    }
+
+    strcpy(pValue, pConfigVal);
+
+    goto done_ok;
+
+
+done_fail:
+
+    ABC_LOG_ERR("Failed to read file %s at line %d: %s",
+            config_error_file(&c),
+            config_error_line(&c),
+            config_error_text(&c));
+
+done_ok:
+
+    config_destroy ( &c );
 
     return status == CONFIG_TRUE;
 }

@@ -17,8 +17,13 @@ typedef enum
     ABC_CONFIG_SERVICE_KEY_TRANSITION_PERIOD, // 10 to 2000 ms.
     ABC_CONFIG_SERVICE_KEY_MIN_BRIGHTNESS, // 0..100%
     ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS, // 0..100%
-    ABC_CONFIG_SERVICE_KEY__LAST = ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS
+    ABC_CONFIG_SERVICE_KEY_BRIGHTNESS_FILE, // Current brightness.
+    ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE, // Max brightness.
+    ABC_CONFIG_SERVICE_KEY__LAST = ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE
 } abc_configService_Key_t;
+
+bool
+abc_configService_getStr(abc_configService_Key_t key, char *pValue, unsigned maxBufLen);
 
 bool
 abc_configService_get(abc_configService_Key_t key, int *pValue);

@@ -48,6 +48,13 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
         return false;
     }
 
+    if (isKeyStr(key))
+    {
+        ABC_LOG_ERR("Expecting key `%s` to be int", keyToStr(key));
+
+        return false;
+    }
+
     ABC_LOG("reading key `%s`", keyToStr(key));
 
     // Try to read from the host file.
@@ -66,6 +73,55 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
 
     ABC_LOG("Setting key `%s` to %d read from `%s` file",
             keyToStr(key), *pValue, isHostValueRead ? "host" : "defaults");
+
+    return true;
+}
+
+bool
+abc_configService_getStr(
+        const abc_Key_t key,
+        char *const restrict pValue,
+        const unsigned maxBufLen)
+{
+    if (NULL == pValue)
+    {
+        ABC_LOG_ERR("Bad value return pointer");
+
+        return false;
+    }
+
+    if (!isKeyValid(key))
+    {
+        ABC_LOG_ERR("Bad key %d", key);
+
+        return false;
+    }
+
+    if (!isKeyStr(key))
+    {
+        ABC_LOG_ERR("Expecting key `%s` to be string", keyToStr(key));
+
+        return false;
+    }
+
+    ABC_LOG("reading key `%s`", keyToStr(key));
+
+    // Try to read from the host file.
+    const bool isHostValueRead = readKeyValueStr(key, pValue, maxBufLen, ABC_CONFIG_FILENAME);
+
+    // If reading from host file fails, try reading from the defaults file.
+    if (!isHostValueRead)
+    {
+        if (!readKeyValueStr(key, pValue, maxBufLen, ABC_CONFIG_DEFAULTS_FILENAME))
+        {
+            ABC_LOG_ERR("Can't read key %d", key);
+
+            return false;
+        }
+    }
+
+    ABC_LOG("Setting key `%s` to `%s` read from `%s` file",
+            keyToStr(key), pValue, isHostValueRead ? "host" : "defaults");
 
     return true;
 }
