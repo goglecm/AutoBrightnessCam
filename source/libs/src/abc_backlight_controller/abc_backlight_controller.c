@@ -107,8 +107,9 @@ abc_backlightBrightnessController_set(const double value)
     const bool arePathsSet = s_PATH_MAX_BRIGHTNESS[0] && s_PATH_CURRENT_BRIGHTNESS[0];
     if (!arePathsSet)
     {
-        abc_backlightBrightnessController_setMaxPath("/sys/class/backlight/intel_backlight/max_brightness");
-        abc_backlightBrightnessController_setCurrentPath("/sys/class/backlight/intel_backlight/brightness");
+        ABC_LOG_ERR("The max and current paths are not set");
+
+        return;
     }
 
     // Make sure there is an up-to-date max brightness.

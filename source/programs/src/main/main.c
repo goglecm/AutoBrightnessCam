@@ -160,6 +160,34 @@ static void configure(void)
     }
 
     abc_brightnessService_ignoreBattery(!dependOnBattery);
+
+    // Get the current and max brightness file paths.
+    char brightnessFile[128];
+    isResultOK =
+        abc_configService_getStr(
+                ABC_CONFIG_SERVICE_KEY_BRIGHTNESS_FILE,
+                brightnessFile,
+                sizeof(brightnessFile));
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Failed to get the current brightness file path");
+    }
+
+    abc_backlightBrightnessController_setCurrentPath(brightnessFile);
+
+    isResultOK =
+        abc_configService_getStr(
+                ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE,
+                brightnessFile,
+                sizeof(brightnessFile));
+
+    if (!isResultOK)
+    {
+        FATAL_ERROR("Failed to get the max brightness file path");
+    }
+
+    abc_backlightBrightnessController_setMaxPath(brightnessFile);
 }
 
 int main(int argc, char **argv)
