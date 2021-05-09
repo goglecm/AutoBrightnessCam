@@ -64,7 +64,7 @@ AC_CHECK_PROG(exists_upower,  upower,    yes, no)
 # Mandatory build dependencies
 #
 
-PKG_CHECK_MODULES([LIBCONFIGXX], [libconfig++ >= 1.4],
+PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],
                   [ libconfig_exists="yes" ],
                   [ libconfig_exists="no" ])
 
@@ -120,7 +120,7 @@ AM_CONDITIONAL([ABC_PRINTS_SYSTEMD_BANNER], test "x$enable_systemdbanner" != "xn
 
 AS_IF([ test "x$libconfig_exists" == "xyes" ],
       [],
-      [ AC_MSG_ERROR([ libconfig++ 1.4 or newer not found ]) ])
+      [ AC_MSG_ERROR([ libconfig 1.4 or newer not found ]) ])
 
 
 #
