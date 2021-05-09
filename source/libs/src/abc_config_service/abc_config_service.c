@@ -8,13 +8,6 @@
 #include <stddef.h>
 
 
-#ifndef ABC_HAS_LIBCONFIG
-
-#error "ABC_HAS_LIBCONFIG not defined."
-
-#endif // ABC_HAS_LIBCONFIG
-
-
 // # Host configuration.
 #ifndef ABC_CONFIG_DEFAULTS_FILENAME
 

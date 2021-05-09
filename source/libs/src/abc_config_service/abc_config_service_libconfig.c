@@ -7,13 +7,6 @@
 #include <string.h>
 
 
-#if ABC_HAS_LIBCONFIG == 0
-
-#error "Expecting ABC_HAS_LIBCONFIG to be 1"
-
-#endif
-
-
 // Parser implementation using libconfig,
 
 bool

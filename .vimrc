@@ -20,7 +20,6 @@ let g:ale_c_clangtidy_options = '
             \ -DABC_HAS_UPOWER=0
             \ -DDEBUG=1
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"'
 
 let g:ale_cpp_clangtidy_options = '
@@ -34,7 +33,6 @@ let g:ale_cpp_clangtidy_options = '
             \ -DABC_HAS_UPOWER=0
             \ -DDEBUG=1
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"'
 
 """"""""""""""""""""
@@ -51,7 +49,6 @@ let g:ale_cpp_cppcheck_options = '
             \ -Ibuild
             \ -Ibuild/source
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DDEBUG=1
             \ -Isource/libs/inc_test
@@ -63,7 +60,6 @@ let g:ale_c_cppcheck_options = '
             \ -DABC_CONFIG_FILENAME=\"aubrca.conf\"
             \ -DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\"
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DDEBUG=1
             \ -DABC_HAS_UPOWER=0
@@ -83,7 +79,6 @@ let g:ale_c_cppcheck_options = '
 let g:ale_c_clang_options = '
             \ -DABC_PICTURE_DIR=\"\"
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DABC_CONFIG_FILENAME=\"aubrca.conf\"
             \ -DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\"
@@ -136,7 +131,6 @@ let g:ale_cpp_clang_options = '
             \ -Ibuild
             \ -Ibuild/source
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DDEBUG=1
             \ -Isource/libs/inc
@@ -157,7 +151,6 @@ let g:ale_c_gcc_options = '
             \ -DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\"
             \ -DABC_HAS_UPOWER=0
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DDEBUG=1
             \ -std=gnu99
@@ -207,7 +200,6 @@ let g:ale_cpp_gcc_options = '
             \ -Ibuild
             \ -Ibuild/source
             \ -DABC_LOGGING_ON=1
-            \ -DABC_HAS_LIBCONFIG=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -Isource/libs/inc
             \ -Isource/libs/inc_test
