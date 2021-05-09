@@ -118,8 +118,8 @@ AM_CONDITIONAL([ABC_PRINTS_SYSTEMD_BANNER], test "x$enable_systemdbanner" != "xn
 # Parser
 #
 
-AS_IF([ test "x$libconfig_exists"  == "xyes" ],
-      [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$with_libconfigparser" == "xyes") ],
+AS_IF([ test "x$libconfig_exists" == "xyes" ],
+      [],
       [ AC_MSG_ERROR([ libconfig++ 1.4 or newer not found ]) ])
 
 
