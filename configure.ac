@@ -23,8 +23,8 @@ AC_ARG_WITH([upower],
                            [Detect the battery charging status manually]))
 
 AC_ARG_WITH([libconfigparser],
-            AS_HELP_STRING([--with-libconfigparser],
-                           [Use libconfig parser rather than a custom parser]))
+            AS_HELP_STRING([--without-libconfigparser],
+                           [Use a custom parser rather than a libconfig parser]))
 
 #
 # Initialise automake
@@ -122,9 +122,9 @@ AM_CONDITIONAL([ABC_PRINTS_SYSTEMD_BANNER], test "x$enable_systemdbanner" != "xn
 # Parser
 #
 
-AS_IF([ test "x$use_libconfigparser" == "xyes" ],
+AS_IF([ test "x$with_libconfigparser" == "xyes" ],
       AS_IF([ test "x$libconfig_exists"  == "xyes" ],
-            [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$use_libconfigparser" == "xyes") ],
+            [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$with_libconfigparser" == "xyes") ],
             [ AC_MSG_ERROR([ libconfig++ 1.4 or newer not found ]) ]),
       [ AM_CONDITIONAL([ABC_USES_LIBCONFIG], test "x$libconfig_exists" == "xyes") ])
 
