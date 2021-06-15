@@ -86,13 +86,15 @@ abc_ioService_readStr(char *const restrict pBuf,
                       const int bufMaxLen,
                       const char *const restrict pFileName)
 {
-    if (NULL == pFileName || NULL == pBuf || bufMaxLen < 1 || bufMaxLen > 32)
+    if (NULL == pFileName || NULL == pBuf || bufMaxLen < 1)
     {
         ABC_LOG_ERR("Bad filename = %p or bad ret value = %p or max len = %d",
                     (const void *)pFileName, (void *)pBuf, bufMaxLen);
 
         return false;
     }
+
+    errno = 0;
 
     FILE *const restrict pFile = fopen(pFileName, "r");
 
@@ -141,6 +143,26 @@ abc_ioService_readStr(char *const restrict pBuf,
     }
 
     memcpy(pBuf, readLine, strnlen(readLine, bufMaxLen - 1) + 1);
+
+    int i = 0;
+    while (pBuf[i] != '\0')
+    {
+        if (pBuf[i] == '\n' || pBuf[i] == '\r')
+        {
+            pBuf[i] = '\0';
+        }
+        else
+        {
+            i++;
+        }
+    }
+
+    if (strlen(pBuf) == 0)
+    {
+        ABC_LOG_ERR("empty string");
+
+        return false;
+    }
 
     return true;
 }
@@ -375,11 +397,14 @@ abc_ioService_read(int *const restrict pValue,
         return false;
     }
 
+    errno = 0;
+
     FILE *const restrict pFile = fopen(pFileName, "r");
 
     if (NULL == pFile)
     {
-        ABC_LOG_ERR("Failed to open the file due to: `%s`", strerror(errno));
+        ABC_LOG_ERR("Failed to open the file `%s` due to: `%s`",
+                pFileName, strerror(errno));
 
         return false;
     }
@@ -397,7 +422,8 @@ abc_ioService_read(int *const restrict pValue,
     }
     else if (errno)
     {
-        ABC_LOG_ERR("Failed to read the file due to: `%s`", strerror(errno));
+        ABC_LOG_ERR("Failed to read the file `%s` due to: `%s`",
+                pFileName, strerror(errno));
 
         isReturnOK = false;
     }

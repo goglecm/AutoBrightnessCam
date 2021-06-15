@@ -6,19 +6,6 @@
 #include "abc_logging_service/abc_logging_service.h"
 
 
-#ifndef ABC_HAS_UPOWER
-
-#error "ABC_HAS_UPOWER is not defined"
-
-#endif // ABC_HAS_UPOWER
-
-
-#if ABC_HAS_UPOWER != 0 && ABC_HAS_UPOWER != 1
-
-#error "Bad value for ABC_HAS_UPOWER"
-
-#endif // ABC_HAS_UPOWER
-
 
 #if ABC_HAS_UPOWER == 1
 #   include "abc_terminal_controller/abc_terminal_controller.h"
@@ -27,9 +14,9 @@
 #endif // ABC_HAS_UPOWER
 
 
-#define BUFF_SIZE 128U
 
-#define NUM_STATUS_PATHS 3U
+
+#define BUFF_SIZE 128U
 
 typedef abc_powerController_State_t BatteryState_t;
 
@@ -42,39 +29,50 @@ s_batteryStatePath[BUFF_SIZE];
 static bool
 s_isBatteryStatePathSet = false;
 
-static bool
-setBatteryStatePath(void)
+bool
+abc_powerController_setBatteryStatePath(const char *const batteryStatusPath)
 {
-    static const char *batteryStatusPaths[NUM_STATUS_PATHS] =
+    if (NULL == batteryStatusPath)
     {
-        "/sys/class/power_supply/BAT1/status",
-        "/sys/class/power_supply/BAT0/status",
-        "/proc/acpi/battery/BAT0/status",
-    };
+        ABC_LOG_ERR("bad battery path");
 
-    for (size_t strNo = 0; strNo < NUM_STATUS_PATHS; ++strNo)
-    {
-        if (abc_ioService_exists(batteryStatusPaths[strNo]))
-        {
-            memcpy(s_batteryStatePath,
-                   batteryStatusPaths[strNo],
-                   1 + strlen(batteryStatusPaths[strNo]));
-
-            s_isBatteryStatePathSet = true;
-
-            ABC_LOG("found battery path = `%s` from `%s`",
-                    s_batteryStatePath, batteryStatusPaths[strNo]);
-
-            return true;
-        }
+        return false;
     }
 
-    ABC_LOG_ERR("none of the battery paths exist");
+    ABC_LOG("trying path %s", batteryStatusPath);
+
+    if (abc_ioService_exists(batteryStatusPath))
+    {
+        strncpy(s_batteryStatePath,
+               batteryStatusPath,
+               sizeof(s_batteryStatePath) - 1);
+
+        s_isBatteryStatePathSet = true;
+
+        ABC_LOG("found battery path = `%s` from `%s`",
+                s_batteryStatePath, batteryStatusPath);
+
+        return true;
+    }
+
+    ABC_LOG_ERR("battery path %s not found", batteryStatusPath);
 
     return false;
 }
 
+void
+abc_powerController_resetBatteryStatePath(void)
+{
+    memset(s_batteryStatePath, 0, sizeof(s_batteryStatePath));
+
+    s_isBatteryStatePathSet = false;
+}
+
 #endif // #if ABC_HAS_UPOWER == 0
+
+
+
+
 
 static BatteryState_t
 getStatus(void)
@@ -104,10 +102,7 @@ getStatus(void)
 
     if (!s_isBatteryStatePathSet)
     {
-        if (!setBatteryStatePath())
-        {
-            ABC_LOG_ERR("failed to set battery state path");
-        }
+        ABC_LOG_ERR("battery state path not set");
     }
 
     bool isStateValid = false;
@@ -154,20 +149,6 @@ getStatus(void)
     return state;
 }
 
-void
-abc_powerController_resetBatteryStatePath(void)
-{
-
-#if ABC_HAS_UPOWER == 0
-
-    memset(s_batteryStatePath, 0, sizeof(s_batteryStatePath));
-
-    s_isBatteryStatePathSet = false;
-
-#endif // #if ABC_HAS_UPOWER == 0
-
-}
-
 bool
 abc_powerController_isCharging(void)
 {
@@ -176,4 +157,3 @@ abc_powerController_isCharging(void)
     return state == ABC_POWER_CONTROLLER_STATE_CHARGING ||
            state == ABC_POWER_CONTROLLER_STATE_FULLY_CHARGED;
 }
-

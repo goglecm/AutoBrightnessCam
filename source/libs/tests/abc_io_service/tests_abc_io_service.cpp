@@ -141,6 +141,19 @@ TEST_F(abc_io_service, write_to_invalid_file_fails)
     ASSERT_FALSE(abc_ioService_write(0, NULL));
 }
 
+TEST_F(abc_io_service, read_an_integer)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    setValue(filename, "10");
+
+    int num = -1;
+
+    ASSERT_TRUE(abc_ioService_read(&num, filename.c_str()));
+
+    ASSERT_EQ(num, 10);
+}
+
 TEST_F(abc_io_service, read_fails_when_the_return_pointer_is_invalid)
 {
     const std::string filename(DEFAULT_FILENAME);
@@ -173,6 +186,64 @@ TEST_F(abc_io_service, read_fails_when_file_is_empty)
     int ret;
 
     ASSERT_FALSE(abc_ioService_read(&ret, filename.c_str()));
+}
+
+TEST_F(abc_io_service, read_a_string)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    setValue(filename, "Hello");
+
+    char contents[128] = { 0 };
+
+    ASSERT_TRUE(abc_ioService_readStr(contents, 128, filename.c_str()));
+
+    ASSERT_STREQ(contents, "Hello");
+}
+
+TEST_F(abc_io_service, str_read_fails_when_the_return_pointer_is_invalid)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    setValue(filename, "Hello");
+
+    ASSERT_FALSE(abc_ioService_readStr(NULL, 0, filename.c_str()));
+}
+
+TEST_F(abc_io_service, str_read_fails_when_file_does_not_exist_or_has_a_bad_name)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    if (testlib_io_exists(filename))
+    {
+        ASSERT_EQ(0, std::remove(filename.c_str()));
+    }
+
+    char contents[128] = { 0 };
+
+    ASSERT_FALSE(abc_ioService_readStr(contents, 128, filename.c_str()));
+}
+
+TEST_F(abc_io_service, str_read_fails_when_file_is_empty)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    createFile(filename);
+
+    char contents[128] = { 0 };
+
+    ASSERT_FALSE(abc_ioService_readStr(contents, 128, filename.c_str()));
+}
+
+TEST_F(abc_io_service, str_read_fails_on_negative_buffer_len)
+{
+    const std::string filename(DEFAULT_FILENAME);
+
+    setValue(filename, "Hello");
+
+    char contents[128] = { 0 };
+
+    ASSERT_FALSE(abc_ioService_readStr(contents, -1, filename.c_str()));
 }
 
 TEST_F(abc_io_service, reports_true_when_file_exists)

@@ -201,6 +201,14 @@ aubrca_LDADD = \
 	libabc_config_service.la \
 	libabc_logging_service.la
 
+
+if ABC_USES_UPOWER
+
+aubrca_LDADD += libabc_power_controller.la
+
+endif # ABC_USES_UPOWER
+
+
 aubrca_SOURCES = programs/src/main/main.c
 
 
@@ -283,31 +291,31 @@ test_abc_power_controller_LDADD                         = $(ABC_TEST_LDLIBS)
 test_abc_power_controller_upower_LDADD                  = $(ABC_TEST_LDLIBS)
 test_abc_terminal_controller_LDADD                      = $(ABC_TEST_LDLIBS)
 
-test_abc_ambient_controller_CPPFLAGS                       = $(ABC_TEST_FLAGS)
-test_abc_backlight_controller_CPPFLAGS                     = $(ABC_TEST_FLAGS)
-test_abc_logging_service_CPPFLAGS                          = $(ABC_TEST_FLAGS)
-test_abc_brightness_service_CPPFLAGS                       = $(ABC_TEST_FLAGS)
-test_abc_brightness_service_fake_abc_time_service_CPPFLAGS = $(ABC_TEST_FLAGS)
-test_abc_filter_CPPFLAGS                                   = $(ABC_TEST_FLAGS)
-test_abc_io_service_CPPFLAGS                               = $(ABC_TEST_FLAGS)
-test_abc_utils_CPPFLAGS                                    = $(ABC_TEST_FLAGS)
-test_abc_config_service_libconfig_CPPFLAGS                 = $(ABC_TEST_FLAGS)
+test_abc_ambient_controller_CPPFLAGS                       = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_backlight_controller_CPPFLAGS                     = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_logging_service_CPPFLAGS                          = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_brightness_service_CPPFLAGS                       = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_brightness_service_fake_abc_time_service_CPPFLAGS = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_filter_CPPFLAGS                                   = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_io_service_CPPFLAGS                               = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_utils_CPPFLAGS                                    = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_config_service_libconfig_CPPFLAGS                 = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_power_controller_CPPFLAGS                         = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CPPFLAGS                  = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_terminal_controller_CPPFLAGS                      = $(ABC_TEST_FLAGS)
+test_abc_terminal_controller_CPPFLAGS                      = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
 
-test_abc_ambient_controller_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_backlight_controller_CFLAGS                     = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_logging_service_CFLAGS                          = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_brightness_service_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_brightness_service_fake_abc_time_service_CFLAGS = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_filter_CFLAGS                                   = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_io_service_CFLAGS                               = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_utils_CFLAGS                                    = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
-test_abc_config_service_libconfig_CFLAGS                 = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
+test_abc_ambient_controller_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_backlight_controller_CFLAGS                     = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_logging_service_CFLAGS                          = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_brightness_service_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_brightness_service_fake_abc_time_service_CFLAGS = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_filter_CFLAGS                                   = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_io_service_CFLAGS                               = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_utils_CFLAGS                                    = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
+test_abc_config_service_libconfig_CFLAGS                 = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
 test_abc_power_controller_CFLAGS                         = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=0
 test_abc_power_controller_upower_CFLAGS                  = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_terminal_controller_CFLAGS                      = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS)
+test_abc_terminal_controller_CFLAGS                      = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
 
 
 test_abc_ambient_controller_SOURCES = \

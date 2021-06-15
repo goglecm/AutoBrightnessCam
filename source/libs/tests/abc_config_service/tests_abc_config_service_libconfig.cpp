@@ -302,3 +302,45 @@ TEST_F(abc_config_service_libconfig, fail_to_read_key_if_defined_multiple_times)
 
     ASSERT_EQ(123, actualValue);
 }
+
+TEST_F(abc_config_service_libconfig, read_string_from_list_within_bounds)
+{
+    const std::string configEntry("battery_files = [\"one\", \"two\", \"three\"]");
+
+    setValue<std::string>(ABC_CONFIG_FILENAME, configEntry);
+    setValue<std::string>(ABC_CONFIG_DEFAULTS_FILENAME, configEntry);
+
+    char element[10] = { '\0' };
+    int index = 1;
+
+    const bool result = abc_configService_getStrElem(
+            ABC_CONFIG_SERVICE_KEY_BATTERY_FILES,
+            element,
+            sizeof(element) / sizeof(element[0]),
+            index);
+
+    ASSERT_TRUE(result);
+
+    ASSERT_STREQ(element, "two");
+}
+
+TEST_F(abc_config_service_libconfig, read_string_from_list_out_of_bounds)
+{
+    const std::string configEntry("battery_files = [\"one\", \"two\", \"three\"]");
+
+    setValue<std::string>(ABC_CONFIG_FILENAME, configEntry);
+    setValue<std::string>(ABC_CONFIG_DEFAULTS_FILENAME, configEntry);
+
+    char element[10] = { '\0' };
+    int index = 3;
+
+    const bool result = abc_configService_getStrElem(
+            ABC_CONFIG_SERVICE_KEY_BATTERY_FILES,
+            element,
+            sizeof(element) / sizeof(element[0]),
+            index);
+
+    ASSERT_FALSE(result);
+
+    ASSERT_STREQ(element, "");
+}

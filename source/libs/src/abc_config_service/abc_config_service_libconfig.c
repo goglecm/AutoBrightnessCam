@@ -41,6 +41,8 @@ readKeyValue(
 
 done_fail:
 
+    status = CONFIG_FALSE;
+
     ABC_LOG_ERR("Failed to read file %s at line %d: %s",
             config_error_file(&c),
             config_error_line(&c),
@@ -48,7 +50,67 @@ done_fail:
 
 done_ok:
 
-    config_destroy ( &c );
+    config_destroy(&c);
+
+    return status == CONFIG_TRUE;
+}
+
+bool
+readKeyValueStrElem(
+        const abc_Key_t key,
+        char *const restrict pValue,
+        const unsigned maxBufLen,
+        const unsigned idx,
+        const char *const restrict pFileName)
+{
+    assert(isKeyValid(key) && isKeyStrArray(key) && pValue && pFileName);
+
+    config_t c;
+
+    config_init(&c);
+
+    const char *pConfigVal;
+    const config_setting_t *pSetting;
+    int status = config_read_file(&c, pFileName);
+    if (status != CONFIG_TRUE)
+    {
+        goto done_fail;
+    }
+
+    pSetting = config_lookup(&c, keyToStr(key));
+    if (NULL == pSetting)
+    {
+        goto done_fail;
+    }
+
+    pConfigVal = config_setting_get_string_elem(pSetting, idx);
+    if (NULL == pConfigVal)
+    {
+        goto done_fail;
+    }
+
+    if (strlen(pConfigVal) >= maxBufLen)
+    {
+        goto done_fail;
+    }
+
+    strcpy(pValue, pConfigVal);
+
+    goto done_ok;
+
+
+done_fail:
+
+    status = CONFIG_FALSE;
+
+    ABC_LOG_ERR("Failed to read file %s at line %d: %s",
+            config_error_file(&c),
+            config_error_line(&c),
+            config_error_text(&c));
+
+done_ok:
+
+    config_destroy(&c);
 
     return status == CONFIG_TRUE;
 }
@@ -91,6 +153,8 @@ readKeyValueStr(
 
 done_fail:
 
+    status = CONFIG_FALSE;
+
     ABC_LOG_ERR("Failed to read file %s at line %d: %s",
             config_error_file(&c),
             config_error_line(&c),
@@ -98,7 +162,7 @@ done_fail:
 
 done_ok:
 
-    config_destroy ( &c );
+    config_destroy(&c);
 
     return status == CONFIG_TRUE;
 }

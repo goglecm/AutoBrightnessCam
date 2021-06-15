@@ -25,11 +25,25 @@ readKeyValue(abc_Key_t key, int *pValue, const char *pFileName);
 bool
 readKeyValueStr(abc_Key_t key, char *pValue, unsigned maxBufLen, const char *pFileName);
 
+bool
+readKeyValueStrElem(
+        abc_Key_t key,
+        char *pValue,
+        unsigned maxBufLen,
+        unsigned idx,
+        const char *pFileName);
+
 static inline bool
 isKeyValid(const abc_Key_t key)
 {
     return key >= ABC_CONFIG_SERVICE_KEY__FIRST &&
            key <= ABC_CONFIG_SERVICE_KEY__LAST;
+}
+
+static inline bool
+isKeyStrArray(const abc_Key_t key)
+{
+    return key == ABC_CONFIG_SERVICE_KEY_BATTERY_FILES;
 }
 
 static inline bool
@@ -91,6 +105,12 @@ keyToStr(const abc_Key_t key)
         case ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE:
         {
             static const char keyStr[] = "max_brightness_file";
+            return keyStr;
+        }
+
+        case ABC_CONFIG_SERVICE_KEY_BATTERY_FILES:
+        {
+            static const char keyStr[] = "battery_files";
             return keyStr;
         }
 

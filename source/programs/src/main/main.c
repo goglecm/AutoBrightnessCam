@@ -3,16 +3,27 @@
 #include "abc_config_service/abc_config_service.h"
 #include "abc_logging_service/abc_logging_service.h"
 
+
+#if ABC_HAS_UPOWER == 0
+
+#   include "abc_power_controller/abc_power_controller.h"
+
+#endif // ABC_HAS_UPOWER
+
+
 #include <stdlib.h>
 #include <argp.h>
 #include <unistd.h>
 
-#ifndef CONFIG_H_INCLUDED
-#define CONFIG_H_INCLUDED
 
-#include <config.h>
+#ifndef CONFIG_H_INCLUDED
+
+#   define CONFIG_H_INCLUDED
+
+#   include <config.h>
 
 #endif // #ifndef CONFIG_H_INCLUDED
+
 
 #define FATAL_ERROR(...)  do {   \
     ABC_LOG_ERR(__VA_ARGS__);    \
@@ -188,6 +199,33 @@ static void configure(void)
     }
 
     abc_backlightBrightnessController_setMaxPath(brightnessFile);
+
+
+#if ABC_HAS_UPOWER == 0
+
+    int idx = 0;
+    char batteryStateFile[128];
+    bool batteryStateFileSet = false;
+    while (!batteryStateFileSet)
+    {
+        isResultOK = abc_configService_getStrElem(
+                ABC_CONFIG_SERVICE_KEY_BATTERY_FILES,
+                batteryStateFile,
+                sizeof(batteryStateFile),
+                idx);
+
+        idx++;
+
+        if (!isResultOK)
+        {
+            FATAL_ERROR("Failed to read the battery state file");
+        }
+
+        batteryStateFileSet = abc_powerController_setBatteryStatePath(batteryStateFile);
+    }
+
+#endif // ABC_HAS_UPOWER
+
 }
 
 int main(int argc, char **argv)

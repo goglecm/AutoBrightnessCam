@@ -71,6 +71,56 @@ abc_configService_get(const abc_Key_t key, int *const restrict pValue)
 }
 
 bool
+abc_configService_getStrElem(
+        const abc_Key_t key,
+        char *const restrict pValue,
+        const unsigned maxBufLen,
+        const unsigned idx)
+{
+    if (NULL == pValue)
+    {
+        ABC_LOG_ERR("Bad value return pointer");
+
+        return false;
+    }
+
+    if (!isKeyValid(key))
+    {
+        ABC_LOG_ERR("Bad key %d", key);
+
+        return false;
+    }
+
+    if (!isKeyStrArray(key))
+    {
+        ABC_LOG_ERR("Expecting key `%s` to be a string array", keyToStr(key));
+
+        return false;
+    }
+
+    ABC_LOG("reading key `%s`", keyToStr(key));
+
+    // Try to read from the host file.
+    const bool isHostValueRead = readKeyValueStrElem(key, pValue, maxBufLen, idx, ABC_CONFIG_FILENAME);
+
+    // If reading from host file fails, try reading from the defaults file.
+    if (!isHostValueRead)
+    {
+        if (!readKeyValueStrElem(key, pValue, maxBufLen, idx, ABC_CONFIG_DEFAULTS_FILENAME))
+        {
+            ABC_LOG_ERR("Can't read key %d", key);
+
+            return false;
+        }
+    }
+
+    ABC_LOG("Setting key `%s` to `%s` read from `%s` file",
+            keyToStr(key), pValue, isHostValueRead ? "host" : "defaults");
+
+    return true;
+}
+
+bool
 abc_configService_getStr(
         const abc_Key_t key,
         char *const restrict pValue,

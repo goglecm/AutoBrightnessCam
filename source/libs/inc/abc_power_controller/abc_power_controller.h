@@ -5,7 +5,25 @@
 extern "C" {
 #endif
 
+
+
+#ifndef ABC_HAS_UPOWER
+
+#   error "ABC_HAS_UPOWER is not defined"
+
+#endif // ABC_HAS_UPOWER
+
+#if ABC_HAS_UPOWER != 0 && ABC_HAS_UPOWER != 1
+
+#   error "Bad value for ABC_HAS_UPOWER"
+
+#endif // ABC_HAS_UPOWER
+
+
+
 #include <stdbool.h>
+
+
 
 typedef enum abc_powerController_State_t
 {
@@ -17,8 +35,19 @@ typedef enum abc_powerController_State_t
 
 } abc_powerController_State_t;
 
+
+
+#if ABC_HAS_UPOWER == 0
+
+bool
+abc_powerController_setBatteryStatePath(const char *batteryStatePath);
+
 void
 abc_powerController_resetBatteryStatePath(void);
+
+#endif // ABC_HAS_UPOWER
+
+
 
 bool
 abc_powerController_isCharging(void);

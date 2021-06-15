@@ -19,8 +19,16 @@ typedef enum
     ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS, // 0..100%
     ABC_CONFIG_SERVICE_KEY_BRIGHTNESS_FILE, // Current brightness.
     ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE, // Max brightness.
-    ABC_CONFIG_SERVICE_KEY__LAST = ABC_CONFIG_SERVICE_KEY_MAX_BRIGHTNESS_FILE
+    ABC_CONFIG_SERVICE_KEY_BATTERY_FILES, // Battery locations.
+    ABC_CONFIG_SERVICE_KEY__LAST = ABC_CONFIG_SERVICE_KEY_BATTERY_FILES,
 } abc_configService_Key_t;
+
+bool
+abc_configService_getStrElem(
+        abc_configService_Key_t key,
+        char *pValue,
+        unsigned maxBufLen,
+        unsigned idx);
 
 bool
 abc_configService_getStr(abc_configService_Key_t key, char *pValue, unsigned maxBufLen);
