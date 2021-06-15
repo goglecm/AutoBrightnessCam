@@ -22,13 +22,16 @@
   so take it into account.
 - Maybe allow users to change the path where the pic is stored (or other paths).
 - Add more options to the config file (max, min brightness, battery paths,
-  speed, etc.)
+  speed, adjust the brightness even during charging, persistent mode, default
+  mode, etc.)
+- Move the limit checking for config options in the config service.
 - Notify the user that only one application can control the camera at once, so
   that the sampling period is not too low.
 - Once most of the configuration is available in a file, create a gtk3 app to
   allow easy control over that file, allow starting/stopping the app. Also,
   make sure the program accepts sufficient flags for the gui to use.
 - Handle the case when multiple programs are started at once.
+- Consider moving the wiki to github.io
 
 ### Build and releases
 
@@ -38,6 +41,8 @@
 - Need to also automate some sort of coverage runs with gcov for the C code to
   maintain an above 90% test coverage
 - Need to sign tarball and RPM releases
+- Need to sort out runtime, build and development dependencies
+- Sort through which configure options requires uses vs enable
 
 #### Medium priority
 
