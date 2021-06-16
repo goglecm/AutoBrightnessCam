@@ -1,5 +1,15 @@
-## [1.2] Unreleased (-)
+## [2.1] Unreleased (-)
 
+## [2.0] Released (16 Jun 2021)
+
+### Build
+
+- Using upower by default
+- Using libconfig to read the config file
+
+### Added
+
+- The app can now be configured dynamically via a config file
 
 ## [1.1] Released (27 Sep 2019)
 
