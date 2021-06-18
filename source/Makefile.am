@@ -402,6 +402,15 @@ TESTS = \
 
 
 #
+# State files
+#
+
+logfilesdir = $(localstatedir)/aubrca
+logfiles_DATA = data/logging/debug.log
+
+
+
+#
 # Config files
 #
 
@@ -451,7 +460,8 @@ systemdunits_DATA = data/systemd/autobrightnesscam.service
 #
 EXTRA_DIST = \
 	data/config/aubrca/defaults.conf \
-	data/systemd/autobrightnesscam.service.in
+	data/systemd/autobrightnesscam.service.in \
+	data/logging/debug.log
 
 
 
@@ -513,9 +523,6 @@ clean-local-check:
 # Post data installation rule (use the 'local' suffix instead of 'hook' for
 # pre-install).
 #
-install-data-local:
-	$(MKDIR_P) $(DESTDIR)$(localstatedir)/aubrca
-
 install-data-hook:
 	-$(echo_systemd_banner)
 
@@ -527,5 +534,7 @@ UNINSTALL_SYSTEMD_SERVICE_CMDS = \
 # Post uninstall rule.
 #
 uninstall-hook:
-	-rmdir $(DESTDIR)$(localstatedir)/aubrca
-	-rmdir $(DESTDIR)$(datadir)/aubrca
+	rm -f $(DESTDIR)$(localstatedir)/aubrca/brightness.jpg
+	rm -f $(DESTDIR)$(localstatedir)/aubrca/debug.log
+	rmdir $(DESTDIR)$(localstatedir)/aubrca
+	rmdir $(DESTDIR)$(datadir)/aubrca

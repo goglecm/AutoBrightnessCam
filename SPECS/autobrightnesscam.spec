@@ -41,4 +41,5 @@ systemctl disable autobrightnesscam.service
 /usr/bin/aubrca
 /usr/lib64/systemd/system/autobrightnesscam.service
 /etc/aubrca.conf
+/var/aubrca/debug.log
 /usr/share/aubrca/defaults.conf
