@@ -144,15 +144,26 @@ error message, or upload a core dump, that would be great.
 
 ## RPM generation
 
+Get an archive ready:
+
+```
+make -sj dist
+```
+
 The SPECS directory contains the spec needed to generate an RPM package. Simply
 run:
+
 ```
 cd ~
 rpmdev-setuptree
+cp build/autobrightnesscam-x.x.tar.gz ~/rpmbuild/SOURCES/.
+cp SPECS/autobrightnesscam.spec ~/rpmbuild/SPECS/.
 rpmbuild -ba rpmbuild/SPECS/autobrightnesscam.spec
 ```
 
-The rpm will be located in ~/rpmbuild/RPMS/\*.rpm
+The rpm will be located in `~/rpmbuild/RPMS/\*.rpm`.
+
+Note that `rpmdevtools` provides `rpmdev-setuptree` and `rpmbuild`.
 
 ## Usage
 
