@@ -412,7 +412,7 @@ abc_ioService_read(int *const restrict pValue,
     bool isReturnOK = true;
 
     // Allow ints up to 2^32, including minus sign.
-    char readLine[11];
+    char readLine[12];
 
     if (NULL == fgets(readLine, sizeof(readLine), pFile))
     {
