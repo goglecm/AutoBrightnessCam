@@ -151,7 +151,7 @@ make -sj dist
 ```
 
 The SPECS directory contains the spec needed to generate an RPM package. Simply
-run:
+run (assuming the build tree lives in build):
 
 ```
 cd ~

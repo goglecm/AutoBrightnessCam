@@ -64,6 +64,7 @@ AC_CHECK_PROG(exists_upower,  upower,    yes, no)
 # Mandatory build dependencies
 #
 
+# This generates LIBCONFIG_CFLAGS and _LIBS.
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],
                   [ libconfig_exists="yes" ],
                   [ libconfig_exists="no" ])
