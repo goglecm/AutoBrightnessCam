@@ -76,7 +76,8 @@ endif # if ABC_USES_DEBUG
 AM_CFLAGS = \
 	$(GENERAL_DEFINITIONS) \
 	-std=gnu99 $(C_WARNING_FLAGS) \
-	-I$(top_srcdir)/source/libs/inc
+	-I$(top_srcdir)/source/libs/inc \
+	$(LIBCONFIG_CFLAGS)
 
 
 #
