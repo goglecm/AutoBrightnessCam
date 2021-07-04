@@ -112,3 +112,34 @@ When:
 
 - Need to add a list of runtime vs dev time dependencies
 - Need to add a guide on how to add modules (to describe the infrastructure)
+
+
+
+
+# UI notes
+
+## Config control
+
+### Mandatory:
+
+- Allow editing of the current config. Check the config values before writing them.
+- View the default config.
+- View the config limits.
+
+### Nice to have:
+
+- Allow to specify a custom config/default file.
+
+
+## App control
+
+- Allow starting and stopping, enabling and disabling the app (i.e. enable at startup).
+- View statistics (cpu usage?).
+- View current state (filter, brightness levels, ambient, etc).
+
+## Other
+
+- Protect the app (from the same location) from starting multiple times.
+- Query the cli app about the current/default config locations.
+- Dump special statistics in a file (differentiate between debug and info). Use a CLI switch to disable/enbale info/debug logs.
+- Set permissions for installed files
