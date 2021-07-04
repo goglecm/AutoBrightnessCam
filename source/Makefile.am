@@ -99,94 +99,8 @@ noinst_LTLIBRARIES = libabc_ambient_controller.la \
 # programs with libraries.
 #
 
-#
-# Library dependencies (no recursive dependencies allowed)
-#
-libabc_filter_la_LIBADD              = libabc_logging_service.la
-libabc_utils_la_LIBADD               = libabc_logging_service.la
-libabc_terminal_controller_la_LIBADD = libabc_logging_service.la
-libabc_time_service_la_LIBADD        = libabc_logging_service.la
-libabc_power_controller_la_LIBADD    = libabc_logging_service.la
+include $(srcdir)/sources_libs.mk
 
-if ABC_USES_UPOWER
-
-libabc_power_controller_la_LIBADD += libabc_terminal_controller.la
-
-else
-
-libabc_power_controller_la_LIBADD += libabc_io_service.la
-
-endif # if ABC_USES_UPOWER
-
-libabc_ambient_controller_la_LIBADD = \
-	libabc_terminal_controller.la \
-	libabc_logging_service.la
-
-libabc_backlight_controller_la_LIBADD = \
-	libabc_logging_service.la \
-	libabc_io_service.la \
-	libabc_time_service.la
-
-libabc_brightness_service_la_LIBADD = \
-	libabc_power_controller.la \
-	libabc_ambient_controller.la \
-	libabc_backlight_controller.la \
-	libabc_time_service.la \
-	libabc_logging_service.la \
-	libabc_filter.la
-
-libabc_config_service_la_LIBADD = \
-	libabc_logging_service.la
-
-libabc_config_service_la_LIBADD += \
-	$(LIBCONFIG_LIBS)
-
-libabc_io_service_la_LIBADD = \
-	libabc_logging_service.la \
-	libabc_utils.la
-
-#
-# Library sources
-#
-libabc_ambient_controller_la_SOURCES   = libs/src/abc_ambient_controller/abc_ambient_controller.c
-libabc_backlight_controller_la_SOURCES = libs/src/abc_backlight_controller/abc_backlight_controller.c
-libabc_brightness_service_la_SOURCES   = libs/src/abc_brightness_service/abc_brightness_service.c
-libabc_filter_la_SOURCES               = libs/src/abc_filter/abc_filter.c
-libabc_io_service_la_SOURCES           = libs/src/abc_io_service/abc_io_service.c
-libabc_logging_service_la_SOURCES      = libs/src/abc_logging_service/abc_logging_service.c
-libabc_power_controller_la_SOURCES     = libs/src/abc_power_controller/abc_power_controller.c
-libabc_terminal_controller_la_SOURCES  = libs/src/abc_terminal_controller/abc_terminal_controller.c
-libabc_time_service_la_SOURCES         = libs/src/abc_time_service/abc_time_service.c
-libabc_utils_la_SOURCES                = libs/src/abc_utils/abc_utils.c
-
-libabc_config_service_la_custom_sources = \
-	libs/src/abc_config_service/abc_config_service_custom.c \
-	libs/src/abc_config_service/abc_config_service.c
-
-libabc_config_service_la_libconfig_sources = \
-	libs/src/abc_config_service/abc_config_service_libconfig.c \
-	libs/src/abc_config_service/abc_config_service.c
-
-libabc_config_service_la_SOURCES = \
-	$(libabc_config_service_la_libconfig_sources)
-
-
-#
-# Library headers
-#
-libabc_ambient_controller_la_SOURCES   += libs/inc/abc_ambient_controller/abc_ambient_controller.h
-libabc_backlight_controller_la_SOURCES += libs/inc/abc_backlight_controller/abc_backlight_controller.h
-libabc_brightness_service_la_SOURCES   += libs/inc/abc_brightness_service/abc_brightness_service.h
-libabc_filter_la_SOURCES               += libs/inc/abc_filter/abc_filter.h
-libabc_io_service_la_SOURCES           += libs/inc/abc_io_service/abc_io_service.h
-libabc_logging_service_la_SOURCES      += libs/inc/abc_logging_service/abc_logging_service.h
-libabc_power_controller_la_SOURCES     += libs/inc/abc_power_controller/abc_power_controller.h
-libabc_terminal_controller_la_SOURCES  += libs/inc/abc_terminal_controller/abc_terminal_controller.h
-libabc_time_service_la_SOURCES         += libs/inc/abc_time_service/abc_time_service.h
-libabc_utils_la_SOURCES                += libs/inc/abc_utils/abc_utils.h
-libabc_config_service_la_SOURCES       += \
-	libs/inc/abc_config_service/abc_config_service.h \
-	libs/src/abc_config_service/abc_config_service_common.h
 
 
 
@@ -195,21 +109,9 @@ libabc_config_service_la_SOURCES       += \
 #
 bin_PROGRAMS = aubrca
 
-aubrca_LDADD = \
-	libabc_brightness_service.la \
-	libabc_backlight_controller.la \
-	libabc_config_service.la \
-	libabc_logging_service.la
+include $(srcdir)/sources_core.mk
 
 
-if ABC_USES_UPOWER
-
-aubrca_LDADD += libabc_power_controller.la
-
-endif # ABC_USES_UPOWER
-
-
-aubrca_SOURCES = programs/src/main/main.c
 
 
 #
@@ -228,40 +130,20 @@ ABC_TEST_FLAGS = \
 	-DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\" \
 	-DABC_PICTURE_DIR=\"\"
 
+#
+# CPP testing libraries
+#
 check_LTLIBRARIES = \
 	libabc_test.la \
 	libabc_logging_service_active.la
 
-#
-# CPP testing libraries
-#
-libabc_test_la_SOURCES  = \
-	libs/tests/test_lib/src/testlib_io.cpp \
-   	libs/tests/test_lib/inc/testlib_io.h \
-	libs/tests/test_lib/inc/testlib_parsing.h
+include $(srcdir)/sources_check_libs.mk
 
-libabc_test_la_CPPFLAGS = $(ABC_TEST_FLAGS)
-
-libabc_test_la_LIBADD = libabc_logging_service_active.la
-
-#
-# Testing logging library
-#
-libabc_logging_service_active_la_SOURCES = $(libabc_logging_service_la_SOURCES)
-
-libabc_logging_service_active_la_CFLAGS  = $(ABC_TEST_FLAGS)
 
 
 #
 # Test executables
 #
-ABC_TEST_LDLIBS = \
-	libabc_test.la \
-	libabc_logging_service_active.la \
-	-lgtest \
-	-lgtest_main \
-	-lpthread
-
 check_PROGRAMS = \
 	test_abc_ambient_controller \
 	test_abc_backlight_controller \
@@ -276,115 +158,7 @@ check_PROGRAMS = \
 	test_abc_brightness_service \
 	test_abc_brightness_service_fake_abc_time_service
 
-# la libraries come first, then follow the -l ones.
-
-test_abc_ambient_controller_LDADD                       = $(ABC_TEST_LDLIBS)
-test_abc_backlight_controller_LDADD                     = $(ABC_TEST_LDLIBS)
-test_abc_logging_service_LDADD                          = libabc_test.la -lgtest -lgtest_main -lpthread
-test_abc_brightness_service_LDADD                       = $(ABC_TEST_LDLIBS)
-test_abc_brightness_service_fake_abc_time_service_LDADD = $(ABC_TEST_LDLIBS)
-test_abc_filter_LDADD                                   = $(ABC_TEST_LDLIBS)
-test_abc_io_service_LDADD                               = libabc_utils.la $(ABC_TEST_LDLIBS) # No need to fake the abc_utils module.
-test_abc_utils_LDADD                                    = $(ABC_TEST_LDLIBS)
-test_abc_config_service_libconfig_LDADD                 = $(ABC_TEST_LDLIBS) $(LIBCONFIG_LIBS)
-test_abc_power_controller_LDADD                         = $(ABC_TEST_LDLIBS)
-test_abc_power_controller_upower_LDADD                  = $(ABC_TEST_LDLIBS)
-test_abc_terminal_controller_LDADD                      = $(ABC_TEST_LDLIBS)
-
-test_abc_ambient_controller_CPPFLAGS                       = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_backlight_controller_CPPFLAGS                     = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_logging_service_CPPFLAGS                          = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_brightness_service_CPPFLAGS                       = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_brightness_service_fake_abc_time_service_CPPFLAGS = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_filter_CPPFLAGS                                   = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_io_service_CPPFLAGS                               = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_utils_CPPFLAGS                                    = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_config_service_libconfig_CPPFLAGS                 = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1 $(LIBCONFIG_CFLAGS)
-test_abc_power_controller_CPPFLAGS                         = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=0
-test_abc_power_controller_upower_CPPFLAGS                  = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_terminal_controller_CPPFLAGS                      = $(ABC_TEST_FLAGS) -DABC_HAS_UPOWER=1
-
-test_abc_ambient_controller_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_backlight_controller_CFLAGS                     = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_logging_service_CFLAGS                          = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_brightness_service_CFLAGS                       = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_brightness_service_fake_abc_time_service_CFLAGS = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_filter_CFLAGS                                   = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_io_service_CFLAGS                               = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_utils_CFLAGS                                    = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_config_service_libconfig_CFLAGS                 = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1 $(LIBCONFIG_CFLAGS)
-test_abc_power_controller_CFLAGS                         = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=0
-test_abc_power_controller_upower_CFLAGS                  = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-test_abc_terminal_controller_CFLAGS                      = $(ABC_TEST_FLAGS) $(C_WARNING_FLAGS) -DABC_HAS_UPOWER=1
-
-
-test_abc_ambient_controller_SOURCES = \
-	$(libabc_ambient_controller_la_SOURCES) \
-	libs/src_test/abc_ambient_controller/fake_abc_terminal_controller.c \
-	libs/tests/abc_ambient_controller/tests_abc_ambient_controller.cpp \
-	libs/inc_test/abc_ambient_controller/fake_abc_terminal_controller.h
-
-test_abc_backlight_controller_SOURCES = \
-	$(libabc_backlight_controller_la_SOURCES) \
-	libs/tests/abc_backlight_controller/tests_abc_backlight_controller.cpp \
-	libs/src_test/abc_backlight_controller/fake_abc_io_service.c \
-	libs/src_test/abc_backlight_controller/fake_abc_time_service.c \
-	libs/inc_test/abc_backlight_controller/fake_abc_io_service.h
-
-test_abc_logging_service_SOURCES = \
-	$(libabc_logging_service_la_SOURCES) \
-	libs/tests/abc_logging_service/tests_abc_logging_service.cpp
-
-test_abc_brightness_service_SOURCES = \
-	$(libabc_brightness_service_la_SOURCES) \
-	libs/tests/abc_brightness_service/tests_abc_brightness_service.cpp \
-	libs/src_test/abc_brightness_service/fake_abc_ambient_controller.c \
-	libs/src_test/abc_brightness_service/fake_abc_backlight_controller.c \
-	libs/src_test/abc_brightness_service/fake_abc_filter.c \
-	libs/src_test/abc_brightness_service/fake_abc_power_controller.c \
-	libs/src_test/abc_brightness_service/fake_abc_time_service.c \
-	libs/inc_test/abc_brightness_service/fake_abc_ambient_controller.h \
-	libs/inc_test/abc_brightness_service/fake_abc_backlight_controller.h \
-	libs/inc_test/abc_brightness_service/fake_abc_filter.h \
-	libs/inc_test/abc_brightness_service/fake_abc_power_controller.h \
-	libs/inc_test/abc_brightness_service/fake_abc_time_service.h
-
-test_abc_brightness_service_fake_abc_time_service_SOURCES = \
-	libs/tests/abc_brightness_service/tests_fake_abc_time_service.cpp \
-	libs/src_test/abc_brightness_service/fake_abc_time_service.c
-
-test_abc_filter_SOURCES = \
-	$(libabc_filter_la_SOURCES) \
-	libs/tests/abc_filter/tests_abc_filter.cpp
-
-test_abc_io_service_SOURCES = \
-	$(libabc_io_service_la_SOURCES) \
-	libs/tests/abc_io_service/tests_abc_io_service.cpp
-
-test_abc_utils_SOURCES = \
-	$(libabc_utils_la_SOURCES) \
-	libs/tests/abc_utils/tests_abc_utils.cpp
-
-test_abc_config_service_libconfig_SOURCES = \
-	$(libabc_config_service_la_libconfig_sources) \
-	libs/tests/abc_config_service/tests_abc_config_service_libconfig.cpp
-
-test_abc_power_controller_SOURCES = \
-	$(libabc_power_controller_la_SOURCES) \
-	libs/tests/abc_power_controller/tests_abc_power_controller.cpp \
-	libs/inc_test/abc_power_controller/fake_abc_io_service.h \
-	libs/src_test/abc_power_controller/fake_abc_io_service.c
-
-test_abc_power_controller_upower_SOURCES = \
-	$(libabc_power_controller_la_SOURCES) \
-	libs/tests/abc_power_controller/tests_abc_power_controller.cpp \
-	libs/inc_test/abc_power_controller/fake_abc_terminal_controller.h \
-	libs/src_test/abc_power_controller/fake_abc_terminal_controller.c
-
-test_abc_terminal_controller_SOURCES = \
-	$(libabc_terminal_controller_la_SOURCES) \
-	libs/tests/abc_terminal_controller/tests_abc_terminal_controller.cpp
-
+include $(srcdir)/sources_check_core.mk
 
 TESTS = \
 	test_abc_ambient_controller \
