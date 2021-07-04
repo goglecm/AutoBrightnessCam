@@ -1,4 +1,10 @@
 #
+# Standard
+#
+
+C_STANDARD = -std=gnu99
+
+#
 # Warning flags
 #
 C_WARNING_FLAGS = \
@@ -70,14 +76,9 @@ GENERAL_DEFINITIONS += -DNDEBUG=1 -DABC_LOGGING_ON=0
 endif # if ABC_USES_DEBUG
 
 
-#
-# Global build flags
-#
-AM_CFLAGS = \
-	$(GENERAL_DEFINITIONS) \
-	-std=gnu99 $(C_WARNING_FLAGS) \
-	-I$(top_srcdir)/source/libs/inc \
-	$(LIBCONFIG_CFLAGS)
+GENERAL_INCLUDE_PATHS = \
+	-I$(top_srcdir)/source/libs/inc
+
 
 
 #
@@ -108,11 +109,12 @@ include $(srcdir)/sources_libs.mk
 #
 # Programs
 #
+bin_PROGRAMS =
 
 #
 # CLI
 #
-bin_PROGRAMS = aubrca
+bin_PROGRAMS += aubrca
 
 include $(srcdir)/sources_core.mk
 
@@ -121,8 +123,6 @@ include $(srcdir)/sources_core.mk
 # GUI
 #
 if ABC_USE_GUI
-
-AM_CFLAGS += $(GTK4_CFLAGS)
 
 bin_PROGRAMS += aubrcaui
 

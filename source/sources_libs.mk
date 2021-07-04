@@ -44,6 +44,29 @@ libabc_io_service_la_LIBADD = \
 	libabc_logging_service.la \
 	libabc_utils.la
 
+
+#
+# Libraries build flags
+#
+LIB_FLAGS = \
+	$(GENERAL_DEFINITIONS) \
+	$(GENERAL_INCLUDE_PATHS) \
+	$(C_WARNING_FLAGS) \
+	$(C_STANDARD)
+
+libabc_ambient_controller_la_CFLAGS   = $(LIB_FLAGS)
+libabc_backlight_controller_la_CFLAGS = $(LIB_FLAGS)
+libabc_brightness_service_la_CFLAGS   = $(LIB_FLAGS)
+libabc_filter_la_CFLAGS               = $(LIB_FLAGS)
+libabc_io_service_la_CFLAGS           = $(LIB_FLAGS)
+libabc_logging_service_la_CFLAGS      = $(LIB_FLAGS)
+libabc_power_controller_la_CFLAGS     = $(LIB_FLAGS)
+libabc_terminal_controller_la_CFLAGS  = $(LIB_FLAGS)
+libabc_time_service_la_CFLAGS         = $(LIB_FLAGS)
+libabc_config_service_la_CFLAGS       = $(LIB_FLAGS) $(LIBCONFIG_CFLAGS)
+libabc_utils_la_CFLAGS                = $(LIB_FLAGS)
+
+
 #
 # Library sources
 #
@@ -57,10 +80,6 @@ libabc_power_controller_la_SOURCES     = libs/src/abc_power_controller/abc_power
 libabc_terminal_controller_la_SOURCES  = libs/src/abc_terminal_controller/abc_terminal_controller.c
 libabc_time_service_la_SOURCES         = libs/src/abc_time_service/abc_time_service.c
 libabc_utils_la_SOURCES                = libs/src/abc_utils/abc_utils.c
-
-libabc_config_service_la_custom_sources = \
-	libs/src/abc_config_service/abc_config_service_custom.c \
-	libs/src/abc_config_service/abc_config_service.c
 
 libabc_config_service_la_libconfig_sources = \
 	libs/src/abc_config_service/abc_config_service_libconfig.c \

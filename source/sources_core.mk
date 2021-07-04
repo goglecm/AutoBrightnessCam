@@ -11,5 +11,10 @@ aubrca_LDADD += libabc_power_controller.la
 
 endif # ABC_USES_UPOWER
 
+aubrca_CFLAGS = \
+	$(GENERAL_DEFINITIONS) \
+	$(GENERAL_INCLUDE_PATHS) \
+	$(C_WARNING_FLAGS) \
+	$(C_STANDARD)
 
 aubrca_SOURCES = programs/src/main/main.c
