@@ -14,6 +14,7 @@ let g:ale_c_clangtidy_options = '
             \ -Isource/libs/inc
             \ -Ibuild
             \ -Isource/libs/inc_test
+            \ `pkg-config --cflags-only-I gtk4`
             \ -DABC_PICTURE_DIR=\"\"
             \ -DABC_CONFIG_FILENAME=\"aubrca.conf\"
             \ -DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\"
@@ -27,6 +28,7 @@ let g:ale_cpp_clangtidy_options = '
             \ -Isource/libs/inc_test
             \ -Isource/libs/tests/test_lib/inc
             \ -Ibuild
+            \ `pkg-config --cflags-only-I gtk4`
             \ -DABC_PICTURE_DIR=\"\"
             \ -DABC_CONFIG_FILENAME=\"aubrca.conf\"
             \ -DABC_CONFIG_DEFAULTS_FILENAME=\"defaults.conf\"
@@ -48,6 +50,7 @@ let g:ale_cpp_cppcheck_options = '
             \ --enable=warning,style,performance,portability,information
             \ -Ibuild
             \ -Ibuild/source
+            \ `pkg-config --cflags-only-I gtk4`
             \ -DABC_LOGGING_ON=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -DDEBUG=1
@@ -66,6 +69,7 @@ let g:ale_c_cppcheck_options = '
             \ --std=c99
             \ --enable=warning,style,performance,portability,information
             \ -DHAVE_CONFIG_H
+            \ `pkg-config --cflags-only-I gtk4`
             \ -Isource/libs/inc
             \ -Isource/libs/inc_test
             \ -Ibuild
@@ -121,6 +125,7 @@ let g:ale_c_clang_options = '
             \ -Wnested-externs
             \ -Wunsuffixed-float-constants
             \ -Wunsafe-loop-optimizations
+            \ `pkg-config --cflags-only-I gtk4`
             \ -Isource/libs/inc'
 
 let g:ale_cpp_clang_options = '
@@ -136,6 +141,7 @@ let g:ale_cpp_clang_options = '
             \ -Isource/libs/inc
             \ -Isource/libs/inc_test
             \ -Isource/libs/tests/test_lib/inc
+            \ `pkg-config --cflags-only-I gtk4`
             \ -std=c++11
             \ -Wall
             \ -Wextra'
@@ -189,6 +195,7 @@ let g:ale_c_gcc_options = '
             \ -Wnested-externs
             \ -Wunsuffixed-float-constants
             \ -Wunsafe-loop-optimizations
+            \ `pkg-config --cflags-only-I gtk4`
             \ -Isource/libs/inc'
 
 let g:ale_cpp_gcc_options = '
@@ -199,6 +206,7 @@ let g:ale_cpp_gcc_options = '
             \ -DDEBUG=1
             \ -Ibuild
             \ -Ibuild/source
+            \ `pkg-config --cflags-only-I gtk4`
             \ -DABC_LOGGING_ON=1
             \ -DABC_LOGGING_DEFAULT_FILENAME=\"log.log\"
             \ -Isource/libs/inc
