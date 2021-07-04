@@ -13,4 +13,3 @@ endif # ABC_USES_UPOWER
 
 
 aubrca_SOURCES = programs/src/main/main.c
-

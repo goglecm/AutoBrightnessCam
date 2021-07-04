@@ -22,6 +22,10 @@ AC_ARG_WITH([upower],
             AS_HELP_STRING([--without-upower],
                            [Detect the battery charging status manually]))
 
+AC_ARG_WITH([gui],
+            AS_HELP_STRING([--with-gui],
+                           [Build the user interface app as well]))
+
 #
 # Initialise automake
 #
@@ -63,6 +67,24 @@ AC_CHECK_PROG(exists_upower,  upower,    yes, no)
 #
 # Mandatory build dependencies
 #
+
+
+
+
+
+    #############################################################
+    #                                                           #
+    #                           NOTE:                           #
+    #                                                           #
+    # Spaces are required around "==" and other equality signs. #
+    #                                                           #
+    # Spaces should not be put around assignments "=".          #
+    #                                                           #
+    #############################################################
+
+
+
+
 
 # This generates LIBCONFIG_CFLAGS and _LIBS.
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig >= 1.4],
@@ -108,6 +130,24 @@ AS_IF([ test "x$use_upower" == "xyes" ],
       [ AC_CHECK_HEADER([sys/stat.h], [], [AC_MSG_ERROR([Missing sys/stat.h])])])
 
 AM_CONDITIONAL([ABC_USES_UPOWER], test "x$use_upower" == "xyes")
+
+
+#
+# GUI app
+#
+AS_IF([ test "x$with_gui" == "xyes" ],
+      [ PKG_CHECK_MODULES([GTK4], [gtk4],
+                          [ gtk4_exists="yes" ],
+                          [ gtk4_exists="no"  ]) ], [])
+
+AS_IF([ test "x$with_gui" == "xyes" ],
+      [ AS_IF([ test "x$gtk4_exists" == "xyes" ],
+              [ AC_MSG_NOTICE([Building the GUI as gtk4 exists]) ],
+              [ AC_MSG_ERROR([gtk4-devel is not available ]) ]) ],
+      [ AC_MSG_NOTICE([Not building the GUI]) ])
+
+AM_CONDITIONAL([ABC_USE_GUI], [ test "x$with_gui" == "xyes" ])
+
 
 #
 # Systemd banner

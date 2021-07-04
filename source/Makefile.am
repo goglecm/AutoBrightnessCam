@@ -108,9 +108,28 @@ include $(srcdir)/sources_libs.mk
 #
 # Programs
 #
+
+#
+# CLI
+#
 bin_PROGRAMS = aubrca
 
 include $(srcdir)/sources_core.mk
+
+
+#
+# GUI
+#
+if ABC_USE_GUI
+
+AM_CFLAGS += $(GTK4_CFLAGS)
+
+bin_PROGRAMS += aubrcaui
+
+include $(srcdir)/sources_core_ui.mk
+
+endif # if ABC_USE_GUI
+
 
 
 
