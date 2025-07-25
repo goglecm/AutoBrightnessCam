@@ -47,7 +47,7 @@ Note: `make install-strip` also works. It will exclude debugging symbols.
 
 Here are the relevant `systemd` commands:
 
-#### Serivce install:
+#### Service install:
 ```
 sudo systemctl daemon-reexec
 sudo systemctl enable /usr/lib64/systemd/system/autobrightnesscam.service # May be different on your system.
