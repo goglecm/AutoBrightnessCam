@@ -27,6 +27,9 @@ s_lastTimestamp;
 static bool
 s_ignoreBattery = false;
 
+static bool
+s_isSetToMax = false;
+
 const PeriodSec_t
 g_abc_brightnessService_DEFAULT_PERIOD = ABC_DEFAULT_PERIOD;
 
@@ -87,6 +90,8 @@ abc_brightnessService_start(void)
 
     s_status = ABC_BRIGHTNESSSERVICE_STARTED;
 
+    s_isSetToMax = false;
+
     if (ABC_BRIGHTNESSSERVICE_SUCCESS != abc_brightnessService_wakeUp())
     {
         ABC_LOG_ERR("service started but it failed to wakeup properly, "
@@ -104,8 +109,6 @@ abc_brightnessService_wakeUp(void)
         return ABC_BRIGHTNESSSERVICE_FAILURE;
     }
 
-    static bool
-    s_isSetToMax = false;
 
     ABC_LOG("Waking up");
 
